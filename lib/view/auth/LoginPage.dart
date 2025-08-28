@@ -6,9 +6,6 @@ import 'package:google_sign_in/google_sign_in.dart' show GoogleSignIn;
 import 'package:lottie/lottie.dart';
 
 
-void main() {
-  runApp(const MyApp());
-}
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
