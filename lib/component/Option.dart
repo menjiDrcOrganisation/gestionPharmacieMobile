@@ -42,7 +42,7 @@ class Option {
               style: const TextStyle(
                 fontSize: 15,
                 fontWeight: FontWeight.w600,
-                color: Colors.black,
+                color: Color.fromRGBO(107, 101, 101, 1),
               ),
             ):Center(),
           ],
