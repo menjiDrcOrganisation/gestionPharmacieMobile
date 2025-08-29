@@ -14,7 +14,8 @@ class Appbar {
               color: Colors.white,
             )
         ),
-        backgroundColor: Color.fromRGBO(40, 167, 69, 1)
+        backgroundColor: Color.fromRGBO(40, 167, 69, 1),
+      automaticallyImplyLeading: true,
       // utilisation du titre injecté
     );
   }
