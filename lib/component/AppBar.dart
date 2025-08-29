@@ -1,6 +1,8 @@
 
 import 'package:flutter/material.dart';
 
+import 'Colors.dart';
+
 class Appbar {
   final String Title; // peut être null
 
@@ -14,7 +16,7 @@ class Appbar {
               color: Colors.white,
             )
         ),
-        backgroundColor: Color.fromRGBO(40, 167, 69, 1),
+        backgroundColor: ColorsApp.primaryColor,
       automaticallyImplyLeading: true,
       // utilisation du titre injecté
     );

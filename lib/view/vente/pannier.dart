@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../../component/AppBar.dart';
 import '../../component/BottomApp.dart';
 import '../../component/Button.dart';
+import '../../component/Colors.dart';
 import '../../component/Combobox.dart';
 import '../../component/LookPharma.dart';
 import '../../component/Option.dart';
@@ -26,6 +27,9 @@ class _PannierState extends State<Pannier> {
   }
   @override
   Widget build(BuildContext context) {
+    final double screenWidth = MediaQuery.of(context).size.width;
+    final double screenHeight = MediaQuery.of(context).size.height;
+
     return Scaffold(
       appBar: Appbar(Title: "Espace vente").lancer(),
       body:Stack(
@@ -35,16 +39,14 @@ class _PannierState extends State<Pannier> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Container(
-                height: 20,
+                height: screenHeight * 0.05,
                 width: double.infinity,
-                color:Color.fromRGBO(40, 167, 69, 1),
-
+                color:ColorsApp.primaryColor,
               ),
-
               Container(
                 width: double.infinity,
-                height:10,
-                color:Color.fromRGBO(40, 167, 69, 1),
+                height: screenHeight * 0.020,
+                color:ColorsApp.primaryColor,
               )
             ],
           ),
@@ -52,19 +54,20 @@ class _PannierState extends State<Pannier> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               SizedBox(
-                height: 645,
+                height: screenHeight * 0.8,
+                width: screenWidth * 0.9,
                 child:Stack(
                   children: [
                     Container(
-                      width: 380,
-                      height: 580,
+                      width: double.infinity,
+                      height: screenHeight * 0.6,
                       decoration: BoxDecoration(
                         color: Colors.white,
                         borderRadius: BorderRadius.circular(12),
 
                       ),
                       alignment: Alignment.center,
-                      padding: EdgeInsets.all(16),
+                        padding: EdgeInsets.all(screenWidth * 0.04),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
@@ -74,7 +77,7 @@ class _PannierState extends State<Pannier> {
                       ),
                     ),
                 Positioned(
-                  bottom: 0,   // distance du bas
+                    bottom: screenHeight * 0.10, // distance du bas
                   left: 0,
                   right: 0,
                   child: Row(
@@ -82,7 +85,7 @@ class _PannierState extends State<Pannier> {
                     children: [
                       Button(
                           intitule: "Valider",
-                          colorButton:Color.fromRGBO(40, 167, 69, 1),
+                          colorButton:ColorsApp.primaryColor,
                       colorText: Colors.white)
                           .lancer(),
 
@@ -92,7 +95,6 @@ class _PannierState extends State<Pannier> {
                       ).lancer()
                     ],
                   ) )
-
                   ],
                 ) ,
               )

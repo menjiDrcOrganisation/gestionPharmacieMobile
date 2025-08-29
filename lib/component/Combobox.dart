@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-/// ComboBox stylé avec placeholder fonctionnel
+
 Widget buildComboBox({
   required String title,
   required List<String> items,
