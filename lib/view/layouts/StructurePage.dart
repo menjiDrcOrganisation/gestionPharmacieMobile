@@ -31,12 +31,12 @@ class StructurePage {
             Container(
               height: screenHeight * 0.05,
               width: double.infinity,
-              color: ColorsApp.primaryColor,
+              color: MyColors.primaryColor,
             ),
             Container(
               width: double.infinity,
               height: screenHeight * 0.020,
-              color: ColorsApp.primaryColor,
+              color: MyColors.primaryColor,
             ),
           ],
         ),

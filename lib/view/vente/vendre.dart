@@ -32,7 +32,7 @@ class _VendreState extends State<Vendre> {
             width: screenWidth * 0.13,
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(500),
-              color: ColorsApp.primaryColor,
+              color: MyColors.primaryColor,
             ),
             child: Icon(Icons.add, color: Colors.white, size: screenWidth * 0.1),
           ),
@@ -98,7 +98,7 @@ class _VendreState extends State<Vendre> {
                     onChanged: (double value) {},
                     max: 10,
                     min: 2,
-                    thumbColor: ColorsApp.primaryColor,
+                    thumbColor: MyColors.primaryColor,
                   ),
                 ],
               ),

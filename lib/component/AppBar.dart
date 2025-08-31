@@ -16,7 +16,7 @@ class Appbar {
               color: Colors.white,
             )
         ),
-        backgroundColor: ColorsApp.primaryColor,
+        backgroundColor: MyColors.primaryColor,
       automaticallyImplyLeading: true,
       // utilisation du titre injecté
     );

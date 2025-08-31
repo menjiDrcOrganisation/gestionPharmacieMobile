@@ -40,7 +40,7 @@ class _PannierState extends State<Pannier> {
             Button(
               intitule: "Valider",
               colorText: Colors.white,
-              colorButton: ColorsApp.primaryColor
+              colorButton: MyColors.primaryColor
             ).lancer(),
             Button(
                 intitule: "Annuler"
