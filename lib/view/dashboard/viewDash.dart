@@ -25,7 +25,7 @@ class _ViewDashState extends State<ViewDash> {
 
     return Scaffold(
       appBar: Appbar(Title: "Dashboard").lancer(),
-      body: SingleChildScrollView( // ✅ permet de scroller si petit écran
+      body: SingleChildScrollView(
         padding: EdgeInsets.symmetric(horizontal: screenWidth * 0.03, vertical: screenHeight * 0.02),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -35,7 +35,7 @@ class _ViewDashState extends State<ViewDash> {
               style: TextStyle(
                 fontWeight: FontWeight.bold,
                 color: Colors.black,
-                fontSize: screenWidth * 0.06, // ✅ taille responsive
+                fontSize: screenWidth * 0.06,
               ),
             ),
             SizedBox(height: screenHeight * 0.02),
