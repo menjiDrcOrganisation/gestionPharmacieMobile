@@ -5,6 +5,8 @@ import '../../component/LookPharma.dart';
 import '../../component/Option.dart';
 import '../../component/SeashBar.dart';
 import '../../component/dashboard/Block.dart';
+import '../lots/LotRegisterPage.dart';
+import '../vente/vendre.dart';
 
 class ViewDash extends StatefulWidget {
   @override
@@ -39,8 +41,6 @@ class _ViewDashState extends State<ViewDash> {
               ),
             ),
             SizedBox(height: screenHeight * 0.02),
-
-
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -48,7 +48,14 @@ class _ViewDashState extends State<ViewDash> {
                   child: Option(
                     src: 'assets/Icone/shopping-cart-add 5.png',
                     intitule: "Vente",
-                    action: () {},
+                    action: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => Vendre(), // ta page cible
+                        ),
+                      );
+                    },
                   ).lancer(),
                 ),
                 SizedBox(width: 8),
@@ -56,7 +63,15 @@ class _ViewDashState extends State<ViewDash> {
                   child: Option(
                     src: 'assets/Icone/supplier-alt 1.png',
                     intitule: "Stock",
-                    action: () {},
+                    action: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => AddProduitPage(), // ta page cible
+                        ),
+                      );
+
+                    },
                   ).lancer(),
                 ),
                 SizedBox(width: 8),

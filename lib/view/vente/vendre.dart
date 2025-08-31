@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:gestion_pharmacie_mobile/view/vente/pannier.dart';
 
 import '../../component/AppBar.dart';
 import '../../component/BottomApp.dart';
@@ -27,15 +28,25 @@ class _VendreState extends State<Vendre> {
     return Scaffold(
       appBar: Appbar(Title: "Espace vente").lancer(),
       body: StructurePage(
-          contentBack: Container(
-            height: screenWidth * 0.13,
-            width: screenWidth * 0.13,
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(500),
-              color: MyColors.primaryColor,
-            ),
-            child: Icon(Icons.add, color: Colors.white, size: screenWidth * 0.1),
-          ),
+          contentBack:InkWell(
+            onTap: (){
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => Pannier(), // ta page cible
+                ),
+              );
+            },
+            child:Container(
+              height: screenWidth * 0.13,
+              width: screenWidth * 0.13,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(500),
+                color: MyColors.primaryColor,
+              ),
+              child: Icon(Icons.add, color: Colors.white, size: screenWidth * 0.1),
+            ) ,
+          ) ,
           screenHeight: screenHeight,
           screenWidth: screenWidth,
           content: Column(

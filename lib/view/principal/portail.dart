@@ -5,6 +5,8 @@ import '../../component/BottomApp.dart';
 import '../../component/LookPharma.dart';
 import '../../component/Option.dart';
 import '../../component/SeashBar.dart';
+import '../dashboard/viewDash.dart';
+import '../pharmacie/pharmacoePage.dart';
 
 class Portail extends StatefulWidget {
 
@@ -46,6 +48,12 @@ class _PortailState extends State<Portail> {
                     src: 'assets/Icone/traitement 1.png',
                     intitule: "Pharma",
                     action: (){
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => CreationComptePage(), // ta page cible
+                        ),
+                      );
                     }).lancer(),
                 SizedBox(width: 20),
                 Option(
@@ -73,8 +81,21 @@ class _PortailState extends State<Portail> {
 
             Column(
               children: [
-                LookPharma().lancer(),
-                LookPharma().lancer()
+                LookPharma(
+                  action: (){
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => ViewDash(), // ta page cible
+                      ),
+                    );
+
+                  }
+                ).lancer(),
+                LookPharma(
+                    action: (){
+                    }
+                ).lancer()
               ],
             )
           ],

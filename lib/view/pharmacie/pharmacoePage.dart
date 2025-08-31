@@ -146,13 +146,23 @@ class CreationComptePage extends StatelessWidget {
                             borderRadius: BorderRadius.circular(30),
                           ),
                         ),
-                        child: const Text(
-                          "Suivant",
-                          style: TextStyle(
-                            fontSize: 16,
-                            color: Colors.white,
-                          ),
-                        ),
+                        child:InkWell(
+                          onTap: (){
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => CreationComptePage(), // ta page cible
+                              ),
+                            );
+                          },
+                          child:const Text(
+                            "Suivant",
+                            style: TextStyle(
+                              fontSize: 16,
+                              color: Colors.white,
+                            ),
+                          ) ,
+                        ) ,
                       ),
                     ),
                   ],
