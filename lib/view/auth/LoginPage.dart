@@ -1,9 +1,16 @@
+import 'dart:convert';
+import 'package:http/http.dart' as http;
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:google_sign_in/google_sign_in.dart' show GoogleSignIn;
+import 'package:google_sign_in/google_sign_in.dart';
 
 import 'package:lottie/lottie.dart';
+
+import '../../component/Colors.dart';
+import '../../controller/AuthController.dart';
+import 'RegisterPage.dart';
 
 
 void main() {
@@ -49,6 +56,7 @@ class _LoginPageState extends State<LoginPage> {
   bool _obscurePassword = true;
 
    final GoogleSignIn _googleSignIn = GoogleSignIn.instance ;
+
   bool _isLoading = false;
   bool _isGoogleLoading = false;
 
@@ -95,6 +103,7 @@ class _LoginPageState extends State<LoginPage> {
     setState(() => _isLoading = true);
 
     try {
+      print({"loginnnnnnnnnnnnnnnnn::page"});
       final user = await _authController
           .login(
         _emailController.text,
@@ -129,43 +138,74 @@ class _LoginPageState extends State<LoginPage> {
     }
   }
 
+
   Future<void> _handleGoogleSignIn() async {
-    setState(() => _isGoogleLoading = true);
-
     try {
-      /*final GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
-      if (googleUser == null) return;
+      // Initialise GoogleSignIn avec les clientId (Android et Web)
+      await GoogleSignIn.instance.initialize(
+        clientId: "1084287883351-m7vtn5gae1ngqicv8r47qgketl2cneho.apps.googleusercontent.com",
+        serverClientId: "1084287883351-5eu60ndaq3c6d2e999d5a04trcf9fecd.apps.googleusercontent.com",
+      );
 
-      final GoogleSignInAuthentication googleAuth =
-      await googleUser.authentication;
+      // Vérifie si authenticate() est supporté
+      if (GoogleSignIn.instance.supportsAuthenticate()) {
+        // Demande à l'utilisateur de se connecter
+        final GoogleSignInAccount? googleUser =
+        await GoogleSignIn.instance.authenticate();
 
-      // Envoie le token à votre backend Laravel
-      final user = await _authController.googleSignIn(googleAuth.idToken);
+        if (googleUser == null) {
+          print("❌ Connexion annulée par l’utilisateur");
+          return;
+        }
 
-      _showToast('Bienvenue, ${user.name}', isError: false);
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => LoginPage()),
+        // Récupère les tokens d'authentification
+        final GoogleSignInAuthentication googleAuth =
+        await googleUser.authentication;
+
+        print("✅ ID Token : ${googleAuth.idToken}");
+        try {
+          print({"loginnnnnnnnnnnnnnnnn::page"});
+          final user = await _authController
+              .googleSignIn(
+              googleAuth.idToken
+          )
+              .timeout(const Duration(seconds: 10));
+
+          _showToast('Bienvenue, ${user.name}', isError: false);
+
+          /*  Future.delayed(
+        const Duration(milliseconds: 1500),
+            () async {
+          context.go('/login');
+        },
       );*/
-    } catch (e) {
-      String errorMessage = 'Une erreur est survenue. Veuillez réessayer.';
+        } catch (e) {
+          String errorMessage = 'Impossible de se connecter. Vérifiez que votre adresse e-mail et votre mot de passe sont corrects.';
+          print(e);
+          if (e.toString().contains('email')) {
+            errorMessage = 'Le champ e-mail est requis.';
+          } else if (e.toString().contains('password')) {
+            errorMessage = 'Le champ mot de passe est requis.';
+          } else if (e.toString().contains('credentials')) {
+            errorMessage = 'Identifiants incorrects. Veuillez réessayer.';
+          } else if (e.toString().contains('SocketException')) {
+            errorMessage = 'Vérifiez votre connexion internet.';
+          }
 
-      if (e.toString().contains('email')) {
-        errorMessage = 'Le champ e-mail est requis.';
-      } else if (e.toString().contains('password')) {
-        errorMessage = 'Le champ mot de passe est requis.';
-      } else if (e.toString().contains('credentials')) {
-        errorMessage = 'Identifiants incorrects. Veuillez réessayer.';
-      } else if (e.toString().contains('SocketException')) {
-        errorMessage = 'Vérifiez votre connexion internet.';
+          _showToast(errorMessage);
+        } finally {
+          if (mounted) setState(() => _isLoading = false);
+        }
+
+      } else {
+        print("⚠️ authenticate() n’est pas supporté sur cette plateforme");
       }
-
-      _showToast(errorMessage);
-    }
-    finally {
-      if (mounted) setState(() => _isLoading = false);
+    } catch (e) {
+      print("Erreur Google Sign-In : $e");
     }
   }
+
+
 
   @override
   Widget build(BuildContext context) {
@@ -194,10 +234,10 @@ class _LoginPageState extends State<LoginPage> {
                     hintStyle: const TextStyle(color: Colors.grey),
                     border: InputBorder.none,
                     enabledBorder: const UnderlineInputBorder(
-                      borderSide: BorderSide(color: Colors.orange, width: 1.0),
+                      borderSide: BorderSide(color:MyColors.primary, width: 1.0),
                     ),
                     focusedBorder: const UnderlineInputBorder(
-                      borderSide: BorderSide(color: Colors.orange, width: 2.0),
+                      borderSide: BorderSide(color: MyColors.primary, width: 2.0),
                     ),
                     contentPadding: const EdgeInsets.only(bottom: 8),
                   ),
@@ -211,16 +251,16 @@ class _LoginPageState extends State<LoginPage> {
                     hintStyle: const TextStyle(color: Colors.grey),
                     border: InputBorder.none,
                     enabledBorder: const UnderlineInputBorder(
-                      borderSide: BorderSide(color: Colors.orange, width: 1.0),
+                      borderSide: BorderSide(color: MyColors.primary, width: 1.0),
                     ),
                     focusedBorder: const UnderlineInputBorder(
-                      borderSide: BorderSide(color: Colors.orange, width: 2.0),
+                      borderSide: BorderSide(color: MyColors.primary, width: 2.0),
                     ),
                     contentPadding: const EdgeInsets.only(bottom: 8),
                     suffixIcon: IconButton(
                       icon: Icon(
                         _obscurePassword ? Icons.visibility_off : Icons.visibility,
-                        color: Colors.orange,
+                        color: MyColors.primary,
                       ),
                       onPressed: () {
                         setState(() {
@@ -231,31 +271,32 @@ class _LoginPageState extends State<LoginPage> {
                   ),
                 ),
 
-                const SizedBox(height: 10),
+                const SizedBox(height: 1),
                 Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                /* TextButton(
+                    SizedBox(height: 10),
+                 TextButton(
                       onPressed: () => Navigator.push(
                         context,
                        MaterialPageRoute(
-                            builder: (context) => CreationCompte()),
+                            builder: (context) => RegisterPage()),
                       ),
                       child: RichText(
                         text: TextSpan(
                           children: [
                             TextSpan(
-                              text: 'Créer ',
-                              style: TextStyle(color: Colors.orange),
+                              text: 'Mots de passe ',
+                              style: TextStyle(color: Colors.grey),
                             ),
                             TextSpan(
-                              text: 'un compte',
-                              style: TextStyle(color: Colors.grey),
+                              text: ' oublié',
+                              style: TextStyle(color: MyColors.primary),
                             ),
                           ],
                         ),
                       ),
-                    ),*/
+                    ),
                  /*   TextButton(
                       onPressed: () => Navigator.push(
                         context,
@@ -281,9 +322,9 @@ class _LoginPageState extends State<LoginPage> {
                 ),
                 const SizedBox(height: 10),
                 ElevatedButton(
-                  onPressed: _isLoading ? null : _handleLogin,
+                  onPressed:  _handleLogin,
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.orange,
+                    backgroundColor: MyColors.primary,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(30.0),
                     ),
@@ -309,7 +350,7 @@ class _LoginPageState extends State<LoginPage> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Expanded(
-                        child: Divider(color: Colors.orange, thickness: 0.7)),
+                        child: Divider(color: MyColors.primary, thickness: 0.7)),
                     Padding(
                       padding: EdgeInsets.symmetric(horizontal: 10),
                       child: Text(
@@ -321,29 +362,49 @@ class _LoginPageState extends State<LoginPage> {
                       ),
                     ),
                     Expanded(
-                        child: Divider(color: Colors.orange, thickness: 0.7)),
+                        child: Divider(color: MyColors.primary, thickness: 0.7)),
                   ],
                 ),
                 const SizedBox(height: 20),
                 _buildGoogleSignInButton(),
+
               ],
             ),
           ),
         ),
+      ),
+      bottomNavigationBar: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          TextButton(
+            onPressed: () => Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (context) => RegisterPage()),
+            ),
+            child: const Text(
+              "Vous n’avez pas de compre ? Cliquez ici ",
+              style: TextStyle(
+                color: MyColors.primary,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }
 
   Widget _buildGoogleSignInButton() {
     return GestureDetector(
-      onTap: _isGoogleLoading ? null : _handleGoogleSignIn,
+      onTap:  _handleGoogleSignIn,
       child: Container(
-        width: 280,
+
         height: 50,
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(25),
-          border: Border.all(color: Colors.orange, width: 0.7),
+          border: Border.all(color: MyColors.primary, width: 0.7),
         ),
         padding: const EdgeInsets.all(10),
         child: _isGoogleLoading
@@ -371,16 +432,48 @@ class _LoginPageState extends State<LoginPage> {
       ),
     );
   }
+
+  Future<void> _handleSignIn() async {
+    try {
+
+      await _googleSignIn.initialize(
+        serverClientId: '1084287883351-5eu60ndaq3c6d2e999d5a04trcf9fecd.apps.googleusercontent.com',
+      );
+      final GoogleSignInAccount? googleUser = await _googleSignIn.authenticate();
+
+      if (googleUser == null) return; // l’utilisateur a annulé
+
+      final GoogleSignInAuthentication googleAuth =
+      await googleUser.authentication;
+
+      final idToken = googleAuth.idToken;
+
+      // Envoi au backend Laravel
+      print('Authentification ID: $idToken');
+
+      final response = await http.post(
+        Uri.parse("https://ton-api.com/api/google-login"),
+        headers: {"Content-Type": "application/json"},
+        body: jsonEncode({"id_token": idToken}),
+      );
+
+      if (response.statusCode == 200) {
+        print("Utilisateur enregistré/connecté !");
+        print(response.body); // ton token Laravel
+      } else {
+        print("Erreur backend : ${response.body}");
+      }
+    } catch (error) {
+      print(error);
+    }
+  }
+
 }
 
 
 
 
 
-class AuthController {
-  login(String text, String text2) {}
 
-  Future googleSignIn(String? idToken) async {}
-}
 
 
