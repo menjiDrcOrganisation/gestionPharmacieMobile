@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
+import '../../ModelTampo/Lot.dart';
 import '../../component/AppBar.dart';
 import '../../component/BottomApp.dart';
 import '../../component/LookPharma.dart';
 import '../../component/Option.dart';
 import '../../component/SeashBar.dart';
 import '../../component/dashboard/Block.dart';
+import '../../services/GetStorage/LotStorage.dart';
 import '../lots/LotRegisterPage.dart';
 import '../vente/vendre.dart';
 
@@ -14,8 +16,11 @@ class ViewDash extends StatefulWidget {
 }
 
 class _ViewDashState extends State<ViewDash> {
+
+
   @override
   void initState() {
+
     super.initState();
   }
 
@@ -49,6 +54,8 @@ class _ViewDashState extends State<ViewDash> {
                     src: 'assets/Icone/shopping-cart-add 5.png',
                     intitule: "Vente",
                     action: () {
+                      print("icici");
+                     print(LotStorage.getLots()) ;
                       Navigator.push(
                         context,
                         MaterialPageRoute(

@@ -5,6 +5,8 @@ import '../../component/BottomApp.dart';
 import '../../component/LookPharma.dart';
 import '../../component/Option.dart';
 import '../../component/SeashBar.dart';
+import '../../controller/LotController.dart';
+import '../../controller/VenteController.dart';
 import '../dashboard/viewDash.dart';
 import '../pharmacie/pharmacoePage.dart';
 
@@ -19,8 +21,8 @@ class _PortailState extends State<Portail> {
 
   @override
   void initState() {
-    super.initState();
 
+    super.initState();
   }
 
   @override
@@ -48,6 +50,9 @@ class _PortailState extends State<Portail> {
                     src: 'assets/Icone/traitement 1.png',
                     intitule: "Pharma",
                     action: (){
+                      print("fdfdfd");
+
+
                       Navigator.push(
                         context,
                         MaterialPageRoute(
@@ -83,6 +88,7 @@ class _PortailState extends State<Portail> {
               children: [
                 LookPharma(
                   action: (){
+                    VenteController.index();
                     Navigator.push(
                       context,
                       MaterialPageRoute(

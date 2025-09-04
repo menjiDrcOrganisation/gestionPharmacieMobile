@@ -1,4 +1,4 @@
-class Lot_register {
+ class Lot_register {
   final int? idLot;
   final int idMedicament;
   final int quantite;
