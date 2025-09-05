@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:gestion_pharmacie_mobile/view/vente/pannier.dart';
 
+import '../../ModelTampo/Lot.dart';
 import '../../component/AppBar.dart';
 import '../../component/BottomApp.dart';
 import '../../component/Colors.dart';
@@ -9,6 +10,7 @@ import '../../component/LookPharma.dart';
 import '../../component/Option.dart';
 import '../../component/SeashBar.dart';
 import '../../component/vente/Prix.dart';
+import '../../services/GetStorage/LotStorage.dart';
 import '../layouts/StructurePage.dart';
 
 class Vendre extends StatefulWidget {
@@ -17,7 +19,24 @@ class Vendre extends StatefulWidget {
 }
 
 class _VendreState extends State<Vendre> {
-  String selected = "Option 1";
+
+  late List<Lot> lots;
+  List<String> medicaments = [];
+  String? selectedMedicament;
+
+  Future<void> getLots() async {
+    lots = await LotStorage.getLots();
+    medicaments = lots.map((lot) => lot.medicament.nom).toList(); // supprimer doublons
+    if (medicaments.isNotEmpty) {
+      selectedMedicament = medicaments[0];
+    }
+    setState(() {}); // Mettre à jour l'UI
+  }
+  @override
+  void initState() {
+    getLots();
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -53,13 +72,17 @@ class _VendreState extends State<Vendre> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               SizedBox(height: screenHeight * 0.05),
+              medicaments.isEmpty
+                  ? CircularProgressIndicator():
               buildComboBox(
                 title: "Nom du produit",
-                items: ["Option 1", "Option 2", "Option 3"],
+                items: medicaments.map((med) {
+                  return med;
+                }).toList(),
                 placeholder: "Choisissez un produit",
                 onChanged: (value) {
                   setState(() {
-                    selected = value!;
+
                   });
                 },
               ),
@@ -73,7 +96,7 @@ class _VendreState extends State<Vendre> {
                       placeholder: "Choisissez une forme",
                       onChanged: (value) {
                         setState(() {
-                          selected = value!;
+
                         });
                       },
                     ),
@@ -86,7 +109,7 @@ class _VendreState extends State<Vendre> {
                       placeholder: "Choisissez une dose",
                       onChanged: (value) {
                         setState(() {
-                          selected = value!;
+
                         });
                       },
                     ),
