@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:gestion_pharmacie_mobile/utils/Utilis.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:http/http.dart' as http;
@@ -6,7 +7,7 @@ import 'package:http/http.dart' as http;
 import '../../model/Medicament.dart';
 
 class MedicamentService {
-  final String baseUrl = "http://192.168.254.136:8000/api";
+  final String baseUrl = Utilise.baseUrl;
 
   // Récupérer depuis API
   Future<List<Medicament>> fetchMedicaments() async {

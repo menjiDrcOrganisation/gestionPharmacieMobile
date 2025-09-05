@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:gestion_pharmacie_mobile/view/auth/ProfilPage.dart';
+import 'package:gestion_pharmacie_mobile/view/lots/MedicamentLotsPage.dart';
 import 'package:gestion_pharmacie_mobile/view/principal/portail.dart';
 
 
@@ -18,7 +20,7 @@ class MyApp extends StatelessWidget {
         fontFamily: "Roboto",
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
       ),
-      home: Portail(),
+      home: ProfilePage(),
     );
   }
 }

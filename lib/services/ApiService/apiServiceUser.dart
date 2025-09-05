@@ -1,11 +1,14 @@
 import 'dart:convert';
+import 'package:gestion_pharmacie_mobile/utils/Utilis.dart';
 import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
 import '../../model/userModel.dart';
+import '../GetStorage/local_storage_service.dart';
 
 
 class ApiService {
   //final String baseUrl = 'https://gotrans.menjidrc.com/api';
-  final String baseUrl = 'http://192.168.199.136:8000/api';
+  final String baseUrl = Utilise.baseUrl;
   String? _token;
 
   // Méthode pour définir le token après la connexion
@@ -16,7 +19,7 @@ class ApiService {
   // Headers communs pour les requêtes authentifiées
   Map<String, String> get _authHeaders {
     return {
-      'Authorization': 'Bearer $_token',
+      //'Authorization': 'Bearer $_token',
       'Content-Type': 'application/json',
       'Accept': 'application/json',
     };
@@ -91,18 +94,25 @@ class ApiService {
     required String name,
     // required String email,
     String? phone,
-  }) async {
+  })
+
+  async {
+    final prefs = await LocalStorageService();
+    final User? user = await prefs.getUser()  ;
     final response = await http.put(
       Uri.parse('$baseUrl/user/profile'),
       headers: _authHeaders,
       body: jsonEncode({
         'name': name,
-        //'email': email,
-        'number_phone': phone,
+        'email': user?.email ,
+        //'number_phone': phone,
       }),
     );
+    print('objectprofillllllllllllllllllllllllllllllll');
+    print(response.body);
 
     if (response.statusCode == 200) {
+      print(response.statusCode);
       final data = jsonDecode(response.body);
       return User.fromJson(data['data']);
     } else {

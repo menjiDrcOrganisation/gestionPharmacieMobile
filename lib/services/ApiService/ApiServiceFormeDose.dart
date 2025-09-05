@@ -1,10 +1,13 @@
 import 'dart:convert';
+import 'package:gestion_pharmacie_mobile/utils/Utilis.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
 class FormeDoseService {
 
-  final String apiUrl = "http://192.168.254.136:8000/api/getallformeanddose";
+
+
+  final String apiUrl = Utilise.baseUrl+"getallformeanddose";
 
   // Récupérer depuis API et stocker localement
   Future<void> fetchAndSaveFormeDose() async {

@@ -5,10 +5,13 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
   final String title;
   final bool showBack;
 
+
   const CustomAppBar({
     super.key,
     required this.title,
     this.showBack = false,
+
+
   });
 
   @override
@@ -40,12 +43,8 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
             );
           },
         ),
-        IconButton(
-          icon: const Icon(Icons.more_vert, color: Colors.white),
-          onPressed: () {
-            // Menu
-          },
-        ),
+
+
       ],
     );
   }

@@ -44,26 +44,23 @@ class AddProduitPage extends StatefulWidget {
 class _AddProduitPageState extends State<AddProduitPage> {
   String? selectedForme;
   String? selectedDosage;
-  String? selectedMedicament; // null par défaut
-
-
+  String? selectedMedicament;
   double quantity = 0;
   DateTime? expirationDate;
-
-
+  bool isLoading = false;
+  bool isSubmitting = false;
 
   final TextEditingController nomProduitController = TextEditingController();
-  final TextEditingController prixUnitaireController =
-  TextEditingController(text: "1500fc");
-  final TextEditingController prixAchatController =
-  TextEditingController(text: "1500fc");
+  final TextEditingController prixUnitaireController = TextEditingController(text: "1500");
+  final TextEditingController prixAchatController = TextEditingController(text: "1500");
+  final TextEditingController searchController = TextEditingController();
+
   final MedicamentController _medicamentController = MedicamentController();
   final FormeDoseController controller = FormeDoseController();
   final LotController lotController = LotController();
-  List<Medicament>? medicaments; // ← Variable pour stocker les médicaments
 
-
-
+  List<Medicament>? medicaments;
+  List<Medicament> filteredMedicaments = [];
   Map<String, dynamic>? data;
 
   @override
@@ -71,313 +68,409 @@ class _AddProduitPageState extends State<AddProduitPage> {
     super.initState();
     _loadData();
     _loadMedicaments();
-  }
-  Future<void> _loadMedicaments() async {
-    final meds = await _medicamentController.loadMedicaments(); // récupérer depuis API ou local
-    setState(() {
-      medicaments = meds;
 
-      // valeur par défaut
-      if (medicaments!.isNotEmpty) {
-        selectedMedicament = medicaments![0].nom;
+    // Écouter les changements de prix d'achat pour calculer automatiquement le prix unitaire
+    prixAchatController.addListener(_calculatePrixUnitaire);
+    searchController.addListener(_filterMedicaments);
+  }
+
+  @override
+  void dispose() {
+    prixAchatController.removeListener(_calculatePrixUnitaire);
+    searchController.removeListener(_filterMedicaments);
+    super.dispose();
+  }
+
+  void _calculatePrixUnitaire() {
+    if (prixAchatController.text.isNotEmpty) {
+      try {
+        final prixAchat = double.parse(prixAchatController.text);
+        // Calculer le prix unitaire avec une marge de 20%
+        final prixUnitaire = (prixAchat * 1.2).round();
+        prixUnitaireController.text = prixUnitaire.toString();
+      } catch (e) {
+        // Ignorer les erreurs de parsing
+      }
+    }
+  }
+
+  void _filterMedicaments() {
+    if (medicaments == null) return;
+
+    final query = searchController.text.toLowerCase();
+    setState(() {
+      filteredMedicaments = medicaments!
+          .where((med) => med.nom.toLowerCase().contains(query))
+          .toList();
+
+      // Mettre à jour la sélection si le médicament sélectionné ne fait plus partie des résultats filtrés
+      if (selectedMedicament != null &&
+          !filteredMedicaments.any((med) => med.nom == selectedMedicament)) {
+        selectedMedicament = null;
       }
     });
   }
 
+  Future<void> _loadMedicaments() async {
+    setState(() {
+      isLoading = true;
+    });
 
-
-
-
+    try {
+      final meds = await _medicamentController.loadMedicaments();
+      setState(() {
+        medicaments = meds;
+        filteredMedicaments = meds;
+        if (meds.isNotEmpty && selectedMedicament == null) {
+          selectedMedicament = meds.first.nom;
+        }
+      });
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Erreur lors du chargement des médicaments: $e")),
+      );
+    } finally {
+      setState(() {
+        isLoading = false;
+      });
+    }
+  }
 
   Future<void> _loadData() async {
-    // Charger depuis API et stocker localement
-    await controller.chargerFormeDose();
+    try {
+      await controller.chargerFormeDose();
+      var localData = await controller.recupererFormeDoseLocal();
+      setState(() {
+        data = localData;
+      });
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Erreur lors du chargement des données: $e")),
+      );
+    }
+  }
 
-    // Lire depuis local
-    var localData = await controller.recupererFormeDoseLocal();
+  Future<void> _submitForm() async {
+    if (selectedMedicament == null || expirationDate == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Veuillez sélectionner un médicament et une date d'expiration")),
+      );
+      return;
+    }
+
+    if (quantity <= 0) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("La quantité doit être supérieure à 0")),
+      );
+      return;
+    }
 
     setState(() {
-      data = localData;
+      isSubmitting = true;
+    });
+
+    try {
+      final medicament = medicaments!.firstWhere(
+            (m) => m.nom == selectedMedicament,
+      );
+
+      final lot = await lotController.enregistrerLot(
+        idMedicament: medicament.id,
+        quantite: quantity.round(),
+        dateExpiration: expirationDate!.toIso8601String().split("T")[0],
+        prixAchat: int.parse(prixAchatController.text),
+        idPharmacie: 1,
+      );
+
+      if (lot != null) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text("Lot ajouté avec succès ✅")),
+        );
+        // Réinitialiser le formulaire après succès
+        _resetForm();
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text("Erreur lors de l'ajout du lot ❌")),
+        );
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Erreur: $e")),
+      );
+    } finally {
+      setState(() {
+        isSubmitting = false;
+      });
+    }
+  }
+
+  void _resetForm() {
+    setState(() {
+      selectedMedicament = medicaments?.isNotEmpty == true ? medicaments!.first.nom : null;
+      quantity = 0;
+      expirationDate = null;
+      prixAchatController.text = "1500";
+      prixUnitaireController.text = "1800"; // 1500 * 1.2
+      searchController.clear();
     });
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: const CustomAppBar(title: "Gestion des Lots", showBack: true),
+      appBar: CustomAppBar(title: "Ajouter un Lot"),
       backgroundColor: Colors.white,
-      body: SingleChildScrollView(
+      body: isLoading
+          ? const Center(child: CircularProgressIndicator())
+          : SingleChildScrollView(
         padding: const EdgeInsets.all(20),
         child: Column(
           children: [
-            Center(
-              child: Container(
-                padding: const EdgeInsets.all(25),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(20),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black,
-                      blurRadius: 10,
-                      offset: const Offset(0, 5),
+            Container(
+              padding: const EdgeInsets.all(25),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(20),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.1),
+                    blurRadius: 10,
+                    offset: const Offset(0, 5),
+                  ),
+                ],
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const SizedBox(height: 20),
+
+                  // Barre de recherche des médicaments
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 12),
+                    decoration: BoxDecoration(
+                      color: Colors.grey[100],
+                      borderRadius: BorderRadius.circular(30),
                     ),
-                  ],
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const SizedBox(height: 40),
-
-                    // Barre de recherche
-                    Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 12),
-                      decoration: BoxDecoration(
-                        color: Colors.grey[100],
-                        borderRadius: BorderRadius.circular(30),
-                      ),
-                      child: Row(
-                        children: const [
-                          Icon(Icons.search, color: Colors.grey),
-                          SizedBox(width: 10),
-                          Expanded(
-                            child: TextField(
-                              decoration: InputDecoration(
-                                hintText: "Recherchez votre pharmacie",
-                                border: InputBorder.none,
-                              ),
-                            ),
-                          ),
-                          Icon(Icons.filter_list, color: Colors.green),
-                        ],
-                      ),
-                    ),
-                    const SizedBox(height: 25),
-
-                    // Nom du produit + calendrier
-                    SingleChildScrollView(
-                      child: Row(
-                        children: [
-                          // Dropdown pour le médicament
-                          Expanded(
-                            child: SizedBox(
-                              width: 200,
-                              child: DropdownButtonFormField<String>(
-                                value: selectedMedicament,
-                                items: medicaments != null
-                                    ? medicaments!
-                                    .map((m) => m.nom) // on prend le nom depuis le modèle
-                                    .toSet() // éviter les doublons
-                                    .map((nom) => DropdownMenuItem(
-                                  value: nom,
-                                  child: Text(nom),
-                                ))
-                                    .toList()
-                                    : [], // liste vide si medicaments n'est pas encore chargé
-                                onChanged: (val) => setState(() => selectedMedicament = val),
-                                decoration: _inputDecoration("Nom du produit"),
-                              ),
-                            ),
-                          ),
-                          const SizedBox(width: 10),
-
-                          // IconButton pour choisir la date d'expiration
-                          IconButton(
-                            icon: const Icon(Icons.calendar_month, color: Colors.green),
-                            onPressed: () async {
-                              DateTime? picked = await showDatePicker(
-                                context: context,
-                                initialDate: expirationDate ?? DateTime.now(),
-                                firstDate: DateTime.now(),
-                                lastDate: DateTime(2100),
-                              );
-                              if (picked != null) {
-                                setState(() {
-                                  expirationDate = picked;
-                                });
-                              }
-                            },
-                          ),
-
-                          // Afficher la date sélectionnée
-                          /*if (expirationDate != null)
-                          Padding(
-                            padding: const EdgeInsets.only(left: 8.0),
-                            child: Text(
-                              "${expirationDate!.day}/${expirationDate!.month}/${expirationDate!.year}",
-                              style: TextStyle(fontSize: 16),
-                            ),
-                          ),*/
-                        ],
-                      ),
-                    ),
-
-                    const SizedBox(height: 15),
-
-                    /* data == null
-                        ? Center(child: CircularProgressIndicator())
-                        : SingleChildScrollView(
-                      scrollDirection: Axis.horizontal,
-                      child: Row(
-                        children: [
-                          // Dropdown Forme
-                          SizedBox(
-                            width: 200,
-                            child: DropdownButtonFormField<String>(
-                              value: selectedForme,
-                              items: (data!["forme"] as List)
-                                  .map<String>((e) => e["nom"] as String)
-                                  .toSet()
-                                  .map((forme) => DropdownMenuItem(
-                                value: forme,
-                                child: Text(forme),
-                              ))
-                                  .toList(),
-                              onChanged: (val) => setState(() => selectedForme = val),
-                              decoration: _inputDecoration("Choisir la forme"),
-                            ),
-                          ),
-                          const SizedBox(width: 10),
-                          // Dropdown Dosage
-                          SizedBox(
-                            width: 150,
-                            child: DropdownButtonFormField<String>(
-                              value: selectedDosage,
-                              items: (data!["dose"] as List)
-                                  .map<String>((e) => "${e["quantite"]} ${e["unite"]}")
-                                  .toSet()
-                                  .map((dosage) => DropdownMenuItem(
-                                value: dosage,
-                                child: Text(dosage),
-                              ))
-                                  .toList(),
-                              onChanged: (val) => setState(() => selectedDosage = val),
-                              decoration: _inputDecoration("Dosage"),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),*/
-
-
-
-
-                    const SizedBox(height: 20),
-
-                    // Quantité slider
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
+                    child: Row(
                       children: [
-                        const Text("Quantité"),
-                        Row(
-                          children: [
-                            Expanded(
-                              child: Slider(
-                                value: quantity,
-                                min: 0,
-                                max: 1000,
-                                divisions: 1000,
-                                label: quantity.round().toString(),
-                                activeColor: Colors.green,
-                                onChanged: (val) {
-                                  setState(() => quantity = val);
-                                },
-                              ),
+                        const Icon(Icons.search, color: Colors.grey),
+                        const SizedBox(width: 10),
+                        Expanded(
+                          child: TextField(
+                            controller: searchController,
+                            decoration: const InputDecoration(
+                              hintText: "Rechercher un médicament...",
+                              border: InputBorder.none,
                             ),
-                            SizedBox(width: 10),
-                            Text(
-                              "${quantity.round()}",
-                              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                            ),
-                          ],
-                        )
-
+                          ),
+                        ),
+                        IconButton(
+                          icon: const Icon(Icons.filter_list, color: Colors.green),
+                          onPressed: () {
+                            // Action de filtrage supplémentaire
+                          },
+                        ),
                       ],
                     ),
-                    const SizedBox(height: 20),
+                  ),
+                  const SizedBox(height: 25),
 
-
-                    // Prix d'achats
-                    TextField(
-                      controller: prixAchatController,
-
-                      decoration: _inputDecoration("Prix d’achats").copyWith(
-                        suffixIcon: const Icon(Icons.check, color: Colors.green),
-                      ),
+                  // Sélection du médicament avec indicateur de chargement
+                  if (medicaments == null)
+                    const Center(child: CircularProgressIndicator())
+                  else if (medicaments!.isEmpty)
+                    const Text("Aucun médicament disponible")
+                  else
+                    DropdownButtonFormField<String>(
+                      value: selectedMedicament,
+                      items: filteredMedicaments
+                          .map((m) => DropdownMenuItem(
+                        value: m.nom,
+                        child: Text(m.nom),
+                      ))
+                          .toList(),
+                      onChanged: (val) => setState(() => selectedMedicament = val),
+                      decoration: _inputDecoration("Médicament"),
+                      isExpanded: true,
                     ),
-                    const SizedBox(height: 15),
-                    // Prix unitaire
-                    TextField(
-                      controller: prixUnitaireController,
-                      readOnly: true,
-                      decoration: _inputDecoration("Prix Unitaire").copyWith(
-                        suffixIcon: const Icon(Icons.check, color: Colors.green),
+
+                  const SizedBox(height: 20),
+
+                  // Date d'expiration
+                  Row(
+                    children: [
+                      Expanded(
+                        child: InputDecorator(
+                          decoration: _inputDecoration("Date d'expiration"),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text(
+                                expirationDate != null
+                                    ? "${expirationDate!.day}/${expirationDate!.month}/${expirationDate!.year}"
+                                    : "Sélectionner une date",
+                                style: TextStyle(
+                                  color: expirationDate != null
+                                      ? Colors.black
+                                      : Colors.grey[400],
+                                ),
+                              ),
+                              IconButton(
+                                icon: const Icon(Icons.calendar_month, color: Colors.green),
+                                onPressed: () async {
+                                  final DateTime? picked = await showDatePicker(
+                                    context: context,
+                                    initialDate: expirationDate ?? DateTime.now(),
+                                    firstDate: DateTime.now(),
+                                    lastDate: DateTime(2100),
+                                    builder: (context, child) {
+                                      return Theme(
+                                        data: ThemeData.light().copyWith(
+                                          colorScheme: const ColorScheme.light(
+                                            primary: Colors.green,
+                                          ),
+                                        ),
+                                        child: child!,
+                                      );
+                                    },
+                                  );
+                                  if (picked != null) {
+                                    setState(() {
+                                      expirationDate = picked;
+                                    });
+                                  }
+                                },
+                              ),
+                            ],
+                          ),
+                        ),
                       ),
+                    ],
+                  ),
+
+                  const SizedBox(height: 20),
+
+                  // Quantité avec slider et champ numérique
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text(
+                        "Quantité",
+                        style: TextStyle(fontWeight: FontWeight.bold),
+                      ),
+                      const SizedBox(height: 8),
+                      Row(
+                        children: [
+                          Expanded(
+                            child: Slider(
+                              value: quantity,
+                              min: 0,
+                              max: 1000,
+                              divisions: 100,
+                              label: quantity.round().toString(),
+                              activeColor: Colors.green,
+                              onChanged: (val) {
+                                setState(() => quantity = val);
+                              },
+                            ),
+                          ),
+                          const SizedBox(width: 16),
+                          Container(
+                            width: 80,
+                            child: TextField(
+                              keyboardType: TextInputType.number,
+                              textAlign: TextAlign.center,
+                              decoration: InputDecoration(
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                                contentPadding: const EdgeInsets.symmetric(
+                                  horizontal: 12,
+                                  vertical: 8,
+                                ),
+                              ),
+                              onChanged: (value) {
+                                final newQuantity = double.tryParse(value) ?? 0;
+                                if (newQuantity >= 0 && newQuantity <= 1000) {
+                                  setState(() => quantity = newQuantity);
+                                }
+                              },
+                            ),
+                          ),
+                        ],
+                      ),
+                      Text(
+                        "Quantité sélectionnée: ${quantity.round()}",
+                        style: const TextStyle(color: Colors.grey),
+                      ),
+                    ],
+                  ),
+
+                  const SizedBox(height: 20),
+
+                  // Prix d'achat
+                  TextField(
+                    controller: prixAchatController,
+                    keyboardType: TextInputType.number,
+                    decoration: _inputDecoration("Prix d'achat (FCFA)").copyWith(
+                      suffixIcon: const Icon(Icons.money, color: Colors.green),
                     ),
+                    onChanged: (value) {
+                      // Le calcul du prix unitaire se fait automatiquement via le listener
+                    },
+                  ),
 
-                    const SizedBox(height: 30),
+                  const SizedBox(height: 15),
 
-                    // Bouton Ajouter
+                  // Prix unitaire (calculé automatiquement)
+                  TextField(
+                    controller: prixUnitaireController,
+                    readOnly: true,
+                    decoration: _inputDecoration("Prix unitaire (FCFA)").copyWith(
+                      suffixIcon: const Icon(Icons.calculate, color: Colors.green),
+                    ),
+                  ),
 
-                  ],
-                ),
+                  const SizedBox(height: 30),
+                ],
               ),
-
             ),
-            const SizedBox(height: 40),
-            Center(
+
+            const SizedBox(height: 30),
+
+            // Bouton d'ajout
+            SizedBox(
+              width: double.infinity,
               child: ElevatedButton(
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.green,
+                  foregroundColor: Colors.white,
                   minimumSize: const Size(double.infinity, 50),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(30),
                   ),
+                  padding: const EdgeInsets.symmetric(vertical: 16),
                 ),
-                onPressed: () async {
-                  if (selectedMedicament == null || expirationDate == null) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text("Veuillez remplir tous les champs")),
-                    );
-                    return;
-                  }
-
-                  // Exemple : trouver l’ID du médicament à partir de son nom
-                  final medicament = medicaments!.firstWhere(
-                        (m) => m.nom == selectedMedicament,
-                  );
-                  print("quantite: ${expirationDate!.toIso8601String().split("T")[0]}");
-                  final lot = await lotController.enregistrerLot(
-                    idMedicament: medicament.id,
-
-
-
-                    quantite: quantity.round(),
-                    dateExpiration: expirationDate!.toIso8601String().split("T")[0],
-                    prixAchat: int.parse(prixAchatController.text),
-                    idPharmacie: 1, // ⚠️ à remplacer par l’ID réel (depuis storage)
-                  );
-
-                  if (lot != null) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text("Lot ajouté avec succès ✅")),
-                    );
-                  } else {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text("Erreur lors de l'ajout du lot ❌")),
-                    );
-                  }
-                }
-                ,
-                child: const Text(
-                  "Ajouter",
-                  style: TextStyle(fontSize: 16, color: Colors.white),
+                onPressed: isSubmitting ? null : _submitForm,
+                child: isSubmitting
+                    ? const SizedBox(
+                  width: 20,
+                  height: 20,
+                  child: CircularProgressIndicator(
+                    valueColor: AlwaysStoppedAnimation(Colors.white),
+                    strokeWidth: 2,
+                  ),
+                )
+                    : const Text(
+                  "Ajouter le Lot",
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                 ),
               ),
             ),
+
+            const SizedBox(height: 20),
           ],
         ),
-
       ),
     );
   }
@@ -386,12 +479,14 @@ class _AddProduitPageState extends State<AddProduitPage> {
     return InputDecoration(
       labelText: label,
       border: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(30),
+        borderRadius: BorderRadius.circular(12),
+        borderSide: const BorderSide(color: Colors.grey),
       ),
       focusedBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(30),
-        borderSide: const BorderSide(color: Colors.green),
+        borderRadius: BorderRadius.circular(12),
+        borderSide: const BorderSide(color: Colors.green, width: 2),
       ),
+      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
     );
   }
 }
