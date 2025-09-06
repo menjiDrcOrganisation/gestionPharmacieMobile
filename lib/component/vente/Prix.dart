@@ -3,6 +3,9 @@
 import 'package:flutter/material.dart';
 
 class Prix {
+  String intitule ,montant;
+
+  Prix({required this.intitule,required this.montant,});
 
   lancer(
 
@@ -21,13 +24,13 @@ class Prix {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text("Prix Unitaire",
+          Text(intitule,
               style: const TextStyle(
                 fontSize: 20,
 
                 color:  Colors.grey,
               )),
-          Text("10 000 FC",
+          Text(montant,
               style: const TextStyle(
                 fontSize: 20,
                 color:  Color.fromRGBO(40, 167, 69, 1),

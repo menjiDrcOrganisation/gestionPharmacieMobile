@@ -8,8 +8,6 @@ class Lot {
   final int prixUnitaire;
   final String numeroLot;
   final String dateExpiration;
-  final String createdAt;
-  final String updatedAt;
   final Medicament medicament;
   final Pharmacie pharmacie;
 
@@ -20,8 +18,6 @@ class Lot {
     required this.prixUnitaire,
     required this.numeroLot,
     required this.dateExpiration,
-    required this.createdAt,
-    required this.updatedAt,
     required this.medicament,
     required this.pharmacie,
   });
@@ -35,8 +31,6 @@ class Lot {
       prixUnitaire: json['prix_unitaire'] as int,
       numeroLot: json['numero_lot'] as String,
       dateExpiration: json['date_expiration'] as String,
-      createdAt: json['created_at'] as String,
-      updatedAt: json['updated_at'] as String,
       medicament: Medicament.fromJson(json['medicament']),
       pharmacie: Pharmacie.fromJson(json['pharmacie']),
     );
@@ -50,8 +44,6 @@ class Lot {
       'prix_unitaire': prixUnitaire,
       'numero_lot': numeroLot,
       'date_expiration': dateExpiration,
-      'created_at': createdAt,
-      'updated_at': updatedAt,
       'medicament': medicament.toJson(),
       'pharmacie': pharmacie.toJson(),
     };

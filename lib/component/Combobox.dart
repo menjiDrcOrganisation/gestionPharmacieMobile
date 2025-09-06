@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 
-Widget buildComboBox({
+Widget buildComboBox<T>({
   required String title,
-  required List<String> items,
-  String? selectedItem, // Nullable pour permettre d'afficher le hint
-  required Function(String?) onChanged,
+  required List<DropdownMenuItem<T>> items,
+  T? selectedItem, // Peut être String, int, ou un objet
+  required ValueChanged<T?> onChanged,
   String placeholder = "Sélectionnez une option",
   double borderRadius = 12.0,
   Color borderColor = Colors.black,
@@ -32,12 +32,12 @@ Widget buildComboBox({
           color: fillColor,
           borderRadius: BorderRadius.circular(borderRadius),
           border: Border.all(
-            color: Color.fromRGBO(0,0, 0, 0.5),
+            color: Color.fromRGBO(0, 0, 0, 0.5),
             width: 1,
           ),
         ),
-        child: DropdownButton<String>(
-          value: items.contains(selectedItem) ? selectedItem : null,
+        child: DropdownButton<T>(
+          value: selectedItem,
           isExpanded: true,
           underline: const SizedBox(),
           iconEnabledColor: Colors.green,
@@ -46,12 +46,7 @@ Widget buildComboBox({
             style: const TextStyle(color: Colors.grey),
           ),
           onChanged: onChanged,
-          items: items.map((String value) {
-            return DropdownMenuItem<String>(
-              value: value,
-              child: Text(value),
-            );
-          }).toList(),
+          items: items,
         ),
       ),
     ],

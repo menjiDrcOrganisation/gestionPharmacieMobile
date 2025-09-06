@@ -14,7 +14,7 @@ class LotStorage {
 
   /// Récupérer la liste de lots
   static Future<List<Lot>> getLots() async {
-    print("pppppp");
+
     final prefs = await SharedPreferences.getInstance();
     final List<String>? lotStrings = prefs.getStringList(LOT_KEY);
 

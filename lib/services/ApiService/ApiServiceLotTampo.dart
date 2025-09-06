@@ -8,19 +8,30 @@ class LotService {
    static  String baseUrl = "http://127.0.0.1:8001/api/pharmacies/1/medicaments";
 
   // Récupérer tous les lots
-  Future<List<Lot>> fetchLots() async {
-    final response = await http.get(Uri.parse(baseUrl));
+   Future<List<Lot>> fetchLots() async {
+     print("dgggg");
+     final response = await http.get(Uri.parse(baseUrl));
 
-    if (response.statusCode == 200) {
-      final Map<String, dynamic> data = jsonDecode(response.body); // JSON top-level = Map
-      final List<dynamic> lotsJson = data["data"];
-      List<Lot> lots=lotsJson.map((item) => Lot.fromJson(item)).toList();
-      LotStorage.saveLots(lots);
-      return lots;
-    } else {
-      throw Exception("Erreur lors du chargement des lots : ${response.statusCode}");
-    }
-  }
+     if (response.statusCode == 200) {
+       // On décode directement en liste
+       final Map<String, dynamic> data = jsonDecode(response.body);
+       print(data);
+       final List<dynamic> lotsJson = data["data"];
+
+       List<Lot> lots = lotsJson.map((item) => Lot.fromJson(item)).toList();
+       LotStorage.saveLots(lots);
+       for (int i = 0; i < lots.length; i++) {
+         print("test");
+         print(lots[i].medicament.nom+lots[i].medicament.forme.nom
+             +lots[i].medicament.dose.quantite);
+       }
+       print(lotsJson);
+       return lots;
+     } else {
+       throw Exception("Erreur lors du chargement des lots : ${response.statusCode}");
+     }
+   }
+
 
   // Récupérer un lot par son ID
   Future<Lot> fetchLotById(int id) async {

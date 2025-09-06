@@ -34,12 +34,11 @@ class Vente {
 
   Map<String, dynamic> toJson() {
     return {
-      'id_vente': idVente,
-      'date_vente': dateVente,
-      'pharmacie': pharmacie.toJson(),
+      'date_vente': "2025-08-17",
       'lots': lots.map((lot) => lot.toJson()).toList(),
-      'created_at': createdAt,
-      'updated_at': updatedAt,
+      "lots_ids":lots.map((lot) => lot.lot.idLot).toList(),
+      "quantite_medicament_lot":lots.map((lot) => lot.quantiteVendue).toList(),
+
     };
   }
 }

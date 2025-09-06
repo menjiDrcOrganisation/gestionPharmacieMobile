@@ -8,35 +8,43 @@ class Button{
   String intitule;
   Color colorButton;
   Color colorText;
+  Function onPressed;
   double sizeText;
+
   Button({required this.intitule,
     this.colorButton=Colors.white,
     this.colorText=Colors.black,
-    this.sizeText=20.0
+    this.sizeText=20.0, required this.onPressed,
   });
 
 
   lancer(){
-    return Container(
-      padding: EdgeInsets.all(10),
-      decoration: BoxDecoration(
-        color: colorButton,
-        borderRadius: BorderRadius.circular(10),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.3), // couleur de l'ombre
-            spreadRadius: 0, // étendue de l'ombre
-            blurRadius: 1,   // flou de l'ombre
-            offset: Offset(1, 0), // décalage horizontal et vertical
-          ),
-        ],
-      ),
-      child: Text(this.intitule,style: TextStyle(
-        fontSize: sizeText,
-        fontWeight: FontWeight.w600,
-        color: colorText,
-      ),),
+    return InkWell(
+      onTap: (){
+        onPressed();
+
+      },
+      child:Container(
+        padding: EdgeInsets.all(10),
+        decoration: BoxDecoration(
+          color: colorButton,
+          borderRadius: BorderRadius.circular(10),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.3), // couleur de l'ombre
+              spreadRadius: 0, // étendue de l'ombre
+              blurRadius: 1,   // flou de l'ombre
+              offset: Offset(1, 0), // décalage horizontal et vertical
+            ),
+          ],
+        ),
+        child: Text(this.intitule,style: TextStyle(
+          fontSize: sizeText,
+          fontWeight: FontWeight.w600,
+          color: colorText,
+        ),),
+      ) ,
     )
     ;
   }
-}
+  }

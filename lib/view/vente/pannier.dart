@@ -1,31 +1,56 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../component/AppBar.dart';
 import '../../component/BottomApp.dart';
 import '../../component/Button.dart';
 import '../../component/Colors.dart';
-import '../../component/Combobox.dart';
-import '../../component/LookPharma.dart';
-import '../../component/Option.dart';
-import '../../component/SeashBar.dart';
-import '../../component/vente/Prix.dart';
-import '../../component/vente/Table.dart';
+import '../../controller/VenteController.dart';
 import '../layouts/StructurePage.dart';
 
 class Pannier extends StatefulWidget {
-
   @override
   State<Pannier> createState() => _PannierState();
 }
 
 class _PannierState extends State<Pannier> {
-  String selected = "Option 1";
+  List<Map<String, dynamic>> panier = [];
 
   @override
   void initState() {
     super.initState();
-
+    loadPanier();
   }
+
+  /// Charger le panier depuis SharedPreferences
+  Future<void> loadPanier() async {
+    final prefs = await SharedPreferences.getInstance();
+    final String? panierString = prefs.getString('panier');
+    if (panierString != null) {
+      setState(() {
+        panier = List<Map<String, dynamic>>.from(jsonDecode(panierString));
+      });
+    }
+  }
+
+  /// Supprimer un article
+  Future<void> removeItem(int index) async {
+    panier.removeAt(index);
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString('panier', jsonEncode(panier));
+    setState(() {});
+  }
+
+  /// Supprimer tout le panier
+  Future<void> clearPanier() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.remove('panier');
+    setState(() {
+      panier = [];
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     final double screenWidth = MediaQuery.of(context).size.width;
@@ -33,33 +58,66 @@ class _PannierState extends State<Pannier> {
 
     return Scaffold(
       appBar: Appbar(Title: "Espace Panier").lancer(),
-      body:StructurePage(
+      body: StructurePage(
         contentBack: Row(
           mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: [
             Button(
               intitule: "Valider",
               colorText: Colors.white,
-              colorButton: MyColors.primaryColor
+              colorButton: MyColors.primaryColor,
+              onPressed: () {
+                VenteController.create(panier);
+              },
             ).lancer(),
             Button(
-                intitule: "Annuler"
+              intitule: "Annuler",
+              colorText: Colors.white,
+              colorButton: Colors.red,
+              onPressed: (){
+
+              },
             ).lancer()
           ],
         ),
-          screenHeight: screenHeight,
-          sizeContent: 0.78,
-          screenWidth: screenWidth,
-          content: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              SizedBox(height: 30),
-              tableau().lancer()
+        screenHeight: screenHeight,
+        sizeContent: 0.78,
+        screenWidth: screenWidth,
+        content: panier.isEmpty
+            ? Center(child: Text("Le panier est vide"))
+            : SingleChildScrollView(
+          scrollDirection: Axis.horizontal,
+          child: DataTable(
+            columns: const [
+              DataColumn(label: Text("Produit")),
+
+              DataColumn(label: Text("Quantité")),
+              DataColumn(label: Text("Prix Unitaire")),
+              DataColumn(label: Text("Prix Total")),
+              DataColumn(label: Text("Action")),
             ],
-          )
-      ).lancer()
-      ,
-      bottomNavigationBar:Bottomapp().lancer() ,
+            rows: List.generate(
+              panier.length,
+                  (index) {
+                final item = panier[index];
+                return DataRow(cells: [
+                  DataCell(Text(item['medicament'] + item['forme']+item['dose'])),
+
+                  DataCell(Text(item['quantite'].toString())),
+                  DataCell(Text("${item['prixUnitaire']} FC")),
+                  DataCell(Text(
+                      "${item['prixUnitaire'] * item['quantite']} FC")),
+                  DataCell(IconButton(
+                    icon: Icon(Icons.delete, color: Colors.red),
+                    onPressed: () => removeItem(index),
+                  )),
+                ]);
+              },
+            ),
+          ),
+        ),
+      ).lancer(),
+      bottomNavigationBar: Bottomapp().lancer(),
     );
   }
 }

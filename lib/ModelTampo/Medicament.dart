@@ -20,8 +20,8 @@ class Medicament {
     return Medicament(
       id: json["id_medicament"],
       nom: json["nom"],
-      forme:Forme(idForme: 1, nom: "comprime", description:"douleur", createdAt: "", updatedAt: ""),
-      dose: Dose(idDose: 1, quantite: "20", unite: "mg", createdAt: "", updatedAt: ""),
+      forme:Forme(idForme: 1, nom: json["forme"]["nom"], description:"douleur", createdAt: "", updatedAt: ""),
+      dose: Dose(idDose: 1, quantite: json["dose"]["quantite"], unite: json["dose"]["unite"], createdAt: "", updatedAt: ""),
       description: json["description"],
     );
   }

@@ -3,7 +3,7 @@ import 'package:http/http.dart' as http;
 import 'package:gestion_pharmacie_mobile/ModelTampo/Vente.dart';
 
 class VenteService {
-  final String baseUrl = "http://127.0.0.1:8000/api"; // <-- adapte à ton backend
+  final String baseUrl = "http://127.0.0.1:8001/api"; // <-- adapte à ton backend
 
   /// Récupérer toutes les ventes
   Future<List<Vente>> fetchVentes() async {
@@ -30,16 +30,17 @@ class VenteService {
   }
 
   /// Ajouter une nouvelle vente
-  Future<Vente> createVente(Vente vente) async {
+  Future<void> createVente(Map<String, dynamic> vente) async {
+    print(jsonEncode(vente));
     final response = await http.post(
-      Uri.parse("$baseUrl/ventes"),
+      Uri.parse("$baseUrl/pharmacie/1/vente"),
       headers: {"Content-Type": "application/json"},
-      body: jsonEncode(vente.toJson()),
+      body: jsonEncode(vente),
     );
 
     if (response.statusCode == 201) {
       final Map<String, dynamic> data = jsonDecode(response.body);
-      return Vente.fromJson(data);
+      print(data);
     } else {
       throw Exception("Erreur lors de la création de la vente : ${response.statusCode}");
     }

@@ -20,7 +20,7 @@ class MyApp extends StatelessWidget {
         fontFamily: "Roboto",
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
       ),
-      home: ProfilePage(),
+      home: Portail(),
     );
   }
 }
