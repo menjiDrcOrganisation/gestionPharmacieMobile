@@ -2,10 +2,11 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:gestion_pharmacie_mobile/ModelTampo/Lot.dart';
 
+import '../../utils/Utilis.dart';
 import '../GetStorage/LotStorage.dart';
 
 class LotService {
-   static  String baseUrl = "http://127.0.0.1:8001/api/pharmacies/1/medicaments";
+   static  String baseUrl = "${Utilise.baseUrl}pharmacies/1/medicaments";
 
   // Récupérer tous les lots
    Future<List<Lot>> fetchLots() async {
@@ -15,17 +16,10 @@ class LotService {
      if (response.statusCode == 200) {
        // On décode directement en liste
        final Map<String, dynamic> data = jsonDecode(response.body);
-       print(data);
        final List<dynamic> lotsJson = data["data"];
 
        List<Lot> lots = lotsJson.map((item) => Lot.fromJson(item)).toList();
        LotStorage.saveLots(lots);
-       for (int i = 0; i < lots.length; i++) {
-         print("test");
-         print(lots[i].medicament.nom+lots[i].medicament.forme.nom
-             +lots[i].medicament.dose.quantite);
-       }
-       print(lotsJson);
        return lots;
      } else {
        throw Exception("Erreur lors du chargement des lots : ${response.statusCode}");

@@ -5,8 +5,10 @@ import 'package:flutter/material.dart';
 class LookPharma{
 
   Function action;
+  String title;
+  String subtitle;
 
-  LookPharma({required this.action});
+  LookPharma({required this.action, required this.title, required this.subtitle});
 
 
 
@@ -37,7 +39,7 @@ class LookPharma{
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'Pharmacie Bien-Être',
+                      this.title,
                       style: TextStyle(
                         fontWeight: FontWeight.bold,
                         color: Colors.green[800],
@@ -46,14 +48,14 @@ class LookPharma{
                     ),
                     const SizedBox(height: 4),
                     Row(
-                      children: const [
-                        Icon(Icons.inventory_2, size: 16),
-                        SizedBox(width: 4),
-                        Text('120 produits'),
-                        SizedBox(width: 6),
-                        Text('Gombe, Kinshasa'),
-                        SizedBox(width: 4),
-                        Row(
+                      children: [
+                        const Icon(Icons.inventory_2, size: 16),
+                        const SizedBox(width: 4),
+                        const Text('120 produits'),
+                        const SizedBox(width: 6),
+                        Text(subtitle),
+                        const SizedBox(width: 4),
+                        const Row(
                           children: const [
                             Icon(Icons.notifications, size: 20),
                             SizedBox(width: 4),

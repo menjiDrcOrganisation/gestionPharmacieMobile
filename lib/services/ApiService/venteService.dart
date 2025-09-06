@@ -2,12 +2,14 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:gestion_pharmacie_mobile/ModelTampo/Vente.dart';
 
+import '../../utils/Utilis.dart';
+
 class VenteService {
-  final String baseUrl = "http://127.0.0.1:8001/api"; // <-- adapte à ton backend
+  final String baseUrl = "${Utilise.baseUrl}";
 
   /// Récupérer toutes les ventes
   Future<List<Vente>> fetchVentes() async {
-    final response = await http.get(Uri.parse("$baseUrl/ventes"));
+    final response = await http.get(Uri.parse("$baseUrl/pharmacie/1/vente"));
 
     if (response.statusCode == 200) {
       final List<dynamic> data = jsonDecode(response.body);

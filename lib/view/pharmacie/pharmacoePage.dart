@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
-
+import '../../ModelTampo/Pharmacie.dart';
+import '../../component/AppBar.dart';
+import '../../services/ApiService/ApiPharmacie.dart';
 import 'CreationCompteStep2.dart';
 
 void main() {
@@ -17,10 +19,7 @@ class MyApp extends StatelessWidget {
         primarySwatch: Colors.blue,
         inputDecorationTheme: InputDecorationTheme(
           border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
-          contentPadding: const EdgeInsets.symmetric(
-            horizontal: 16,
-            vertical: 14,
-          ),
+          contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
         ),
       ),
       home: const CreationComptePage(),
@@ -28,40 +27,49 @@ class MyApp extends StatelessWidget {
   }
 }
 
-
-class CreationComptePage extends StatelessWidget {
+class CreationComptePage extends StatefulWidget {
   const CreationComptePage({super.key});
+
+  @override
+  State<CreationComptePage> createState() => _CreationComptePageState();
+}
+
+class _CreationComptePageState extends State<CreationComptePage> {
+  // Controllers pour récupérer les valeurs des TextField
+  final TextEditingController nomController = TextEditingController();
+  final TextEditingController villeController = TextEditingController();
+  final TextEditingController quartierController = TextEditingController();
+  final TextEditingController rueController = TextEditingController();
+  final TextEditingController telephoneController = TextEditingController();
+  final TextEditingController emailController = TextEditingController();
+
+  @override
+  void dispose() {
+    // Toujours libérer les controllers
+    nomController.dispose();
+    villeController.dispose();
+    quartierController.dispose();
+    rueController.dispose();
+    telephoneController.dispose();
+    emailController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar:  Appbar(Title: "Opharma").lancer(),
       backgroundColor: Colors.white,
       body: SafeArea(
         child: SingleChildScrollView(
           child: Column(
             children: [
-              // Header vert
-              Container(
-                width: double.infinity,
-                color: Colors.green,
-                padding: const EdgeInsets.symmetric(vertical: 20),
-                child: const Center(
-                  child: Text(
-                    "Opharma",
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 22,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ),
-              ),
 
               const SizedBox(height: 20),
 
               // Titre
               const Text(
-                "Creation de compte",
+                "Création de compte",
                 style: TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
@@ -108,26 +116,21 @@ class CreationComptePage extends StatelessWidget {
                 padding: const EdgeInsets.symmetric(horizontal: 20),
                 child: Column(
                   children: [
-                    _buildTextField("Nom de la pharmacie"),
+                    _buildTextField("Nom de la pharmacie", controller: nomController),
                     const SizedBox(height: 15),
-
                     Row(
                       children: [
-                        Expanded(child: _buildTextField("Ville")),
+                        Expanded(child: _buildTextField("Ville", controller: villeController)),
                         const SizedBox(width: 10),
-                        Expanded(child: _buildTextField("Quartier")),
+                        Expanded(child: _buildTextField("Quartier", controller: quartierController)),
                       ],
                     ),
-
                     const SizedBox(height: 15),
-                    _buildTextField("Rue"),
+                    _buildTextField("Rue", controller: rueController),
                     const SizedBox(height: 15),
-                    _buildTextField("Téléphone",
-                        keyboardType: TextInputType.phone),
+                    _buildTextField("Téléphone", controller: telephoneController, keyboardType: TextInputType.phone),
                     const SizedBox(height: 15),
-                    _buildTextField("Email",
-                        keyboardType: TextInputType.emailAddress),
-
+                    _buildTextField("Email", controller: emailController, keyboardType: TextInputType.emailAddress),
                     const SizedBox(height: 30),
 
                     // Bouton Suivant
@@ -135,34 +138,53 @@ class CreationComptePage extends StatelessWidget {
                       width: double.infinity,
                       height: 50,
                       child: ElevatedButton(
-                        onPressed: () { Navigator.push(
-    context,
-    MaterialPageRoute(builder: (context) => CreationCompteStep2()),
-    );
-    },
+                        onPressed: () {
+                          // Récupérer les valeurs
+                          final nom = nomController.text;
+                          final ville = villeController.text;
+                          final quartier = quartierController.text;
+                          final rue = rueController.text;
+                          final tel = telephoneController.text;
+                          final email = emailController.text;
+
+                          final nouvellePharmacie = Pharmacie(
+                            id: 0, // id inutile pour la création, le serveur le génère
+                            nom: nom,
+                            adresse: '$rue, $quartier, $ville',
+                            telephone: tel,
+                            indice: 2,
+                            idGerant: 1,
+                            statut: 'valide',
+                            createdAt: null,
+                            updatedAt: null,
+                          );
+
+                          try {
+                           PharmacieService().createPharmacie(nouvellePharmacie);
+                           ScaffoldMessenger.of(context).showSnackBar(
+                             SnackBar(content: Text("Pharmacie creer avec succes avec succes")),
+                           );
+                            // Tu peux naviguer vers une autre page ou afficher un message de succès
+                          } catch (e) {
+                            print('Erreur lors de la création : $e');
+                            // Afficher un snackbar ou dialogue d'erreur
+                          }
+
+
+
+                          // Ici tu peux les envoyer à la prochaine page
+
+                        },
                         style: ElevatedButton.styleFrom(
                           backgroundColor: Colors.green,
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(30),
                           ),
                         ),
-                        child:InkWell(
-                          onTap: (){
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => CreationComptePage(), // ta page cible
-                              ),
-                            );
-                          },
-                          child:const Text(
-                            "Suivant",
-                            style: TextStyle(
-                              fontSize: 16,
-                              color: Colors.white,
-                            ),
-                          ) ,
-                        ) ,
+                        child: const Text(
+                          "Suivant",
+                          style: TextStyle(fontSize: 16, color: Colors.white),
+                        ),
                       ),
                     ),
                   ],
@@ -177,15 +199,14 @@ class CreationComptePage extends StatelessWidget {
 
   // Méthode réutilisable pour un champ texte
   Widget _buildTextField(String label,
-      {TextInputType keyboardType = TextInputType.text}) {
+      {TextInputType keyboardType = TextInputType.text, TextEditingController? controller}) {
     return TextField(
+      controller: controller,
       keyboardType: keyboardType,
       decoration: InputDecoration(
         labelText: label,
         contentPadding: const EdgeInsets.symmetric(horizontal: 15, vertical: 12),
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(15),
-        ),
+        border: OutlineInputBorder(borderRadius: BorderRadius.circular(15)),
       ),
     );
   }

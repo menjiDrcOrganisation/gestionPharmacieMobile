@@ -23,6 +23,7 @@ class _VendreState extends State<Vendre> {
   List<Lot> filteredLots = [];
   TextEditingController rechercheController = TextEditingController();
   Lot? selectedLot;
+  int coutPannier=0;
   double quantiteChoisie = 0;
 
   @override
@@ -42,8 +43,7 @@ class _VendreState extends State<Vendre> {
       print(filteredLots[i].medicament.nom+filteredLots[i].medicament.forme.nom
       +filteredLots[i].medicament.dose.quantite);
     }
-    
-    print(filteredLots);
+
     selectedLot = filteredLots.isNotEmpty ? filteredLots[0] : null;
     setState(() {});
   }
@@ -85,6 +85,9 @@ class _VendreState extends State<Vendre> {
     }
 
     await prefs.setString('panier', jsonEncode(panier));
+    setState(() {
+
+    });
 
     // Notification rapide
     ScaffoldMessenger.of(context).showSnackBar(
@@ -215,6 +218,16 @@ class _VendreState extends State<Vendre> {
         ),
       ).lancer(),
       bottomNavigationBar: BottomappVente(
+        onAccueil: (){
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => Vendre(), // ta page cible
+            ),
+          );
+
+        },
+          notifCount: coutPannier,
         onNotif: (){
           Navigator.push(
             context,

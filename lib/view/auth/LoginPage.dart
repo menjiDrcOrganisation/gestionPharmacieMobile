@@ -14,8 +14,8 @@ import 'RegisterPage.dart';
 
 
 
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+class Loginpage extends StatelessWidget {
+  const Loginpage({super.key});
 
   @override
   Widget build(BuildContext context) {
