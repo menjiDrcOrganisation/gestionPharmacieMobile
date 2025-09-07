@@ -26,22 +26,26 @@ class ApiService {
   }
 
   Future<Map<String, dynamic>> login(String email, String password) async {
+
+    print([email,password]);
+    print("${baseUrl}login");
     final response = await http.post(
-      Uri.parse('$baseUrl/login'),
+      Uri.parse('${baseUrl}login'),
       body: {
         'email': email,
         'password': password,
       },
     );
 
+
     if (response.statusCode == 200) {
 
       final data = jsonDecode(response.body);
       print(data);
-      _token = data['token']; // Stocke le token après la connexion
+      _token = data['token'];
       return {
         'user': User.fromJson(data['user']),
-        'roleInfo': RoleInfo.fromJson(data['role']),
+        'roleInfo': RoleInfo.fromJson(data['user']),
         'token': data['token'],
       };
     } else {
@@ -51,8 +55,9 @@ class ApiService {
   }
 
   Future<Map<String, dynamic>> register(String name, String email, String password, String? role) async {
+
     final response = await http.post(
-      Uri.parse('$baseUrl/register'),
+      Uri.parse('${baseUrl}register'),
       body: {
         'name': name,
         'email': email,
@@ -60,6 +65,7 @@ class ApiService {
         'role': role
       },
     );
+    print(response);
 
     if (response.statusCode == 200 || response.statusCode == 201) {
       final data = jsonDecode(response.body);
@@ -77,7 +83,7 @@ class ApiService {
   // Récupérer les informations du profil utilisateur
   Future<User> getProfile() async {
     final response = await http.get(
-      Uri.parse('$baseUrl/user/profile'),
+      Uri.parse('${baseUrl}user/profile'),
       headers: _authHeaders,
     );
 
@@ -100,7 +106,7 @@ class ApiService {
     final prefs = await LocalStorageService();
     final User? user = await prefs.getUser()  ;
     final response = await http.put(
-      Uri.parse('$baseUrl/user/profile'),
+      Uri.parse('${baseUrl}user/profile'),
       headers: _authHeaders,
       body: jsonEncode({
         'name': name,
@@ -126,7 +132,7 @@ class ApiService {
   }) async {
     try {
       final response = await http.post(
-        Uri.parse('$baseUrl/google-login'),
+        Uri.parse('${baseUrl}google-login'),
         headers: {'Content-Type': 'application/json'},
         body: jsonEncode({
           'email': email,
@@ -153,7 +159,7 @@ class ApiService {
     required String newPassword,
   }) async {
     final response = await http.post(
-      Uri.parse('$baseUrl/user/change-password'),
+      Uri.parse('${baseUrl}user/change-password'),
       headers: _authHeaders,
       body: jsonEncode({
         'current_password': currentPassword,
@@ -172,7 +178,7 @@ class ApiService {
   Future<String> updateProfilePhoto(String imagePath) async {
     var request = http.MultipartRequest(
       'POST',
-      Uri.parse('$baseUrl/user/profile-photo'),
+      Uri.parse('${baseUrl}user/profile-photo'),
     )..headers.addAll(_authHeaders)
       ..files.add(await http.MultipartFile.fromPath('photo', imagePath));
 
@@ -190,7 +196,7 @@ class ApiService {
   // Déconnexion
   Future<void> logout() async {
     final response = await http.post(
-      Uri.parse('$baseUrl/logout'),
+      Uri.parse('${baseUrl}logout'),
       headers: _authHeaders,
     );
 
@@ -223,7 +229,7 @@ class ApiService {
     required String confirmPassword,
   }) async {
     final response = await http.post(
-      Uri.parse('$baseUrl/reset-password'),
+      Uri.parse('${baseUrl}reset-password'),
       headers: {
         'Accept': 'application/json',
       },
@@ -244,7 +250,7 @@ class ApiService {
 
   }
   Future<Map<String, dynamic>> googleAuth({required String? idToken}) async {
-    final url = Uri.parse('$baseUrl/google-login');
+    final url = Uri.parse('${baseUrl}google-login');
 
     final response = await http.post(
       url,

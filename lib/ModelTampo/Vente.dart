@@ -4,31 +4,36 @@ import 'VenteLot.dart';
 
 class Vente {
   final int idVente;
+  final montant_total;
+  final nom_client;
+
   final String dateVente;
   final Pharmacie pharmacie;
   final List<VenteLot> lots; // liste des lots vendus avec détails
-  final String createdAt;
-  final String updatedAt;
 
   Vente({
     required this.idVente,
     required this.dateVente,
     required this.pharmacie,
     required this.lots,
-    required this.createdAt,
-    required this.updatedAt,
+    required this.montant_total,
+    required this.nom_client
+
   });
 
   factory Vente.fromJson(Map<String, dynamic> json) {
+
+    print(json);
     return Vente(
       idVente: json['id_vente'],
+      nom_client: json['nom_client'] ,
+      montant_total: json['montant_total'] ,
       dateVente: json['date_vente'],
       pharmacie: Pharmacie.fromJson(json['pharmacie']),
       lots: (json['lots'] as List)
           .map((item) => VenteLot.fromJson(item))
           .toList(),
-      createdAt: json['created_at'],
-      updatedAt: json['updated_at'],
+
     );
   }
 

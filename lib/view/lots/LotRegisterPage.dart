@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-
 import '../../controller/FormeDoseController.dart';
 import '../../controller/LotController.dart';
 import '../../controller/MedocController.dart';
@@ -66,7 +65,7 @@ class _AddProduitPageState extends State<AddProduitPage> {
   @override
   void initState() {
     super.initState();
-    _loadData();
+
     _loadMedicaments();
 
     // Écouter les changements de prix d'achat pour calculer automatiquement le prix unitaire
@@ -136,19 +135,7 @@ class _AddProduitPageState extends State<AddProduitPage> {
     }
   }
 
-  Future<void> _loadData() async {
-    try {
-      await controller.chargerFormeDose();
-      var localData = await controller.recupererFormeDoseLocal();
-      setState(() {
-        data = localData;
-      });
-    } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Erreur lors du chargement des données: $e")),
-      );
-    }
-  }
+
 
   Future<void> _submitForm() async {
     if (selectedMedicament == null || expirationDate == null) {
@@ -281,7 +268,7 @@ class _AddProduitPageState extends State<AddProduitPage> {
                   else if (medicaments!.isEmpty)
                     const Text("Aucun médicament disponible")
                   else
-                    DropdownButtonFormField<String>(
+                    DropdownButtonFormField(
                       value: selectedMedicament,
                       items: filteredMedicaments
                           .map((m) => DropdownMenuItem(

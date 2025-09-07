@@ -1,6 +1,5 @@
 
-
-
+import 'package:intl/intl.dart';
 import '../ModelTampo/Lot.dart';
 import '../ModelTampo/Vente.dart';
 import '../services/ApiService/ApiServiceLotTampo.dart' show LotService;
@@ -15,6 +14,14 @@ class VenteController {
     print(lots[0].toJson());
 
   }
+
+  static getVente () async{
+    print("ddddd");
+    List<Lot> lots= await LotService().fetchLots();
+    print(lots[0].toJson());
+
+  }
+
   static create (List<Map<String, dynamic>> ligneVente) async{
 
     List <int> id_lots =[];
@@ -27,9 +34,15 @@ class VenteController {
       montant_total += int.parse(element["quantite"].toString()) *
           int.parse(element["prixUnitaire"].toString());
     });
+    // Récupérer la date actuelle
+    DateTime now = DateTime.now();
 
+    // Formater en "yyyy-MM-dd"
+    String formattedDate = DateFormat('yyyy-MM-dd').format(now);
+
+    print(formattedDate);
     Map<String, dynamic> vente={
-      "date_vente" : "2025-08-17",
+      "date_vente" : formattedDate,
       "montant_total" :montant_total.toString(),
       "nom_client" : "client",
       "lots_ids":id_lots,

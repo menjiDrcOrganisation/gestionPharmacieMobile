@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
-import '../../ModelTampo/Lot.dart';
+import 'package:intl/intl.dart'; // pour formater la date
+import 'package:gestion_pharmacie_mobile/services/ApiService/venteService.dart';
+import '../../ModelTampo/Vente.dart';
 import '../../component/AppBar.dart';
 import '../../component/BottomApp.dart';
-import '../../component/LookPharma.dart';
 import '../../component/Option.dart';
-import '../../component/SeashBar.dart';
 import '../../component/dashboard/Block.dart';
-import '../../services/GetStorage/LotStorage.dart';
-import '../lots/LotRegisterPage.dart';
 import '../vente/vendre.dart';
+import '../lots/LotRegisterPage.dart';
+import '../../services/GetStorage/LotStorage.dart';
 
 class ViewDash extends StatefulWidget {
   @override
@@ -16,17 +16,55 @@ class ViewDash extends StatefulWidget {
 }
 
 class _ViewDashState extends State<ViewDash> {
+  List<Vente> Ventes = [];
+  double montantVenduJour = 0.0;
+  double montantVenduMois = 0.0;
 
+  getName(){
+
+  }
 
   @override
   void initState() {
-
     super.initState();
+    getVente();
+  }
+
+  Future<void> getVente() async {
+    try {
+      final ventesData = await VenteService().fetchVentes();
+
+      double totalJour = 0.0;
+      double totalMois = 0.0;
+      DateTime today = DateTime.now();
+
+      for (var vente in ventesData) {
+        DateTime dateVente = DateTime.parse(vente.dateVente);
+        double montant = double.tryParse(vente.montant_total) ?? 0.0;
+
+        // Vérifie la vente du mois
+        if (dateVente.year == today.year && dateVente.month == today.month) {
+          totalMois += montant;
+
+          // Vérifie la vente du jour
+          if (dateVente.day == today.day) {
+            totalJour += montant;
+          }
+        }
+      }
+
+      setState(() {
+        Ventes = ventesData;
+        montantVenduJour = totalJour;
+        montantVenduMois = totalMois;
+      });
+    } catch (e) {
+      print("Erreur lors de la récupération des ventes : $e");
+    }
   }
 
   @override
   Widget build(BuildContext context) {
-    // Récupérer la taille de l’écran
     final screenWidth = MediaQuery.of(context).size.width;
     final screenHeight = MediaQuery.of(context).size.height;
 
@@ -46,6 +84,7 @@ class _ViewDashState extends State<ViewDash> {
               ),
             ),
             SizedBox(height: screenHeight * 0.02),
+
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -54,13 +93,10 @@ class _ViewDashState extends State<ViewDash> {
                     src: 'assets/Icone/shopping-cart-add 5.png',
                     intitule: "Vente",
                     action: () {
-                      print("icici");
-                     print(LotStorage.getLots()) ;
+                      print(LotStorage.getLots());
                       Navigator.push(
                         context,
-                        MaterialPageRoute(
-                          builder: (context) => Vendre(), // ta page cible
-                        ),
+                        MaterialPageRoute(builder: (context) => Vendre()),
                       );
                     },
                   ).lancer(),
@@ -73,11 +109,8 @@ class _ViewDashState extends State<ViewDash> {
                     action: () {
                       Navigator.push(
                         context,
-                        MaterialPageRoute(
-                          builder: (context) => AddProduitPage(), // ta page cible
-                        ),
+                        MaterialPageRoute(builder: (context) => AddProduitPage()),
                       );
-
                     },
                   ).lancer(),
                 ),
@@ -107,7 +140,7 @@ class _ViewDashState extends State<ViewDash> {
                   child: Block(
                     src: 'assets/Icone/traitement 1.png',
                     text: "Vente du jour",
-                    montant: "20 000 FC",
+                    montant: "${montantVenduJour.toStringAsFixed(2)} FC",
                     action: () {},
                   ).lancer(),
                 ),
@@ -116,7 +149,7 @@ class _ViewDashState extends State<ViewDash> {
                   child: Block(
                     src: 'assets/Icone/supplier-alt 1.png',
                     text: "Vente du mois",
-                    montant: "16 000 FC",
+                    montant: "${montantVenduMois.toStringAsFixed(2)} FC",
                     action: () {},
                   ).lancer(),
                 ),
@@ -138,28 +171,27 @@ class _ViewDashState extends State<ViewDash> {
               ],
             ),
 
-
             Container(
               width: double.infinity,
               padding: EdgeInsets.all(10),
               margin: EdgeInsets.symmetric(vertical: screenHeight * 0.02),
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(12),
-                border: Border.all(
-                  color: Color.fromRGBO(234, 234, 234, 1),
-                  width: 1,
-                ),
+                border: Border.all(color: Color.fromRGBO(234, 234, 234, 1), width: 1),
               ),
-              child: ListView(
+              child: Ventes.isEmpty
+                  ? Text("Aucune activité récente")
+                  : ListView.builder(
                 shrinkWrap: true,
                 physics: NeverScrollableScrollPhysics(),
-                children: [
-                  Text("05/08 – 14h35 · Vente · Paracétamol 500mg · 3 u · 3 600 FC"),
-                  Text("05/08 – 14h35 · Vente · Paracétamol 500mg · 3 u · 3 600 FC"),
-                  Text("05/08 – 14h35 · Vente · Paracétamol 500mg · 3 u · 3 600 FC")
-                ],
+                itemCount: Ventes.length > 5 ? 5 : Ventes.length,
+                itemBuilder: (context, index) {
+                  final v = Ventes[index];
+                  final date = DateFormat('dd/MM – HH:mm').format(DateTime.parse(v.dateVente));
+                  return Text("$date · Vente · ${v.nom_client ?? 'Client'} · ${v.montant_total} FC");
+                },
               ),
-            )
+            ),
           ],
         ),
       ),

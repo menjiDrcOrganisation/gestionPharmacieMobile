@@ -6,7 +6,6 @@ import 'package:shared_preferences/shared_preferences.dart';
 class FormeDoseService {
 
 
-
   final String apiUrl = Utilise.baseUrl+"getallformeanddose";
 
   // Récupérer depuis API et stocker localement

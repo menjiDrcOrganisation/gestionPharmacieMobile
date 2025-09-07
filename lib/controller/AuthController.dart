@@ -16,6 +16,7 @@ class AuthController {
   Future<User> login(String email, String password) async {
     final result = await _apiService.login(email, password);
     print({"loginnnnnnnnnnnnnnnnn::controller"});
+
     final token = result['token'];
     final user = result['user'] as User;
    // final roleInfo = result['roleInfo'] as RoleInfo;
@@ -48,8 +49,12 @@ class AuthController {
   Future<User> register(
       String name, String email, String password) async {
     String role = 'gerant';
+    print([name, email, password, role]);
     final result =
     await _apiService.register(name, email, password, role);
+
+
+
     final token = result['token'];
     final user = result['user'] as User;
    // final roleInfo = result['roleInfo'] as RoleInfo;

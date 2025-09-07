@@ -10,12 +10,13 @@ import 'package:lottie/lottie.dart';
 
 import '../../component/Colors.dart';
 import '../../controller/AuthController.dart';
+import '../principal/portail.dart';
 import 'RegisterPage.dart';
 
 
 
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+class Loginpage extends StatelessWidget {
+  const Loginpage({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -109,6 +110,12 @@ class _LoginPageState extends State<LoginPage> {
           .timeout(const Duration(seconds: 10));
 
       _showToast('Bienvenue, ${user.name}', isError: false);
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => Portail(),
+        ),
+      );
 
     /*  Future.delayed(
         const Duration(milliseconds: 1500),
@@ -169,6 +176,12 @@ class _LoginPageState extends State<LoginPage> {
               .timeout(const Duration(seconds: 10));
 
           _showToast('Bienvenue, ${user.name}', isError: false);
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => Portail(),
+            ),
+          );
 
           /*  Future.delayed(
         const Duration(milliseconds: 1500),

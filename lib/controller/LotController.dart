@@ -1,6 +1,7 @@
 import '../model/lotModel.dart';
 import '../services/ApiService/ApiServiceLot.dart';
 import '../model/lot_register.dart';
+import '../services/GetStorage/Pharmacie.dart';
 
 
 class LotController {
@@ -24,13 +25,15 @@ class LotController {
     required int prixAchat,
     required int idPharmacie,
   }) async {
+
     try {
+      String idPharma = await PharmacieStorage.getPharma();
       Lot_register lot = Lot_register(
         idMedicament: idMedicament,
         quantite: quantite,
         dateExpiration: dateExpiration,
         prixAchat: prixAchat,
-        idPharmacie: idPharmacie,
+        idPharmacie:int.parse(idPharma)
       );
 
       return await _lotService.createLot(lot);
@@ -49,8 +52,6 @@ class LotController {
 
   }) async {
     try {
-
-
       return await _lotService.updatelot(idlot,quantite,dateExpiration,prixAchat);
     } catch (e) {
       print("Erreur dans LotController update : $e");

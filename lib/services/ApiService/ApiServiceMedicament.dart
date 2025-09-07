@@ -11,7 +11,7 @@ class MedicamentService {
 
   // Récupérer depuis API
   Future<List<Medicament>> fetchMedicaments() async {
-    final url = Uri.parse("$baseUrl/getallmedicament");
+    final url = Uri.parse("${baseUrl}getallmedicament");
     final response = await http.get(url);
 
     if (response.statusCode == 200) {

@@ -12,10 +12,12 @@ class VenteLot {
   });
 
   factory VenteLot.fromJson(Map<String, dynamic> json) {
+    print("fjjj");
+    print(json);
     return VenteLot(
-      lot: Lot.fromJson(json['lot']),
-      quantiteVendue: json['quantite_vendue'],
-      prixVente: json['prix_vente'],
+      lot: Lot.fromJson(json),
+      quantiteVendue: 0,
+      prixVente:0,
     );
   }
 

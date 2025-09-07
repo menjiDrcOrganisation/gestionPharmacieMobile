@@ -1,11 +1,13 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:gestion_pharmacie_mobile/view/vente/vendre.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../component/AppBar.dart';
 import '../../component/BottomApp.dart';
 import '../../component/Button.dart';
 import '../../component/Colors.dart';
+import '../../component/vente/BottomAppVente.dart';
 import '../../controller/VenteController.dart';
 import '../layouts/StructurePage.dart';
 
@@ -16,6 +18,7 @@ class Pannier extends StatefulWidget {
 
 class _PannierState extends State<Pannier> {
   List<Map<String, dynamic>> panier = [];
+  int coutPannier=0;
 
   @override
   void initState() {
@@ -30,6 +33,7 @@ class _PannierState extends State<Pannier> {
     if (panierString != null) {
       setState(() {
         panier = List<Map<String, dynamic>>.from(jsonDecode(panierString));
+        coutPannier=0;
       });
     }
   }
@@ -66,8 +70,12 @@ class _PannierState extends State<Pannier> {
               intitule: "Valider",
               colorText: Colors.white,
               colorButton: MyColors.primaryColor,
-              onPressed: () {
-                VenteController.create(panier);
+              onPressed: ()async {
+                await VenteController.create(panier);
+                clearPanier();
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(content: Text(" Vente effectue avec succes")),
+                );
               },
             ).lancer(),
             Button(
@@ -117,7 +125,29 @@ class _PannierState extends State<Pannier> {
           ),
         ),
       ).lancer(),
-      bottomNavigationBar: Bottomapp().lancer(),
+      bottomNavigationBar: BottomappVente(
+        notifCount: coutPannier,
+
+          onAccueil: (){
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => Vendre(), // ta page cible
+              ),
+            );
+
+          },
+
+          onNotif: (){
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => Pannier(), // ta page cible
+              ),
+            );
+          }
+
+      ).lancer(),
     );
   }
 }
