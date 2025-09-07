@@ -19,6 +19,8 @@ class LotService {
        final Map<String, dynamic> data = jsonDecode(response.body);
        final List<dynamic> lotsJson = data["data"];
 
+       print(lotsJson);
+
        List<Lot> lots = lotsJson.map((item) => Lot.fromJson(item)).toList();
        LotStorage.saveLots(lots);
        return lots;

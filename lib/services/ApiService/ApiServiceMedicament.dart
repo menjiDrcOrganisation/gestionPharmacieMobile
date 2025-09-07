@@ -16,6 +16,7 @@ class MedicamentService {
 
     if (response.statusCode == 200) {
       final List data = jsonDecode(response.body);
+
       final meds = data.map((e) => Medicament.fromJson(e)).toList();
 
       // Sauvegarder localement

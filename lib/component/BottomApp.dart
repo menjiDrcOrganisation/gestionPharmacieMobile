@@ -2,6 +2,16 @@
 import 'package:flutter/material.dart';
 
 class Bottomapp {
+  final VoidCallback? onAccueil;
+  final VoidCallback? onNotif;
+  final VoidCallback? onUser;
+
+  Bottomapp({
+    this.onAccueil,
+    this.onNotif,
+    this.onUser,
+  });
+
   BottomAppBar lancer() {
     return BottomAppBar(
       color: Colors.white,
@@ -13,15 +23,21 @@ class Bottomapp {
           children: [
             IconButton(
               icon: Image.asset("assets/Icone/accueil.png"),
-              onPressed: () {},
+              onPressed: () {
+                this.onAccueil;
+              },
             ),
             IconButton(
               icon: Image.asset("assets/Icone/bell.png"),
-              onPressed: () {},
+              onPressed: () {
+                this.onNotif;
+              },
             ),
             IconButton(
               icon: Image.asset("assets/Icone/user.png"),
-              onPressed: () {},
+              onPressed: () {
+                this.onUser;
+              },
             ),
           ],
         ),

@@ -104,7 +104,7 @@ class LotService {
 
 
   Future<Map<String, dynamic>> createLot(Lot_register Lot_register) async {
-    print('bien');
+
     final prefs = await SharedPreferences.getInstance();
     final token = prefs.getString('token') ?? ''; // récupération token
 
@@ -118,6 +118,7 @@ class LotService {
     );
 
     if (response.statusCode == 201) {
+      print('bien');
       print('benikasu');
       final data = jsonDecode(response.body);
       print(jsonDecode(response.body));

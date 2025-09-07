@@ -17,7 +17,7 @@ class Medicament {
   factory Medicament.fromJson(Map<String, dynamic> json) {
     return Medicament(
       id: json["id_medicament"],
-      nom: json["nom"],
+      nom: json["nom"]+"_"+json["forme"]["nom"]+"_"+json["dose"]["quantite"]+"_"+json["dose"]["unite"],
       description: json["description"],
       idForme: json["id_forme"],
       idDose: json["id_dose"],

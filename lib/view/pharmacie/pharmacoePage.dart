@@ -3,6 +3,7 @@ import '../../ModelTampo/Pharmacie.dart';
 import '../../component/AppBar.dart';
 import '../../controller/PharmacieController.dart';
 import '../../services/ApiService/ApiPharmacie.dart';
+import '../../utils/navigation.dart';
 import '../principal/portail.dart';
 import 'CreationCompteStep2.dart';
 
@@ -154,12 +155,8 @@ class _CreationComptePageState extends State<CreationComptePage> {
                             ScaffoldMessenger.of(context).showSnackBar(
                               SnackBar(content: Text("Pharmacie  ${p.nom} creer avec succes avec succes")),
                             );
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => Portail(),
-                              ),
-                            );
+                            goToPagePlacement(context,Portail());
+
                           } catch (e) {
                             ScaffoldMessenger.of(context).showSnackBar(
                               SnackBar(content: Text("Erreur lors de la création du pharmacie")),

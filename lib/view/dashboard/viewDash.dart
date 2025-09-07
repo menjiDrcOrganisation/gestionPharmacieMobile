@@ -6,6 +6,10 @@ import '../../component/AppBar.dart';
 import '../../component/BottomApp.dart';
 import '../../component/Option.dart';
 import '../../component/dashboard/Block.dart';
+import '../../model/userModel.dart';
+import '../../services/GetStorage/local_storage_service.dart';
+import '../../utils/navigation.dart';
+import '../pharmacie/pharmacoePage.dart';
 import '../vente/vendre.dart';
 import '../lots/LotRegisterPage.dart';
 import '../../services/GetStorage/LotStorage.dart';
@@ -19,14 +23,21 @@ class _ViewDashState extends State<ViewDash> {
   List<Vente> Ventes = [];
   double montantVenduJour = 0.0;
   double montantVenduMois = 0.0;
+  String nomAdmin="";
+  Future<void>  getName() async{
 
-  getName(){
+    User? user = await LocalStorageService().getUser();
+    nomAdmin=user!.name;
+    setState(() {
+
+    });
 
   }
 
   @override
   void initState() {
     super.initState();
+    getName();
     getVente();
   }
 
@@ -76,7 +87,7 @@ class _ViewDashState extends State<ViewDash> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              "Bienvenu , Marien",
+              "Bienvenu , ${nomAdmin}",
               style: TextStyle(
                 fontWeight: FontWeight.bold,
                 color: Colors.black,
@@ -142,7 +153,7 @@ class _ViewDashState extends State<ViewDash> {
                     text: "Vente du jour",
                     montant: "${montantVenduJour.toStringAsFixed(2)} FC",
                     action: () {},
-                  ).lancer(),
+                  ).lancer(context),
                 ),
                 SizedBox(width: 12),
                 Expanded(
@@ -151,7 +162,7 @@ class _ViewDashState extends State<ViewDash> {
                     text: "Vente du mois",
                     montant: "${montantVenduMois.toStringAsFixed(2)} FC",
                     action: () {},
-                  ).lancer(),
+                  ).lancer(context),
                 ),
               ],
             ),
@@ -195,7 +206,11 @@ class _ViewDashState extends State<ViewDash> {
           ],
         ),
       ),
-      bottomNavigationBar: Bottomapp().lancer(),
+      bottomNavigationBar: Bottomapp(
+        onAccueil: (){
+          goToPagePlacement(context,ViewDash());
+        }
+      ).lancer(),
     );
   }
 }

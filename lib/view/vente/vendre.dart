@@ -69,9 +69,7 @@ class _VendreState extends State<Vendre> {
       body: FutureBuilder<List<Lot>>(
         future: getLots(),
         builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(child: CircularProgressIndicator());
-          }
+
 
           if (snapshot.hasError) {
             return Center(child: Text("Erreur de chargement des médicaments"));
@@ -136,11 +134,11 @@ class _VendreState extends State<Vendre> {
                   },
                 ),
                 SizedBox(height: screenHeight * 0.01),
-                buildComboBox<Lot>(
+                buildComboBox<int>(
                   title: "Nom du produit",
                   items: lots.map((lot) {
-                    return DropdownMenuItem<Lot>(
-                      value: lot,
+                    return DropdownMenuItem<int>(
+                      value: lot.idLot, // identifiant unique
                       child: Text(
                         "${lot.medicament.nom} "
                             "${lot.medicament.forme.nom} "
@@ -149,11 +147,12 @@ class _VendreState extends State<Vendre> {
                       ),
                     );
                   }).toList(),
-                  selectedItem: selectedLot,
+                  selectedItem: selectedLot?.idLot, // garder uniquement l'id comme valeur
                   placeholder: "Choisissez un produit",
-                  onChanged: (Lot? value) {
+                  onChanged: (int? id) {
                     setState(() {
-                      selectedLot = value;
+                      // retrouver le lot complet via son id
+                      selectedLot = lots.firstWhere((lot) => lot.idLot == id);
                       quantiteChoisie = 0;
                     });
                   },

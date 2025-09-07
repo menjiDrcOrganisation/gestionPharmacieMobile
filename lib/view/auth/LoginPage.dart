@@ -10,6 +10,8 @@ import 'package:lottie/lottie.dart';
 
 import '../../component/Colors.dart';
 import '../../controller/AuthController.dart';
+import '../../utils/navigation.dart';
+import '../dashboard/viewDash.dart';
 import '../principal/portail.dart';
 import 'RegisterPage.dart';
 
@@ -110,12 +112,8 @@ class _LoginPageState extends State<LoginPage> {
           .timeout(const Duration(seconds: 10));
 
       _showToast('Bienvenue, ${user.name}', isError: false);
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => Portail(),
-        ),
-      );
+      goToPagePlacement(context,Portail());
+
 
     /*  Future.delayed(
         const Duration(milliseconds: 1500),

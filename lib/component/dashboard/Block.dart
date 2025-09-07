@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 
 class Block {
@@ -7,77 +6,78 @@ class Block {
   final Function action;
   final String src;
 
-  Block({required this.src, required this.action, required this.montant,required this.text, });
+  Block({
+    required this.src,
+    required this.action,
+    required this.montant,
+    required this.text,
+  });
 
-  Widget lancer() {
+  Widget lancer(BuildContext context) {
+    final double screenWidth = MediaQuery.of(context).size.width;
+    final double screenHeight = MediaQuery.of(context).size.height;
+
+    // tailles proportionnelles
+    final double blockWidth = screenWidth * 0.45; // 45% de la largeur écran
+    final double blockHeight = screenHeight * 0.13; // 13% de la hauteur écran
+
     return InkWell(
-      onTap: () {
-        action(); // exécute la fonction passée
-      },
+      onTap: () => action(),
       child: Container(
         padding: const EdgeInsets.all(10),
-
-        width: 190
-        ,
-        height:100,
+        width: blockWidth,
+        height: blockHeight,
         decoration: BoxDecoration(
           border: Border.all(
-            color: Color.fromRGBO(234, 234, 234, 1), // couleur de la bordure
-            width: 1,            // épaisseur de la bordure
+            color: const Color.fromRGBO(234, 234, 234, 1),
+            width: 1,
           ),
-            borderRadius: BorderRadius.circular(10)
+          borderRadius: BorderRadius.circular(10),
         ),
-
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceAround,
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Container(
-              height: 48,
-              width: 55,
+              height: blockHeight * 0.5,
+              width: blockWidth * 0.2,
               decoration: BoxDecoration(
-                color: Color.fromRGBO(40, 167, 69, 1),
+                color: const Color.fromRGBO(40, 167, 69, 1),
                 borderRadius: BorderRadius.circular(12),
-
               ),
-              child:
-              Padding(padding: const EdgeInsets.all(10),
-                child:Image.asset(
+              child: Padding(
+                padding: const EdgeInsets.all(10),
+                child: Image.asset(
                   src,
-                  fit: BoxFit.contain, // adapte l’image à l’espace
-                ) ,)
-              ,
+                  fit: BoxFit.contain,
+                ),
+              ),
             ),
-
             SizedBox(
-              height: 90,
+              height: blockHeight * 0.8,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
-                    montant , // affiche une chaîne vide si null
-                    style: const TextStyle(
-                      fontSize: 20,
+                    montant,
+                    style: TextStyle(
+                      fontSize: blockWidth * 0.1, // taille texte adaptative
                       fontWeight: FontWeight.w600,
-                      color:  Color.fromRGBO(40, 167, 69, 1),
+                      color: const Color.fromRGBO(40, 167, 69, 1),
                     ),
                   ),
                   Text(
-                    text, // affiche une chaîne vide si null
-                    style: const TextStyle(
-                      fontSize: 15,
+                    text,
+                    style: TextStyle(
+                      fontSize: blockWidth * 0.07,
                       fontWeight: FontWeight.w600,
-                      color: Color.fromRGBO(107, 101, 101, 1),
+                      color: const Color.fromRGBO(107, 101, 101, 1),
                     ),
                   ),
-                  Icon(Icons.access_time_rounded)
-
+                  const Icon(Icons.access_time_rounded, size: 18),
                 ],
               ),
-            )
-
-           ,
+            ),
           ],
         ),
       ),

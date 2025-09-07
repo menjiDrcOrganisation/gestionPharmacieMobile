@@ -157,9 +157,11 @@ class _AddProduitPageState extends State<AddProduitPage> {
     });
 
     try {
+      print("dfdfdf");
       final medicament = medicaments!.firstWhere(
-            (m) => m.nom == selectedMedicament,
+            (m) => m.id.toString() == selectedMedicament,
       );
+
 
       final lot = await lotController.enregistrerLot(
         idMedicament: medicament.id,
@@ -182,7 +184,7 @@ class _AddProduitPageState extends State<AddProduitPage> {
       }
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Erreur: $e")),
+        SnackBar(content: Text("Erreurzzz: $e")),
       );
     } finally {
       setState(() {
@@ -269,10 +271,10 @@ class _AddProduitPageState extends State<AddProduitPage> {
                     const Text("Aucun médicament disponible")
                   else
                     DropdownButtonFormField(
-                      value: selectedMedicament,
+
                       items: filteredMedicaments
                           .map((m) => DropdownMenuItem(
-                        value: m.nom,
+                        value: m.id.toString(),
                         child: Text(m.nom),
                       ))
                           .toList(),
