@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:gestion_pharmacie_mobile/view/auth/ProfilPage.dart';
 import 'package:intl/intl.dart'; // pour formater la date
 import 'package:gestion_pharmacie_mobile/services/ApiService/venteService.dart';
 import '../../ModelTampo/Vente.dart';
@@ -9,6 +10,7 @@ import '../../component/dashboard/Block.dart';
 import '../../model/userModel.dart';
 import '../../services/GetStorage/local_storage_service.dart';
 import '../../utils/navigation.dart';
+import '../lots/ListLots.dart';
 import '../pharmacie/pharmacoePage.dart';
 import '../vente/vendre.dart';
 import '../lots/LotRegisterPage.dart';
@@ -120,7 +122,7 @@ class _ViewDashState extends State<ViewDash> {
                     action: () {
                       Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (context) => AddProduitPage()),
+                        MaterialPageRoute(builder: (context) => DashboardPage()),
                       );
                     },
                   ).lancer(),
@@ -209,7 +211,10 @@ class _ViewDashState extends State<ViewDash> {
       bottomNavigationBar: Bottomapp(
         onAccueil: (){
           goToPagePlacement(context,ViewDash());
-        }
+        },
+        onUser:(){
+          goToPage(context,ProfilePage());
+        },
       ).lancer(),
     );
   }

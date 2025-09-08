@@ -11,6 +11,8 @@ import '../../controller/VenteController.dart';
 import '../../model/userModel.dart';
 import '../../services/ApiService/ApiPharmacie.dart';
 import '../../services/GetStorage/Pharmacie.dart';
+import '../../utils/navigation.dart';
+import '../auth/ProfilPage.dart';
 import '../dashboard/viewDash.dart';
 import '../pharmacie/pharmacoePage.dart';
 
@@ -28,7 +30,7 @@ class _PortailState extends State<Portail> {
   void initState() {
     super.initState();
 
-    pharmaciesFuture = PharmacieService().fetchPharmaciesDuGerant(1);
+    pharmaciesFuture = PharmacieService().fetchPharmaciesDuGerant(8);
   }
 
   @override
@@ -68,7 +70,14 @@ class _PortailState extends State<Portail> {
                 Option(
                   src: 'assets/Icone/userQ.png',
                   intitule: "User",
-                  action: () {},
+                  action: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => ProfilePage(),
+                      ),
+                    );
+                  },
                 ).lancer(),
               ],
             ),
@@ -148,7 +157,19 @@ class _PortailState extends State<Portail> {
           ],
         ),
       ),
-      bottomNavigationBar: Bottomapp().lancer(),
+      bottomNavigationBar: Bottomapp(
+        onAccueil: (){
+          goToPagePlacement(context,ViewDash());
+        },
+        onUser:() {
+    Navigator.push(
+    context,
+    MaterialPageRoute(
+    builder: (context) => ProfilePage(),
+    ),
+    );
+
+        },).lancer(),
     );
   }
 }

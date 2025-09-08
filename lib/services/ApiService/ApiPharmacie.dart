@@ -46,6 +46,7 @@ class PharmacieService {
     RoleInfo? user = await LocalStorageService().getRoleInfo();
 
     int? idUser=user?.id;
+
     final response = await http.get(
       Uri.parse("$baseUrl/gerant/$idUser"),
       headers: {"Accept": "application/json"},
@@ -62,14 +63,14 @@ class PharmacieService {
   // Ajouter une pharmacie
   Future<Pharmacie> createPharmacie(Pharmacie pharmacie) async {
     final response = await http.post(
-      Uri.parse(baseUrl),
+      Uri.parse("$baseUrl"),
       headers: {
         "Content-Type": "application/json",
         "Accept": "application/json"
       },
       body: jsonEncode(pharmacie.toJson()),
     );
-
+print("pharmacies ${response.body}");
     if (response.statusCode == 201) {
       final data = jsonDecode(response.body);
       return Pharmacie.fromJson(data);

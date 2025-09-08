@@ -16,10 +16,13 @@ class AuthController {
   Future<User> login(String email, String password) async {
     final result = await _apiService.login(email, password);
     print({"loginnnnnnnnnnnnnnnnn::controller"});
+    print('connexion ${result['role']}');
 
     final token = result['token'];
     final user = result['user'] as User;
-   final roleInfo = result['roleInfo'] as RoleInfo;
+
+   final roleInfo = result['role'] ;
+
 
     await _localStorage.saveToken(token);
     await _localStorage.saveUser(user);

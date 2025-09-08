@@ -4,6 +4,7 @@ import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../model/lotModel.dart';
 import '../../model/lot_register.dart';
+import '../GetStorage/Pharmacie.dart';
 
 
 class LotService {
@@ -12,8 +13,10 @@ class LotService {
   /// Récupération API
 
   Future<List<Lot>> fetchLots() async {
+    String idPharma = await PharmacieStorage.getPharma();
+    print(idPharma);
     try {
-      final response = await http.get(Uri.parse("$baseUrl/1"));
+      final response = await http.get(Uri.parse("$baseUrl/$idPharma"));
 
       if (response.statusCode == 200) {
         print('Réponse API brute: ${response.body}');
@@ -116,7 +119,7 @@ class LotService {
       },
       body: jsonEncode(Lot_register.toJson()),
     );
-
+    print(response);
     if (response.statusCode == 201) {
       print('bien');
       print('benikasu');

@@ -1,6 +1,4 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
-    <uses-permission android:name="android.permission.INTERNET"/>
-
     <application
         android:label="gestion_pharmacie_mobile"
         android:name="${applicationName}"
@@ -32,11 +30,6 @@
         <meta-data
             android:name="flutterEmbedding"
             android:value="2" />
-
-        <meta-data
-            android:name="com.google.android.gms.auth.api.credentials.ClientId"
-            android:value="1084287883351-5eu60ndaq3c6d2e999d5a04trcf9fecd.apps.googleusercontent.com"
-            />
     </application>
     <!-- Required to query activities that can process text, see:
          https://developer.android.com/training/package-visibility and

@@ -11,10 +11,9 @@ class ControllerPharmacie{
 
 
     RoleInfo? user = await LocalStorageService().getRoleInfo();
-    print(user);
 
-    print(user!.id);
     int? idUser=user!.id;
+    print("id genrant $idUser");
     Pharmacie pharmacie = Pharmacie(
       id: 0,
       nom: nom,
