@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:gestion_pharmacie_mobile/view/principal/portail.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -230,7 +231,12 @@ class _RegisterPageState extends State<RegisterPage> {
           backgroundColor: AppColors.success,
           textColor: Colors.white,
         );
-        Navigator.pop(context);
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => Portail(),
+          ),
+        );
       } else {
         Fluttertoast.showToast(
           msg: "Erreur lors de la création du compte",

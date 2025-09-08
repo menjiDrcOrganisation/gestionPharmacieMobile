@@ -45,7 +45,7 @@ class ApiService {
       _token = data['token'];
       return {
         'user': User.fromJson(data['user']),
-        'roleInfo': RoleInfo.fromJson(data['user']),
+        'role': RoleInfo.fromJson(data['role']),
         'token': data['token'],
       };
     } else {
@@ -72,7 +72,7 @@ class ApiService {
       _token = data['token']; // Stocke le token après l'inscription
       return {
         'user': User.fromJson(data['user']),
-       // 'roleInfo': RoleInfo.fromJson(data['role']),
+        'roleInfo': RoleInfo.fromJson(data['role']),
         'token': data['token'],
       };
     } else {

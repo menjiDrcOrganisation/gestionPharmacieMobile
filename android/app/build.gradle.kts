@@ -8,7 +8,8 @@ plugins {
 android {
     namespace = "com.example.gestion_pharmacie_mobile"
     compileSdk = flutter.compileSdkVersion
-    ndkVersion = "29.0.13846066"
+   // ndkVersion = flutter.ndkVersion
+    ndkVersion = "27.0.12077973"
 
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11

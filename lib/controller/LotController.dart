@@ -28,6 +28,7 @@ class LotController {
 
     try {
       String idPharma = await PharmacieStorage.getPharma();
+      print(idPharma);
       Lot_register lot = Lot_register(
         idMedicament: idMedicament,
         quantite: quantite,
