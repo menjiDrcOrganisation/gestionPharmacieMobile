@@ -14,6 +14,7 @@ class LotService {
      String idPharma = await PharmacieStorage.getPharma();
      String base= "${Utilise.baseUrl}pharmacies/${idPharma}/medicaments";
      final response = await http.get(Uri.parse(base));
+     print(response.statusCode);
      if (response.statusCode == 200) {
        // On décode directement en liste
        final Map<String, dynamic> data = jsonDecode(response.body);

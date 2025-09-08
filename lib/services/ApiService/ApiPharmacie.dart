@@ -43,7 +43,8 @@ class PharmacieService {
 
   // Récupérer les pharmacies d’un gérant
   Future<List<Pharmacie>> fetchPharmaciesDuGerant(int idGerant) async {
-    User? user = await LocalStorageService().getUser();
+    RoleInfo? user = await LocalStorageService().getRoleInfo();
+
     int? idUser=user?.id;
     final response = await http.get(
       Uri.parse("$baseUrl/gerant/$idUser"),
