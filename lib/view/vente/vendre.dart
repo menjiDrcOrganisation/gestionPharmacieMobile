@@ -70,6 +70,11 @@ class _VendreState extends State<Vendre> {
         future: getLots(),
         builder: (context, snapshot) {
 
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return Center(
+              child: CircularProgressIndicator(), // Loader
+            );
+          }
 
           if (snapshot.hasError) {
             return Center(child: Text("Erreur de chargement des médicaments"));

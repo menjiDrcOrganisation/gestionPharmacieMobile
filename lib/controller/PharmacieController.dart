@@ -7,9 +7,11 @@ import '../services/GetStorage/local_storage_service.dart';
 
 class ControllerPharmacie{
 
-  static Future<Pharmacie> createPhramacie(nom,ville,quartier,rue,tel) async{
+  static Future<Pharmacie> createPhramacie(nom,ville,quartier,rue,tel,indice) async{
+
 
     RoleInfo? user = await LocalStorageService().getRoleInfo();
+
     int? idUser=user!.id;
     print("id genrant $idUser");
     Pharmacie pharmacie = Pharmacie(
@@ -17,7 +19,7 @@ class ControllerPharmacie{
       nom: nom,
       adresse: '$rue, $quartier, $ville',
       telephone: tel,
-      indice: 2,
+      indice: int.parse(indice),
       idGerant: idUser,
       statut: 'valide',
       createdAt: null,

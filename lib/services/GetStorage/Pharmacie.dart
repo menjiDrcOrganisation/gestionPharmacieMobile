@@ -18,6 +18,9 @@ class PharmacieStorage {
     final prefs = await SharedPreferences.getInstance();
     String? id= prefs.getString(PHAR_KEY);
 
+
+    print(id);
+
     if (id != null) {
       return id;
     } else {

@@ -27,13 +27,10 @@ class _ViewDashState extends State<ViewDash> {
   double montantVenduMois = 0.0;
   String nomAdmin="";
   Future<void>  getName() async{
-
     User? user = await LocalStorageService().getUser();
     nomAdmin=user!.name;
     setState(() {
-
     });
-
   }
 
   @override

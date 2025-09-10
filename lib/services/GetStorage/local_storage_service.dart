@@ -70,10 +70,14 @@ class LocalStorageService {
 
 // Récupérer roleInfo
   Future<RoleInfo?> getRoleInfo() async {
+
     final prefs = await SharedPreferences.getInstance();
     final jsonStr = prefs.getString(_roleInfoKey);
+
     if (jsonStr != null) {
       final Map<String, dynamic> jsonMap = jsonDecode(jsonStr);
+      print(jsonMap);
+      print(RoleInfo.fromJson(jsonMap));
       return RoleInfo.fromJson(jsonMap);
     }
     return null;

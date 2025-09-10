@@ -27,8 +27,6 @@ class ApiService {
 
   Future<Map<String, dynamic>> login(String email, String password) async {
 
-    print([email,password]);
-    print("${baseUrl}login");
     final response = await http.post(
       Uri.parse('${baseUrl}login'),
       body: {
@@ -45,7 +43,9 @@ class ApiService {
       _token = data['token'];
       return {
         'user': User.fromJson(data['user']),
+
         'role': RoleInfo.fromJson(data['role']),
+
         'token': data['token'],
       };
     } else {
