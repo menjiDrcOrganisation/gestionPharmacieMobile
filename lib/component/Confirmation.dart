@@ -1,8 +1,4 @@
 
-
-
-
-
 import 'package:flutter/material.dart';
 
 confirmation(BuildContext context, String message,{
@@ -10,7 +6,6 @@ Function()? onOui,
 Function()? onNon,
 }
 ){
-
   return showDialog(
     context: context,
     builder: (context) {
@@ -21,7 +16,9 @@ Function()? onNon,
           TextButton(
             child: Text("OUI"),
             onPressed: () {
-              onOui!(); // fermer la boîte de dialogue
+              onOui!();
+              Navigator.of(context).pop();
+           // fermer la boîte de dialogue
             },
           ),
           TextButton(

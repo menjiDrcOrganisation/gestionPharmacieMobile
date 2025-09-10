@@ -4,10 +4,11 @@ class LookPharma {
   Function action;
   String title;
   String subtitle;
-
   LookPharma({required this.action, required this.title, required this.subtitle});
-
   Widget lancer() {
+    String abreviation = title.length >= 2
+        ? title.substring(0, 2).toUpperCase()
+        : title.toUpperCase();
     return InkWell(
       onTap: () {
         action();
@@ -22,7 +23,7 @@ class LookPharma {
             children: <Widget>[
               CircleAvatar(
                 radius: 24,
-                child: Text('PB', style: TextStyle(color: Colors.white)),
+                child: Text(abreviation, style: TextStyle(color: Colors.white)),
                 backgroundColor: Colors.green,
               ),
               const SizedBox(width: 12),
