@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import '../../ModelTampo/Pharmacie.dart';
 import '../../component/AppBar.dart';
+import '../../component/Combobox.dart';
+import '../../component/Confirmation.dart';
 import '../../controller/PharmacieController.dart';
 import '../../services/ApiService/ApiPharmacie.dart';
 import '../../utils/navigation.dart';
@@ -38,6 +40,9 @@ class CreationComptePage extends StatefulWidget {
 }
 
 class _CreationComptePageState extends State<CreationComptePage> {
+  List<String> villes = ["Kinshasa", "Lubumbashi"];
+  String? selectedVille = "Kinshasa";
+
   // Controllers pour récupérer les valeurs des TextField
   final TextEditingController nomController = TextEditingController();
   final TextEditingController villeController = TextEditingController();
@@ -89,7 +94,6 @@ class _CreationComptePageState extends State<CreationComptePage> {
               ),
 
               const SizedBox(height: 15),
-
               // Stepper
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 40),
@@ -123,7 +127,28 @@ class _CreationComptePageState extends State<CreationComptePage> {
                     const SizedBox(height: 15),
                     Row(
                       children: [
-                        Expanded(child: _buildTextField("Ville", controller: villeController)),
+
+                        Expanded(child:
+                        buildComboBox<String>(
+                          items: villes.map((ville) {
+                            return DropdownMenuItem<String>(
+                              value: ville, // identifiant unique
+                              child: Text(
+                                  "${ville} "
+                              ),
+                            );
+                          }).toList(),
+                          selectedItem: selectedVille, // garder uniquement l'id comme valeur
+                          placeholder: "Choisissez un produit",
+                          onChanged: (String? pharamacie) {
+                            print(pharamacie);
+                            setState(() {
+                              selectedVille=pharamacie;
+                              // retrouver le lot complet via son id
+                            });
+                          },
+                        )
+                        ),
                         const SizedBox(width: 10),
                         Expanded(child: _buildTextField("Quartier", controller: quartierController)),
                       ],
@@ -142,33 +167,35 @@ class _CreationComptePageState extends State<CreationComptePage> {
                       height: 50,
                       child: ElevatedButton(
                         onPressed: () async {
+                          confirmation(context,"Vous confirmez l'ajout de cette pharmacie?",
+                            onOui: () async{
+                              final nom = nomController.text;
+                              final ville = selectedVille;
+                              final quartier = quartierController.text;
+                              final rue = rueController.text;
+                              final tel = telephoneController.text;
+                              try {
+                                Pharmacie p=await ControllerPharmacie.createPhramacie(nom, ville, quartier, rue, tel);
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(content: Text("Pharmacie  ${p.nom} creer avec succes avec succes")),
+                                );
+                                goToPagePlacement(context,Portail());
+
+                              } catch (e) {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(content: Text("Erreur lors de la création du pharmacie")),
+                                );
+                                print('Erreur lors de la création du pharmacie : $e');
+                                // Afficher un snackbar ou dialogue d'erreur
+                              }
+
+                            }
+
+                          );
                           // Récupérer les valeurs
-                          final nom = nomController.text;
-                          final ville = villeController.text;
-                          final quartier = quartierController.text;
-                          final rue = rueController.text;
-                          final tel = telephoneController.text;
-
-
-                          try {
-                            Pharmacie p=await ControllerPharmacie.createPhramacie(nom, ville, quartier, rue, tel);
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(content: Text("Pharmacie  ${p.nom} creer avec succes avec succes")),
-                            );
-                            goToPagePlacement(context,Portail());
-
-                          } catch (e) {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(content: Text("Erreur lors de la création du pharmacie")),
-                            );
-                            print('Erreur lors de la création du pharmacie : $e');
-                            // Afficher un snackbar ou dialogue d'erreur
-                          }
-
 
 
                           // Ici tu peux les envoyer à la prochaine page
-
                         },
                         style: ElevatedButton.styleFrom(
                           backgroundColor: Colors.green,

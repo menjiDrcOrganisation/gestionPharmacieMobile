@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 Widget buildComboBox<T>({
-  required String title,
+  String title="",
   required List<DropdownMenuItem<T>> items,
   T? selectedItem, // Peut être String, int, ou un objet
   required ValueChanged<T?> onChanged,
@@ -15,6 +15,7 @@ Widget buildComboBox<T>({
   return Column(
     crossAxisAlignment: CrossAxisAlignment.start,
     children: [
+      title!=""?
       Text(
         title,
         style: const TextStyle(
@@ -22,7 +23,7 @@ Widget buildComboBox<T>({
           color: Color.fromRGBO(117, 117, 117, 1),
           fontWeight: FontWeight.w500,
         ),
-      ),
+      ):Center(),
       const SizedBox(height: 8),
       Container(
         width: width,
