@@ -30,7 +30,6 @@ class _VendreState extends State<Vendre> {
   }
   getQuantite() async{
 
-    print("ici");
 
     final prefs = await SharedPreferences.getInstance();
     final String? panierString = prefs.getString('panier');
@@ -41,7 +40,6 @@ class _VendreState extends State<Vendre> {
         coutPannier=panier.length;
       });
     }else{
-      print(coutPannier);
     }
   }
 
@@ -227,11 +225,17 @@ class _VendreState extends State<Vendre> {
           });
         },
         notifCount: coutPannier,
-        onNotif: () {
-          Navigator.push(
+        onNotif: ()async {
+          final result = await Navigator.push(
             context,
             MaterialPageRoute(builder: (context) => Pannier()),
           );
+
+          if (result == true) {
+            setState(() {
+              getQuantite(); // met à jour coutPannier
+            });
+          }
         },
       ).lancer(),
     );

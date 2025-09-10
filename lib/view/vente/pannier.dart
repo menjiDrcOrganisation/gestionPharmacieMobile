@@ -142,7 +142,7 @@ class _PannierState extends State<Pannier> {
                   itemBuilder: (context, index) {
                     final item = panier[index];
                     return  Dismissible(
-                      key: ValueKey("${item['medicament']}$index"),
+                      key:  ValueKey("${item['medicament']} ${item['forme']}"),
                       direction: DismissDirection.endToStart,
                       background: Container(
                         color: Colors.red,

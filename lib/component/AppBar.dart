@@ -27,11 +27,11 @@ class Appbar {
           ? IconButton(
         icon: const Icon(Icons.arrow_back, color: Colors.white),
         onPressed: () {
-          // Si une page de remplacement est fournie → remplacer
           Navigator.pop(
             context,
-            MaterialPageRoute(builder: (context) => pageDeRemplacement!),
+            true,
           );
+
         },
       )
           : null, // sinon bouton retour par défaut
