@@ -18,8 +18,9 @@ class ApiService {
 
   // Headers communs pour les requêtes authentifiées
   Map<String, String> get _authHeaders {
+    print(_token);
     return {
-      //'Authorization': 'Bearer $_token',
+      'Authorization': 'Bearer $_token',
       'Content-Type': 'application/json',
       'Accept': 'application/json',
     };
@@ -102,7 +103,9 @@ class ApiService {
     String? phone,
   })
 
+
   async {
+    print(_authHeaders);
     final prefs = await LocalStorageService();
     final User? user = await prefs.getUser()  ;
     final response = await http.put(
@@ -115,6 +118,7 @@ class ApiService {
       }),
     );
     print('objectprofillllllllllllllllllllllllllllllll');
+
     print(response.body);
 
     if (response.statusCode == 200) {

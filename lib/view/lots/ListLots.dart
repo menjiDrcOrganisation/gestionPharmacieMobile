@@ -1,36 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:gestion_pharmacie_mobile/view/layouts/StructurePage.dart';
 import '../../controller/LotController.dart';
 import '../../model/lotModel.dart';
-import '../layouts/AppBarCustomer.dart';
 import 'LotRegisterPage.dart';
-import 'MedicamentLotsPage.dart';
+import 'MedicamentLotsPage.dart' hide AddProduitPage;
 
-void main() {
-  runApp(const MyApp());
-}
-
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Gestion Pharmacie',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-        inputDecorationTheme: InputDecorationTheme(
-          border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
-          contentPadding: const EdgeInsets.symmetric(
-            horizontal: 16,
-            vertical: 14,
-          ),
-        ),
-      ),
-      home: const DashboardPage(),
-    );
-  }
-}
+import 'package:flutter/material.dart';
 
 class DashboardPage extends StatefulWidget {
   const DashboardPage({super.key});
@@ -63,6 +37,7 @@ class _DashboardPageState extends State<DashboardPage> {
 
       final List<Lot> fetchedLots = await _lotController.getLots();
       print('view ${fetchedLots}');
+      print(fetchedLots);
 
       setState(() {
         allLots = fetchedLots;
@@ -138,39 +113,13 @@ class _DashboardPageState extends State<DashboardPage> {
 
   @override
   Widget build(BuildContext context) {
-    if (isLoading) {
-      return const Scaffold(
-        body: Center(child: CircularProgressIndicator()),
-      );
-    }
-
-    if (errorMessage.isNotEmpty) {
-      return Scaffold(
-        body: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Text(errorMessage, style: const TextStyle(color: Colors.red)),
-              const SizedBox(height: 20),
-              ElevatedButton(
-                onPressed: _loadLots,
-                child: const Text('Réessayer'),
-              ),
-            ],
-          ),
-        ),
-      );
-    }
-
     final groupedLots = groupLotsByMedicament();
-
-    // Filtrage dynamique selon recherche
     final filteredMedicaments = groupedLots.entries.where((entry) =>
         entry.key.toLowerCase().contains(searchQuery.toLowerCase())).toList();
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('Stoks'),
+        title: const Text('Stocks'),
         backgroundColor: Colors.green,
         foregroundColor: Colors.white,
         actions: [
@@ -181,7 +130,12 @@ class _DashboardPageState extends State<DashboardPage> {
           IconButton(
             icon: const Icon(Icons.add),
             onPressed: () {
-
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => AddProduitPage(),
+                ),
+              );
             },
           ),
         ],
@@ -204,23 +158,25 @@ class _DashboardPageState extends State<DashboardPage> {
               ),
             ),
 
-            // CARTES INDICATEURS
+            // CARTES INDICATEURS - Avec indicateur de chargement
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 15),
               child: Row(
                 children: [
-                  _buildStatCard("Total Médicaments", "${groupedLots.length}", Colors.blue,
-                      Icons.medication_outlined),
+                  isLoading
+                      ? Expanded(child: _buildStatCardSkeleton())
+                      : _buildStatCard("Total Medocs", "${groupedLots.length}", Colors.blue, Icons.medication_outlined),
                   const SizedBox(width: 10),
-                  _buildStatCard("Lots en stock", "${allLots.length}", Colors.green,
-                      Icons.inventory_2_outlined),
+                  isLoading
+                      ? Expanded(child: _buildStatCardSkeleton())
+                      : _buildStatCard("Lots en stock", "${allLots.length}", Colors.green, Icons.inventory_2_outlined),
                 ],
               ),
             ),
 
             const SizedBox(height: 15),
 
-            // BARRE DE RECHERCHE
+            // BARRE DE RECHERCHE - Toujours visible
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 15),
               child: Container(
@@ -254,7 +210,7 @@ class _DashboardPageState extends State<DashboardPage> {
 
             const SizedBox(height: 15),
 
-            // TITRE TABLEAU
+            // TITRE TABLEAU - Toujours visible
             const Padding(
               padding: EdgeInsets.symmetric(horizontal: 20),
               child: Text(
@@ -269,10 +225,12 @@ class _DashboardPageState extends State<DashboardPage> {
 
             const SizedBox(height: 10),
 
-            // LEGENDE
+            // LEGENDE - Avec indicateur de chargement conditionnel
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20),
-              child: Row(
+              child: isLoading
+                  ? _buildLegendSkeleton()
+                  : Row(
                 children: [
                   _buildLegendItem(Colors.green, "Valide"),
                   const SizedBox(width: 15),
@@ -287,7 +245,7 @@ class _DashboardPageState extends State<DashboardPage> {
 
             const SizedBox(height: 10),
 
-            // TABLEAU DES MEDICAMENTS
+            // TABLEAU DES MEDICAMENTS - Avec indicateur de chargement
             Expanded(
               child: Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 15),
@@ -310,63 +268,112 @@ class _DashboardPageState extends State<DashboardPage> {
                       ),
                       const Divider(height: 1, thickness: 0.5),
 
-                      // Liste dynamique
-                      Expanded(
-                        child: filteredMedicaments.isEmpty
-                            ? Center(
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Icon(
-                                Icons.search_off,
-                                size: 50,
-                                color: Colors.grey[300],
-                              ),
-                              const SizedBox(height: 10),
-                              Text(
-                                "Aucun médicament trouvé",
-                                style: TextStyle(
-                                  color: Colors.grey[500],
-                                  fontSize: 16,
-                                ),
-                              ),
-                            ],
-                          ),
-                        )
-                            : ListView.builder(
-                          itemCount: filteredMedicaments.length,
-                          itemBuilder: (context, index) {
-                            final entry = filteredMedicaments[index];
-                            final medicamentName = entry.key;
-                            final medicamentLots = entry.value;
-                            final totalQuantity = getTotalQuantity(medicamentLots);
-                            final earliestLot = getEarliestExpiration(medicamentLots);
-
-                            return InkWell(
-                              onTap: () {
-                                _showMedicamentDetails(context, medicamentName, medicamentLots);
-                              },
-                              child: Container(
-                                decoration: BoxDecoration(
-                                  color: getExpirationColor(earliestLot.dateExpiration).withOpacity(0.1),
-                                  border: Border(
-                                    bottom: BorderSide(
-                                      color: Colors.grey[200]!,
-                                      width: 0.5,
-                                    ),
+                      // Contenu conditionnel
+                      if (isLoading)
+                        Expanded(
+                          child: Center(
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                const CircularProgressIndicator(),
+                                const SizedBox(height: 16),
+                                Text(
+                                  "Chargement des données...",
+                                  style: TextStyle(
+                                    color: Colors.grey[600],
                                   ),
                                 ),
-                                child: _buildTableRow(
-                                  medicamentName,
-                                  totalQuantity.toString(),
-                                  medicamentLots.length.toString(),
-                                  getExpirationInfo(earliestLot.dateExpiration),
+                              ],
+                            ),
+                          ),
+                        )
+                      else if (errorMessage.isNotEmpty)
+                        Expanded(
+                          child: Center(
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Icon(
+                                  Icons.error_outline,
+                                  size: 50,
+                                  color: Colors.red[300],
                                 ),
+                                const SizedBox(height: 16),
+                                Text(
+                                  errorMessage,
+                                  textAlign: TextAlign.center,
+                                  style: TextStyle(
+                                    color: Colors.grey[600],
+                                  ),
+                                ),
+                                const SizedBox(height: 16),
+                                ElevatedButton(
+                                  onPressed: _loadLots,
+                                  child: const Text('Réessayer'),
+                                ),
+                              ],
+                            ),
+                          ),
+                        )
+                      else if (filteredMedicaments.isEmpty)
+                          Expanded(
+                            child: Center(
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Icon(
+                                    Icons.search_off,
+                                    size: 50,
+                                    color: Colors.grey[300],
+                                  ),
+                                  const SizedBox(height: 10),
+                                  Text(
+                                    "Aucun médicament trouvé",
+                                    style: TextStyle(
+                                      color: Colors.grey[500],
+                                      fontSize: 16,
+                                    ),
+                                  ),
+                                ],
                               ),
-                            );
-                          },
-                        ),
-                      ),
+                            ),
+                          )
+                        else
+                          Expanded(
+                            child: ListView.builder(
+                              itemCount: filteredMedicaments.length,
+                              itemBuilder: (context, index) {
+                                final entry = filteredMedicaments[index];
+                                final medicamentName = entry.key;
+                                final medicamentLots = entry.value;
+                                final totalQuantity = getTotalQuantity(medicamentLots);
+                                final earliestLot = getEarliestExpiration(medicamentLots);
+
+                                return InkWell(
+                                  onTap: () {
+                                    _showMedicamentDetails(context, medicamentName, medicamentLots);
+                                  },
+                                  child: Container(
+                                    decoration: BoxDecoration(
+                                      color: getExpirationColor(earliestLot.dateExpiration).withOpacity(0.1),
+                                      border: Border(
+                                        bottom: BorderSide(
+                                          color: Colors.grey[200]!,
+                                          width: 0.5,
+                                        ),
+                                      ),
+                                    ),
+                                    child: _buildTableRow(
+                                      medicamentName,
+                                      totalQuantity.toString(),
+                                      medicamentLots.length.toString(),
+                                      getExpirationInfo(earliestLot.dateExpiration),
+                                    ),
+                                  ),
+                                );
+                              },
+                            ),
+                          ),
                     ],
                   ),
                 ),
@@ -376,7 +383,7 @@ class _DashboardPageState extends State<DashboardPage> {
         ),
       ),
 
-      // FLOATING BUTTON AJOUT
+      // FLOATING BUTTON AJOUT - Toujours visible
       floatingActionButton: FloatingActionButton(
         backgroundColor: Colors.green,
         onPressed: () {
@@ -391,7 +398,7 @@ class _DashboardPageState extends State<DashboardPage> {
         elevation: 4,
       ),
 
-      // BOTTOM NAV BAR
+      // BOTTOM NAV BAR - Toujours visible
       bottomNavigationBar: Container(
         decoration: BoxDecoration(
           boxShadow: [
@@ -438,6 +445,47 @@ class _DashboardPageState extends State<DashboardPage> {
     );
   }
 
+  // Widget pour le squelette de la carte statistique
+  Widget _buildStatCardSkeleton() {
+    return Container(
+      height: 100,
+      decoration: BoxDecoration(
+        color: Colors.grey[200],
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: const Center(
+        child: CircularProgressIndicator(),
+      ),
+    );
+  }
+
+  // Widget pour le squelette de la légende
+  Widget _buildLegendSkeleton() {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceAround,
+      children: List.generate(4, (index) =>
+          Row(
+            children: [
+              Container(
+                width: 12,
+                height: 12,
+                decoration: BoxDecoration(
+                  color: Colors.grey[300],
+                  shape: BoxShape.circle,
+                ),
+              ),
+              const SizedBox(width: 5),
+              Container(
+                width: 40,
+                height: 12,
+                color: Colors.grey[300],
+              ),
+            ],
+          ),
+      ),
+    );
+  }
+
   void _showMedicamentDetails(BuildContext context, String medicamentName, List<Lot> lots) {
     if (lots.isNotEmpty) {
       Navigator.push(
@@ -450,16 +498,13 @@ class _DashboardPageState extends State<DashboardPage> {
         ),
       );
     } else {
-      // Gérer le cas où il n'y a pas de lots
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Aucun lot disponible pour $medicamentName')),
       );
     }
   }
 
-
-
-// Widget pour les éléments de légende
+  // Widget pour les éléments de légende
   Widget _buildLegendItem(Color color, String text) {
     return Row(
       children: [
@@ -477,7 +522,7 @@ class _DashboardPageState extends State<DashboardPage> {
     );
   }
 
-// Petite carte statistique améliorée
+  // Petite carte statistique améliorée
   Widget _buildStatCard(String title, String value, Color color, IconData icon) {
     return Expanded(
       child: Container(
@@ -496,48 +541,46 @@ class _DashboardPageState extends State<DashboardPage> {
         ),
         child: Padding(
           padding: const EdgeInsets.all(15),
-          child: SingleChildScrollView(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  children: [
-                    Container(
-                      padding: const EdgeInsets.all(6),
-                      decoration: BoxDecoration(
-                        color: color.withOpacity(0.2),
-                        shape: BoxShape.circle,
-                      ),
-                      child: Icon(icon, color: color, size: 18),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(6),
+                    decoration: BoxDecoration(
+                      color: color.withOpacity(0.2),
+                      shape: BoxShape.circle,
                     ),
-                    const Spacer(),
-                    Text(
-                      value,
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 20,
-                        color: color,
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 8),
-                Text(
-                  title,
-                  style: TextStyle(
-                    color: Colors.grey[600],
-                    fontSize: 14,
+                    child: Icon(icon, color: color, size: 18),
                   ),
+                  const Spacer(),
+                  Text(
+                    value,
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 20,
+                      color: color,
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 8),
+              Text(
+                title,
+                style: TextStyle(
+                  color: Colors.grey[600],
+                  fontSize: 14,
                 ),
-              ],
-            ),
+              ),
+            ],
           ),
         ),
       ),
     );
   }
 
-// En-tête du tableau amélioré
+  // En-tête du tableau amélioré
   Widget _buildTableHeader() {
     return const Padding(
       padding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
@@ -572,7 +615,7 @@ class _DashboardPageState extends State<DashboardPage> {
     );
   }
 
-// Ligne de tableau améliorée
+  // Ligne de tableau améliorée
   Widget _buildTableRow(
       String medoc, String qte, String lots, String expiration) {
     return Padding(
@@ -605,4 +648,3 @@ class _DashboardPageState extends State<DashboardPage> {
     );
   }
 }
-// Fonction pour afficher les détails d'un médicament

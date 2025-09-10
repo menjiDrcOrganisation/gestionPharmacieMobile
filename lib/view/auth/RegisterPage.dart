@@ -214,7 +214,7 @@ class _RegisterPageState extends State<RegisterPage> {
     try {
 
         final user = await _authController.register(
-        _nameController.text = 'nom',
+        _nameController.text ,
         _emailController.text,
         _passwordController.text,
 
@@ -270,9 +270,9 @@ class _RegisterPageState extends State<RegisterPage> {
             colors: [Colors.white, Colors.white],
           ),
         ),
-        child: Padding(
-          padding: const EdgeInsets.all(20),
+
           child: SingleChildScrollView(
+
             child: Column(
               children: [
                 const SizedBox(height: 50),
@@ -300,7 +300,7 @@ class _RegisterPageState extends State<RegisterPage> {
                 const SizedBox(height: 30),
                 // Form container
                 Container(
-                  padding: const EdgeInsets.all(25),
+                  padding: const EdgeInsets.all(20),
                   decoration: BoxDecoration(
                     color: AppColors.background,
                     borderRadius: BorderRadius.circular(20),
@@ -316,7 +316,7 @@ class _RegisterPageState extends State<RegisterPage> {
                     key: _formKey,
                     child: Column(
                       children: [
-                       /* TextFormField(
+                       TextFormField(
                           controller: _nameController,
                           decoration: const InputDecoration(
                             labelText: "Nom complet",
@@ -328,8 +328,8 @@ class _RegisterPageState extends State<RegisterPage> {
                             }
                             return null;
                           },
-                        ),*/
-                        //const SizedBox(height: 20),
+                        ),
+                        const SizedBox(height: 20),
                         TextFormField(
                           controller: _emailController,
                           decoration: const InputDecoration(
@@ -509,7 +509,7 @@ class _RegisterPageState extends State<RegisterPage> {
               ],
             ),
           ),
-        ),
+
       ),
     );
   }

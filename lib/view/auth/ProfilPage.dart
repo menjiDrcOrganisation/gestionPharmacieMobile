@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:gestion_pharmacie_mobile/model/userModel.dart';
+import 'package:gestion_pharmacie_mobile/utils/navigation.dart';
+import 'package:gestion_pharmacie_mobile/view/auth/LoginPage.dart';
 
 import '../../controller/AuthController.dart';
 import '../../services/ApiService/apiServiceUser.dart';
@@ -478,7 +480,7 @@ class _ProfilePageState extends State<ProfilePage> with SingleTickerProviderStat
                             icon: Icons.logout,
                             color: Colors.red,
                             onPressed: () => _authController.logout().then((_) {
-                              Navigator.of(context).pushReplacementNamed('/login');
+                              goToPagePlacement(context, LoginPage());
                             }),
                           ),
                         ],
