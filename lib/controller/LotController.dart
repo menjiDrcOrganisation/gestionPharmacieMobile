@@ -7,17 +7,26 @@ import '../services/GetStorage/Pharmacie.dart';
 class LotController {
   final LotService _lotService = LotService();
 
+
   Future<List<Lot>> getLots() async {
     try {
-      List<Lot> lots = await _lotService.fetchLots();
-      print('controller ${lots}');
-      return lots;
+
+      // Appel API
+      return await _lotService.fetchLots();
     } catch (e) {
-      // Si API échoue -> récupérer localement
-      print('controller ${e}');
-      return await _lotService.getLocalLots();
+      String idPharma = await PharmacieStorage.getPharma();
+      print('Erreur fetchLots: $e');
+
+      // Tentative récupération locale
+      final localLots = await _lotService.getLocalLots(idPharma);
+
+      // Toujours retourner une liste, même vide
+      return localLots.isNotEmpty ? localLots : <Lot>[];
     }
   }
+
+
+
   Future<Map<String, dynamic>?> enregistrerLot({
     required int idMedicament,
     required int quantite,
