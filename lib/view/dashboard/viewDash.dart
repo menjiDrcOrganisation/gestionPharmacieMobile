@@ -79,7 +79,7 @@ class _ViewDashState extends State<ViewDash> {
     final screenHeight = MediaQuery.of(context).size.height;
 
     return Scaffold(
-      appBar: Appbar(Title: "Dashboard").lancer(),
+      appBar: Appbar(Title: "Dashboard").lancer(context),
       body: SingleChildScrollView(
         padding: EdgeInsets.symmetric(horizontal: screenWidth * 0.03, vertical: screenHeight * 0.02),
         child: Column(

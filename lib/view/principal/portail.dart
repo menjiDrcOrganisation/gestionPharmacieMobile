@@ -23,6 +23,9 @@ class Portail extends StatefulWidget {
 
 class _PortailState extends State<Portail> {
   late Future<List<Pharmacie>> pharmaciesFuture;
+  double leftPosition = 0;
+
+  Color Coloraction=Colors.black12;
 
   @override
   void initState() {
@@ -33,7 +36,7 @@ class _PortailState extends State<Portail> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: Appbar(Title: "Portail").lancer(),
+      appBar: Appbar(Title: "Portail").lancer(context),
       body: Padding(
         padding: EdgeInsets.symmetric(horizontal: 10, vertical: 10),
         child: Column(
@@ -102,7 +105,9 @@ class _PortailState extends State<Portail> {
               ],
             ),
             SizedBox(height: 10),
-            // Titre "Mes pharmacies"
+
+
+          // Titre "Mes pharmacies"
             Align(
               alignment: Alignment.centerLeft,
               child: Text(
@@ -115,6 +120,57 @@ class _PortailState extends State<Portail> {
               ),
             ),
             SizedBox(height: 10),
+            Row(
+              children: [
+                SizedBox(
+                  width: 200, // largeur du widget glissable
+                  child: Dismissible(
+                    key: Key("unique"),
+                    direction: DismissDirection.horizontal, // glisser de droite à gauche
+                    background:
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.end,
+                          children: [
+                            Container(
+                              color: Coloraction,
+                              alignment: Alignment.centerRight,
+                              padding: EdgeInsets.symmetric(horizontal: 20),
+                              child: Icon(Icons.delete, color: Colors.white),
+                            ),
+                            Container(
+                              color: Coloraction,
+                              alignment: Alignment.centerRight,
+                              padding: EdgeInsets.symmetric(horizontal: 20),
+                              child: Icon(Icons.update, color: Colors.white),
+                            )
+
+                          ],
+                        )
+
+                  ,
+                    onDismissed: (direction) {
+                      if (direction == DismissDirection.startToEnd) {
+
+                        // glissé vers la droite (côté gauche)
+                        print("Action gauche déclenchée !");
+                      } else if (direction == DismissDirection.endToStart) {
+                        // glissé vers la gauche (côté droit)
+
+                        print("Action droite déclenchée !");
+                      }
+                      // Ici tu peux faire ce que tu veux
+                    },
+                    child: Container(
+                      height: 60,
+                      color: Colors.green,
+                      alignment: Alignment.center,
+                      child: Text("Glisser moi"),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+
             // Liste des pharmacies
             Expanded(
               child: FutureBuilder<List<Pharmacie>>(

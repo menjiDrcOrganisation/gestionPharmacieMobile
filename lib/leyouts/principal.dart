@@ -31,7 +31,7 @@ class _LayoutPrincipalState extends State<LayoutPrincipal> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: Appbar(Title: "Portail").lancer(),
+      appBar: Appbar(Title: "Portail").lancer(context),
       body: Container(
           child: widget.contenu,
         ),

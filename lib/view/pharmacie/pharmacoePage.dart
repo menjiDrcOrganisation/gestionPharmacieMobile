@@ -66,15 +66,13 @@ class _CreationComptePageState extends State<CreationComptePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar:  Appbar(Title: "Opharma").lancer(),
+      appBar:  Appbar(Title: "Opharma").lancer(context),
       backgroundColor: Colors.white,
       body: SafeArea(
         child: SingleChildScrollView(
           child: Column(
             children: [
-
               const SizedBox(height: 20),
-
               // Titre
               const Text(
                 "Création de compte",

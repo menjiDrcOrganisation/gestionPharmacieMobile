@@ -28,8 +28,29 @@ class _VendreState extends State<Vendre> {
   Future<List<Lot>> getLots() async {
     return await LotService().fetchLots();
   }
+  getQuantite() async{
 
-  /// Ajouter le lot au panier avec SharedPreferences
+    print("ici");
+
+    final prefs = await SharedPreferences.getInstance();
+    final String? panierString = prefs.getString('panier');
+    if (panierString != null) {
+      List<Map<String, dynamic>> panier = List<Map<String, dynamic>>.from(jsonDecode(panierString));
+
+      setState(() {
+        coutPannier=panier.length;
+      });
+    }else{
+      print(coutPannier);
+    }
+  }
+
+  @override
+  void initState() {
+    getQuantite();
+    super.initState();
+  }
+
   Future<void> ajouterAuPanier(Lot lot, int quantite) async {
     if (quantite <= 0) return;
     final prefs = await SharedPreferences.getInstance();
@@ -65,16 +86,10 @@ class _VendreState extends State<Vendre> {
     final double screenHeight = MediaQuery.of(context).size.height;
 
     return Scaffold(
-      appBar: Appbar(Title: "Espace vente").lancer(),
+      appBar: Appbar(Title: "Espace vente").lancer(context),
       body: FutureBuilder<List<Lot>>(
         future: getLots(),
         builder: (context, snapshot) {
-
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return Center(
-              child: CircularProgressIndicator(), // Loader
-            );
-          }
 
           if (snapshot.hasError) {
             return Center(child: Text("Erreur de chargement des médicaments"));
@@ -98,6 +113,10 @@ class _VendreState extends State<Vendre> {
               onTap: () {
                 if (selectedLot != null && quantiteChoisie > 0) {
                   ajouterAuPanier(selectedLot!, quantiteChoisie.toInt());
+                  setState(() {
+                    getQuantite();
+                  });
+
                 }
               },
               child: Container(
@@ -202,11 +221,10 @@ class _VendreState extends State<Vendre> {
         },
       ),
       bottomNavigationBar: BottomappVente(
+
         onAccueil: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => Vendre()),
-          );
+          setState(() {
+          });
         },
         notifCount: coutPannier,
         onNotif: () {
