@@ -21,15 +21,15 @@ class Vendre extends StatefulWidget {
 class _VendreState extends State<Vendre> {
   Lot? selectedLot;
   double quantiteChoisie = 0;
+  late Future<List<Lot> >lots;
   int coutPannier = 0;
   TextEditingController rechercheController = TextEditingController();
 
   /// Future pour récupérer les lots
-  Future<List<Lot>> getLots() async {
-    return await LotService().fetchLots();
+  Future<void> getLots() async {
+    lots=  LotService().fetchLots();
   }
   getQuantite() async{
-
 
     final prefs = await SharedPreferences.getInstance();
     final String? panierString = prefs.getString('panier');
@@ -46,6 +46,7 @@ class _VendreState extends State<Vendre> {
   @override
   void initState() {
     getQuantite();
+    getLots();
     super.initState();
   }
 
@@ -86,8 +87,14 @@ class _VendreState extends State<Vendre> {
     return Scaffold(
       appBar: Appbar(Title: "Espace vente").lancer(context),
       body: FutureBuilder<List<Lot>>(
-        future: getLots(),
+        future: lots,
         builder: (context, snapshot) {
+
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(
+              child: CircularProgressIndicator(), // loader
+            );
+          }
 
           if (snapshot.hasError) {
             return Center(child: Text("Erreur de chargement des médicaments"));

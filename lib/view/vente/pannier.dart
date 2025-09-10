@@ -107,7 +107,6 @@ class _PannierState extends State<Pannier> {
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(content: Text(" Vente effectue avec succes")),
                       );
-
                     }
                 );
 
@@ -162,10 +161,7 @@ class _PannierState extends State<Pannier> {
                           trailing: Row(
                             mainAxisSize: MainAxisSize.min,
                             children: [
-                              IconButton(
-                                icon: const Icon(Icons.delete, color: Colors.red),
-                                onPressed: () => removeItem(index),
-                              ),
+
                               IconButton(
                                 icon: const Icon(Icons.edit, color: Colors.green),
                                 onPressed: () => print("Mettre à jour $index"),
