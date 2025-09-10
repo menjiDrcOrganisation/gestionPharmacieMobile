@@ -164,7 +164,7 @@ class _PortailState extends State<Portail> {
                       height: 60,
                       color: Colors.green,
                       alignment: Alignment.center,
-                      child: Text("Glisser moi"),
+                      child: Text("Glisserd moi"),
                     ),
                   ),
                 ),
