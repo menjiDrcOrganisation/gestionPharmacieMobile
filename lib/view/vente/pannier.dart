@@ -79,6 +79,7 @@ class _PannierState extends State<Pannier> {
     await prefs.remove('panier');
     setState(() {
       panier = [];
+      getQuantite();
     });
   }
 
@@ -118,7 +119,7 @@ class _PannierState extends State<Pannier> {
               colorText: Colors.white,
               colorButton: Colors.red,
               onPressed: (){
-
+                clearPanier();
               },
             ).lancer()
           ],
@@ -208,9 +209,7 @@ class _PannierState extends State<Pannier> {
 
           },
           onNotif: (){
-
             setState(() {
-
             });
           }
 
