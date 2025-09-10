@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 
 import '../../controller/LotController.dart';
 import '../../model/lotModel.dart';
+import '../../services/GetStorage/Pharmacie.dart';
 
 class MedicamentLotsPage extends StatefulWidget {
   final String medicamentName;
@@ -86,7 +87,6 @@ class _MedicamentLotsPageState extends State<MedicamentLotsPage> {
     );
   }
 
-  // AJOUTEZ CETTE MÉTHODE MANQUANTE :
   Widget _buildBody() {
     if (isLoading) {
       return const Center(child: CircularProgressIndicator());
@@ -128,63 +128,72 @@ class _MedicamentLotsPageState extends State<MedicamentLotsPage> {
       );
     }
 
-    return ListView.builder(
-      itemCount: lots.length,
-      itemBuilder: (context, index) {
-        final lot = lots[index];
-        final color = getExpirationColor(lot.dateExpiration);
+    return RefreshIndicator(
+      onRefresh: _loadLots,
+      child: ListView.builder(
+        itemCount: lots.length,
+        itemBuilder: (context, index) {
+          final lot = lots[index];
+          final color = getExpirationColor(lot.dateExpiration);
 
-        return Card(
-          margin: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-          child: ListTile(
-            contentPadding: const EdgeInsets.all(16),
-            title: Text(
-              "Lot: ${lot.numeroLot}",
-              style: const TextStyle(fontWeight: FontWeight.bold),
+          return Dismissible(
+            key: Key(lot.idLot.toString()),
+            direction: DismissDirection.endToStart,
+            background: Container(
+              color: Colors.red,
+              alignment: Alignment.centerRight,
+              padding: const EdgeInsets.only(right: 20),
+              child: const Icon(Icons.delete, color: Colors.white, size: 30),
             ),
-            subtitle: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text("Quantité: ${lot.quantite}"),
-                Text("Prix unitaire: ${lot.prixUnitaire} FCFA"),
-                Text("Expiration: ${lot.dateExpiration}"),
-                Text(
-                  "Statut: ${getExpirationInfo(lot.dateExpiration)}",
-                  style: TextStyle(color: color, fontWeight: FontWeight.bold),
-                ),
-              ],
-            ),
-            trailing: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                IconButton(
-                  icon: const Icon(Icons.edit, color: Colors.blue),
-                  onPressed: () => _showEditLotDialog(lot),
-                ),
-                IconButton(
-                  icon: const Icon(Icons.monetization_on_outlined, color: Colors.green),
-                  onPressed: () => _showsetprixunitaire(lot),
-                ),
-                IconButton(
-                  icon: const Icon(Icons.delete, color: Colors.red),
-                  onPressed: () => _confirmDelete(lot).then((confirmed) {
-                    if (confirmed) {
-                      _deleteLot(lot);
-                    }
-                  }),
-                ),
-              ],
-            ),
-            onTap: () {
-              _showLotDetails(lot);
+            confirmDismiss: (direction) async {
+              return await _confirmDelete(lot);
             },
-          ),
-        );
-      },
+            onDismissed: (direction) {
+              _deleteLot(lot);
+            },
+            child: Card(
+              margin: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+              child: ListTile(
+                contentPadding: const EdgeInsets.all(16),
+                title: Text(
+                  "Lot: ${lot.numeroLot}",
+                  style: const TextStyle(fontWeight: FontWeight.bold),
+                ),
+                subtitle: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text("Quantité: ${lot.quantite}"),
+                    Text("Prix unitaire: ${lot.prixUnitaire} FCFA"),
+                    Text("Expiration: ${_formatDate(lot.dateExpiration)}"),
+                    Text(
+                      "Statut: ${getExpirationInfo(lot.dateExpiration)}",
+                      style: TextStyle(color: color, fontWeight: FontWeight.bold),
+                    ),
+                  ],
+                ),
+                trailing: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    IconButton(
+                      icon: const Icon(Icons.edit, color: Colors.blue),
+                      onPressed: () => _showEditLotDialog(lot),
+                    ),
+                    IconButton(
+                      icon: const Icon(Icons.monetization_on_outlined, color: Colors.green),
+                      onPressed: () => _showSetPrixUnitaireDialog(lot),
+                    ),
+                  ],
+                ),
+                onTap: () {
+                  _showLotDetails(lot);
+                },
+              ),
+            ),
+          );
+        },
+      ),
     );
   }
-
-  // AJOUTEZ CES MÉTHODES MANQUANTES :
 
   Future<bool> _confirmDelete(Lot lot) async {
     return await showDialog(
@@ -209,42 +218,138 @@ class _MedicamentLotsPageState extends State<MedicamentLotsPage> {
   }
 
   void _deleteLot(Lot lot) {
-    setState(() {
+    try {
       _lotController.deletelot(idlot: lot.idLot);
-      lots.remove(lot);
-    });
-    // Ici vous devriez aussi appeler votre API pour supprimer le lot
+      setState(() {
+        lots.remove(lot);
+      });
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Lot ${lot.numeroLot} supprimé avec succès'),
+          backgroundColor: Colors.green,
+          duration: const Duration(seconds: 2),
+        ),
+      );
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Erreur lors de la suppression: $e'),
+          backgroundColor: Colors.red,
+          duration: const Duration(seconds: 3),
+        ),
+      );
+    }
   }
 
   void _showAddLotDialog() {
+    final numeroLotController = TextEditingController();
+    final quantiteController = TextEditingController();
+    final dateController = TextEditingController();
+    final prixAchatController = TextEditingController();
+    final prixUnitaireController = TextEditingController();
+
     showDialog(
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
           title: const Text("Ajouter un nouveau lot"),
-          content: const Text("Fonctionnalité d'ajout de lot"),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.of(context).pop(),
-              child: const Text("Fermer"),
-            ),
-          ],
-        );
-      },
-    );
-  }
+          content: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
 
-  void _showEditLotDialog2(Lot lot) {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: const Text("Modifier le lot"),
-          content: const Text("Fonctionnalité de modification de lot"),
+                TextField(
+                  controller: quantiteController,
+                  decoration: const InputDecoration(
+                    labelText: 'Quantité',
+                    border: OutlineInputBorder(),
+                    prefixIcon: Icon(Icons.inventory_2),
+                  ),
+                  keyboardType: TextInputType.number,
+                ),
+                const SizedBox(height: 16),
+                TextField(
+                  controller: dateController,
+                  decoration: const InputDecoration(
+                    labelText: 'Date d\'expiration (AAAA-MM-JJ)',
+                    border: OutlineInputBorder(),
+                    prefixIcon: Icon(Icons.calendar_today),
+                  ),
+                  onTap: () async {
+                    final DateTime? picked = await showDatePicker(
+                      context: context,
+                      initialDate: DateTime.now(),
+                      firstDate: DateTime.now(),
+                      lastDate: DateTime(2100),
+                    );
+                    if (picked != null) {
+                      dateController.text = "${picked.toLocal()}".split(' ')[0];
+                    }
+                  },
+                ),
+                const SizedBox(height: 16),
+                TextField(
+                  controller: prixAchatController,
+                  decoration: const InputDecoration(
+                    labelText: 'Prix d\'achat',
+                    border: OutlineInputBorder(),
+                    prefixIcon: Icon(Icons.attach_money),
+                  ),
+                  keyboardType: TextInputType.number,
+                ),
+                const SizedBox(height: 16),
+              /*  TextField(
+                  controller: prixUnitaireController,
+                  decoration: const InputDecoration(
+                    labelText: 'Prix unitaire',
+                    border: OutlineInputBorder(),
+                    prefixIcon: Icon(Icons.monetization_on),
+                  ),
+                  keyboardType: TextInputType.number,
+                ),*/
+              ],
+            ),
+          ),
           actions: [
             TextButton(
               onPressed: () => Navigator.of(context).pop(),
-              child: const Text("Fermer"),
+              child: const Text("Annuler"),
+            ),
+            ElevatedButton(
+              onPressed: () async {
+               final String idPharma = await PharmacieStorage.getPharma();
+                try {
+                  final newLot = await _lotController.enregistrerLot(
+                    idMedicament: widget.medicamentId,
+                    //numeroLot: numeroLotController.text,
+                    quantite: int.parse(quantiteController.text),
+                    dateExpiration: dateController.text,
+                    prixAchat: int.parse(prixAchatController.text),
+                    idPharmacie: int.parse(idPharma),
+                   // prixUnitaire: int.parse(prixUnitaireController.text),
+                  );
+
+                  if (newLot != null) {
+                    Navigator.of(context).pop();
+                    _loadLots();
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text('Lot ajouté avec succès!'),
+                        backgroundColor: Colors.green,
+                      ),
+                    );
+                  }
+                } catch (e) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text('Erreur: $e'),
+                      backgroundColor: Colors.red,
+                    ),
+                  );
+                }
+              },
+              child: const Text("Ajouter"),
             ),
           ],
         );
@@ -253,10 +358,9 @@ class _MedicamentLotsPageState extends State<MedicamentLotsPage> {
   }
 
   void _showEditLotDialog(Lot lot) {
-    final idlot = lot.idLot;
     final quantiteController = TextEditingController(text: lot.quantite.toString());
     final dateController = TextEditingController(text: lot.dateExpiration);
-    final prixController = TextEditingController(text: lot.prixAchat.toString());
+    final prixAchatController = TextEditingController(text: lot.prixAchat.toString());
 
     showDialog(
       context: context,
@@ -286,10 +390,22 @@ class _MedicamentLotsPageState extends State<MedicamentLotsPage> {
                         border: OutlineInputBorder(),
                         prefixIcon: Icon(Icons.calendar_today),
                       ),
+                      onTap: () async {
+                        final DateTime? picked = await showDatePicker(
+                          context: context,
+                          initialDate: DateTime.parse(lot.dateExpiration),
+                          firstDate: DateTime.now(),
+                          lastDate: DateTime(2100),
+                        );
+                        if (picked != null) {
+                          dateController.text = "${picked.toLocal()}".split(' ')[0];
+                          setDialogState(() {});
+                        }
+                      },
                     ),
                     const SizedBox(height: 16),
                     TextField(
-                      controller: prixController,
+                      controller: prixAchatController,
                       decoration: const InputDecoration(
                         labelText: 'Prix d\'achat',
                         border: OutlineInputBorder(),
@@ -307,23 +423,19 @@ class _MedicamentLotsPageState extends State<MedicamentLotsPage> {
                 ),
                 ElevatedButton(
                   onPressed: () async {
-                    // Show loading state in the dialog
                     setDialogState(() {});
 
                     try {
                       final updatedLot = await _lotController.updatelot(
-                        idlot: idlot,
+                        idlot: lot.idLot,
                         quantite: int.parse(quantiteController.text),
                         dateExpiration: dateController.text,
-                        prixAchat: int.parse(prixController.text),
-
+                        prixAchat: int.parse(prixAchatController.text),
                       );
 
                       if (updatedLot != null) {
                         Navigator.of(context).pop();
-                        // Call the loadLots function properly
                         _loadLots();
-
                         ScaffoldMessenger.of(context).showSnackBar(
                           const SnackBar(
                             content: Text('Lot modifié avec succès!'),
@@ -359,10 +471,8 @@ class _MedicamentLotsPageState extends State<MedicamentLotsPage> {
     );
   }
 
-  void _showsetprixunitaire(Lot lot) {
-    final idlot = lot.idLot;
-
-    final prix_unitaire = TextEditingController(text: lot.prixUnitaire.toString());
+  void _showSetPrixUnitaireDialog(Lot lot) {
+    final prixUnitaireController = TextEditingController(text: lot.prixUnitaire.toString());
 
     showDialog(
       context: context,
@@ -370,14 +480,13 @@ class _MedicamentLotsPageState extends State<MedicamentLotsPage> {
         return StatefulBuilder(
           builder: (context, setDialogState) {
             return AlertDialog(
-              title: const Text("Modifier le lot"),
+              title: const Text("Modifier le prix unitaire"),
               content: SingleChildScrollView(
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-
                     TextField(
-                      controller: prix_unitaire,
+                      controller: prixUnitaireController,
                       decoration: const InputDecoration(
                         labelText: 'Prix unitaire',
                         border: OutlineInputBorder(),
@@ -395,32 +504,27 @@ class _MedicamentLotsPageState extends State<MedicamentLotsPage> {
                 ),
                 ElevatedButton(
                   onPressed: () async {
-                    // Show loading state in the dialog
                     setDialogState(() {});
 
                     try {
                       final updatedLot = await _lotController.setprixunitaire(
-                        idlot: idlot,
-
-                        prix_unitaire: int.parse(prix_unitaire.text),
-
+                        idlot: lot.idLot,
+                        prix_unitaire: int.parse(prixUnitaireController.text),
                       );
 
                       if (updatedLot != null) {
                         Navigator.of(context).pop();
-                        // Call the loadLots function properly
                         _loadLots();
-
                         ScaffoldMessenger.of(context).showSnackBar(
                           const SnackBar(
-                            content: Text('Lot modifié avec succès!'),
+                            content: Text('Prix unitaire modifié avec succès!'),
                             backgroundColor: Colors.green,
                           ),
                         );
                       } else {
                         ScaffoldMessenger.of(context).showSnackBar(
                           const SnackBar(
-                            content: Text('Erreur lors de la modification du lot!'),
+                            content: Text('Erreur lors de la modification!'),
                             backgroundColor: Colors.red,
                           ),
                         );
@@ -464,7 +568,7 @@ class _MedicamentLotsPageState extends State<MedicamentLotsPage> {
                 Text("Quantité: ${lot.quantite}"),
                 Text("Prix d'achat: ${lot.prixAchat} FCFA"),
                 Text("Prix unitaire: ${lot.prixUnitaire} FCFA"),
-                Text("Date d'expiration: ${lot.dateExpiration}"),
+                Text("Date d'expiration: ${_formatDate(lot.dateExpiration)}"),
                 Text(
                   "Statut: ${getExpirationInfo(lot.dateExpiration)}",
                   style: TextStyle(color: color, fontWeight: FontWeight.bold),
@@ -483,37 +587,54 @@ class _MedicamentLotsPageState extends State<MedicamentLotsPage> {
     );
   }
 
-  // AJOUTEZ LES MÉTHODES D'EXPIRATION :
+  String _formatDate(String dateString) {
+    try {
+      final date = DateTime.parse(dateString);
+      return "${date.day}/${date.month}/${date.year}";
+    } catch (e) {
+      return dateString;
+    }
+  }
 
   Color getExpirationColor(String expirationDate) {
-    final now = DateTime.now();
-    final expiration = DateTime.parse(expirationDate);
-    final difference = expiration.difference(now).inDays;
+    try {
+      final now = DateTime.now();
+      final expiration = DateTime.parse(expirationDate);
+      final difference = expiration.difference(now).inDays;
 
-    if (difference < 0) {
-      return Colors.red; // Déjà expiré
-    } else if (difference < 30) {
-      return Colors.orange; // Expire dans moins d'un mois
-    } else if (difference < 90) {
-      return Colors.yellow; // Expire dans moins de 3 mois
-    } else {
-      return Colors.green; // Valide (plus de 3 mois)
+      if (difference < 0) {
+        return Colors.red; // Déjà expiré
+      } else if (difference < 30) {
+        return Colors.orange; // Expire dans moins d'un mois
+      } else if (difference < 90) {
+        return Colors.amber; // Expire dans moins de 3 mois
+      } else {
+        return Colors.green; // Valide (plus de 3 mois)
+      }
+    } catch (e) {
+      return Colors.grey; // Format de date invalide
     }
   }
 
   String getExpirationInfo(String expirationDate) {
-    final now = DateTime.now();
-    final expiration = DateTime.parse(expirationDate);
-    final difference = expiration.difference(now).inDays;
+    try {
+      final now = DateTime.now();
+      final expiration = DateTime.parse(expirationDate);
+      final difference = expiration.difference(now).inDays;
 
-    if (difference < 0) {
-      return "Expiré";
-    } else if (difference < 30) {
-      return "$difference jours";
-    } else if (difference < 90) {
-      return "${(difference / 30).floor()} mois";
-    } else {
-      return "${(difference / 30).floor()} mois";
+      if (difference < 0) {
+        return "Expiré (${difference.abs()} jours)";
+      } else if (difference < 30) {
+        return "$difference jours";
+      } else if (difference < 90) {
+        final months = (difference / 30).floor();
+        return "$months mois ${difference % 30} jours";
+      } else {
+        final months = (difference / 30).floor();
+        return "$months mois";
+      }
+    } catch (e) {
+      return "Date invalide";
     }
   }
 }

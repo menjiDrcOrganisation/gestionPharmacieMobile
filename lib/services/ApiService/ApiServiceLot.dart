@@ -185,7 +185,7 @@ class LotService {
       },
 
     );
-
+print(response.body);
     if (response.statusCode == 201 ) {
       print('benikasu');
       final data = jsonDecode(response.body);

@@ -31,8 +31,6 @@ class MyApp extends StatelessWidget {
   }
 }
 
-
-
 class AddProduitPage extends StatefulWidget {
   const AddProduitPage({super.key});
 
@@ -41,6 +39,7 @@ class AddProduitPage extends StatefulWidget {
 }
 
 class _AddProduitPageState extends State<AddProduitPage> {
+
   String? selectedForme;
   String? selectedDosage;
   String? selectedMedicament;
@@ -104,7 +103,7 @@ class _AddProduitPageState extends State<AddProduitPage> {
 
       // Mettre à jour la sélection si le médicament sélectionné ne fait plus partie des résultats filtrés
       if (selectedMedicament != null &&
-          !filteredMedicaments.any((med) => med.nom == selectedMedicament)) {
+          !filteredMedicaments.any((med) => med.id.toString() == selectedMedicament)) {
         selectedMedicament = null;
       }
     });
@@ -121,7 +120,7 @@ class _AddProduitPageState extends State<AddProduitPage> {
         medicaments = meds;
         filteredMedicaments = meds;
         if (meds.isNotEmpty && selectedMedicament == null) {
-          selectedMedicament = meds.first.nom;
+          selectedMedicament = meds.first.id.toString();
         }
       });
     } catch (e) {
@@ -134,8 +133,6 @@ class _AddProduitPageState extends State<AddProduitPage> {
       });
     }
   }
-
-
 
   Future<void> _submitForm() async {
     if (selectedMedicament == null || expirationDate == null) {
@@ -157,11 +154,9 @@ class _AddProduitPageState extends State<AddProduitPage> {
     });
 
     try {
-      print("dfdfdf");
       final medicament = medicaments!.firstWhere(
             (m) => m.id.toString() == selectedMedicament,
       );
-
 
       final lot = await lotController.enregistrerLot(
         idMedicament: medicament.id,
@@ -184,7 +179,7 @@ class _AddProduitPageState extends State<AddProduitPage> {
       }
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Erreurzzz: $e")),
+        SnackBar(content: Text("Erreur: $e")),
       );
     } finally {
       setState(() {
@@ -195,7 +190,7 @@ class _AddProduitPageState extends State<AddProduitPage> {
 
   void _resetForm() {
     setState(() {
-      selectedMedicament = medicaments?.isNotEmpty == true ? medicaments!.first.nom : null;
+      selectedMedicament = medicaments?.isNotEmpty == true ? medicaments!.first.id.toString() : null;
       quantity = 0;
       expirationDate = null;
       prixAchatController.text = "1500";
@@ -209,9 +204,7 @@ class _AddProduitPageState extends State<AddProduitPage> {
     return Scaffold(
       appBar: CustomAppBar(title: "Ajouter un Lot"),
       backgroundColor: Colors.white,
-      body: isLoading
-          ? const Center(child: CircularProgressIndicator())
-          : SingleChildScrollView(
+      body: SingleChildScrollView(
         padding: const EdgeInsets.all(20),
         child: Column(
           children: [
@@ -265,13 +258,31 @@ class _AddProduitPageState extends State<AddProduitPage> {
                   const SizedBox(height: 25),
 
                   // Sélection du médicament avec indicateur de chargement
-                  if (medicaments == null)
-                    const Center(child: CircularProgressIndicator())
-                  else if (medicaments!.isEmpty)
+                  if (isLoading)
+                    Container(
+                      padding: const EdgeInsets.symmetric(vertical: 16),
+                      child: Row(
+                        children: [
+                          Expanded(
+                            child: Container(
+                              height: 56,
+                              decoration: BoxDecoration(
+                                border: Border.all(color: Colors.grey[300]!),
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              child: const Center(
+                                child: CircularProgressIndicator(strokeWidth: 2),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    )
+                  else if (medicaments == null || medicaments!.isEmpty)
                     const Text("Aucun médicament disponible")
                   else
                     DropdownButtonFormField(
-
+                      value: selectedMedicament,
                       items: filteredMedicaments
                           .map((m) => DropdownMenuItem(
                         value: m.id.toString(),
@@ -367,6 +378,7 @@ class _AddProduitPageState extends State<AddProduitPage> {
                           Container(
                             width: 80,
                             child: TextField(
+                              controller: TextEditingController(text: quantity.round().toString()),
                               keyboardType: TextInputType.number,
                               textAlign: TextAlign.center,
                               decoration: InputDecoration(
@@ -404,9 +416,6 @@ class _AddProduitPageState extends State<AddProduitPage> {
                     decoration: _inputDecoration("Prix d'achat (FCFA)").copyWith(
                       suffixIcon: const Icon(Icons.money, color: Colors.green),
                     ),
-                    onChanged: (value) {
-                      // Le calcul du prix unitaire se fait automatiquement via le listener
-                    },
                   ),
 
                   const SizedBox(height: 15),
@@ -427,7 +436,7 @@ class _AddProduitPageState extends State<AddProduitPage> {
 
             const SizedBox(height: 30),
 
-            // Bouton d'ajout
+            // Bouton d'ajout avec état de chargement
             SizedBox(
               width: double.infinity,
               child: ElevatedButton(
@@ -442,13 +451,20 @@ class _AddProduitPageState extends State<AddProduitPage> {
                 ),
                 onPressed: isSubmitting ? null : _submitForm,
                 child: isSubmitting
-                    ? const SizedBox(
-                  width: 20,
-                  height: 20,
-                  child: CircularProgressIndicator(
-                    valueColor: AlwaysStoppedAnimation(Colors.white),
-                    strokeWidth: 2,
-                  ),
+                    ? const Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    SizedBox(
+                      width: 20,
+                      height: 20,
+                      child: CircularProgressIndicator(
+                        valueColor: AlwaysStoppedAnimation(Colors.white),
+                        strokeWidth: 2,
+                      ),
+                    ),
+                    SizedBox(width: 10),
+                    Text("Ajout en cours..."),
+                  ],
                 )
                     : const Text(
                   "Ajouter le Lot",

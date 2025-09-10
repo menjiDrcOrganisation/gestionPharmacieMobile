@@ -270,9 +270,9 @@ class _RegisterPageState extends State<RegisterPage> {
             colors: [Colors.white, Colors.white],
           ),
         ),
-        child: Padding(
-          padding: const EdgeInsets.all(20),
+
           child: SingleChildScrollView(
+
             child: Column(
               children: [
                 const SizedBox(height: 50),
@@ -300,7 +300,7 @@ class _RegisterPageState extends State<RegisterPage> {
                 const SizedBox(height: 30),
                 // Form container
                 Container(
-                  //padding: const EdgeInsets.all(25),
+                  padding: const EdgeInsets.all(20),
                   decoration: BoxDecoration(
                     color: AppColors.background,
                     borderRadius: BorderRadius.circular(20),
@@ -329,7 +329,7 @@ class _RegisterPageState extends State<RegisterPage> {
                             return null;
                           },
                         ),
-                        //const SizedBox(height: 20),
+                        const SizedBox(height: 20),
                         TextFormField(
                           controller: _emailController,
                           decoration: const InputDecoration(
@@ -509,7 +509,7 @@ class _RegisterPageState extends State<RegisterPage> {
               ],
             ),
           ),
-        ),
+
       ),
     );
   }
