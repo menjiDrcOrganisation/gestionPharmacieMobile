@@ -9,6 +9,7 @@ import '../../component/Button.dart';
 import '../../component/Colors.dart';
 import '../../component/vente/BottomAppVente.dart';
 import '../../controller/VenteController.dart';
+import '../../utils/navigation.dart';
 import '../layouts/StructurePage.dart';
 
 class Pannier extends StatefulWidget {
@@ -73,6 +74,7 @@ class _PannierState extends State<Pannier> {
               onPressed: ()async {
                 await VenteController.create(panier);
                 clearPanier();
+                goToPagePlacement(context,Vendre());
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(content: Text(" Vente effectue avec succes")),
                 );

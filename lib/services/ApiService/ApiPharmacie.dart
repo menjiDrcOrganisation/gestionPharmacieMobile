@@ -44,6 +44,7 @@ class PharmacieService {
   // Récupérer les pharmacies d’un gérant
   Future<List<Pharmacie>> fetchPharmaciesDuGerant(int idGerant) async {
     RoleInfo? user = await LocalStorageService().getRoleInfo();
+
     int? idUser=user?.id;
 
     final response = await http.get(

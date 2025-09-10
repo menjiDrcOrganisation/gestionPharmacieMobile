@@ -9,7 +9,9 @@ class ControllerPharmacie{
 
   static Future<Pharmacie> createPhramacie(nom,ville,quartier,rue,tel) async{
 
+
     RoleInfo? user = await LocalStorageService().getRoleInfo();
+
     int? idUser=user!.id;
     print("id genrant $idUser");
     Pharmacie pharmacie = Pharmacie(

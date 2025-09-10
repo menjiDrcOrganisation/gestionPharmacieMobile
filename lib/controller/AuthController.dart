@@ -20,7 +20,9 @@ class AuthController {
 
     final token = result['token'];
     final user = result['user'] as User;
+
    final roleInfo = result['role'] ;
+
 
     await _localStorage.saveToken(token);
     await _localStorage.saveUser(user);
