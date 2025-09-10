@@ -8,6 +8,7 @@ import 'package:google_sign_in/google_sign_in.dart';
 import 'package:lottie/lottie.dart';
 
 import '../../controller/AuthController.dart';
+import '../../utils/navigation.dart';
 
 // Mock AuthController for demonstration
 
@@ -153,7 +154,7 @@ class _RegisterPageState extends State<RegisterPage> {
 
         print("✅ ID Token : ${googleAuth.idToken}");
         try {
-          print({"loginnnnnnnnnnnnnnnnn::page"});
+          print({"loginnnnnnnnnnnnnnnnn::page google"});
           final user = await _authController
               .googleSignIn(
               googleAuth.idToken
@@ -161,7 +162,7 @@ class _RegisterPageState extends State<RegisterPage> {
               .timeout(const Duration(seconds: 10));
 
           _showToast('Bienvenue, ${user.name}', isError: false);
-
+          goToPagePlacement(context,Portail());
           /*  Future.delayed(
         const Duration(milliseconds: 1500),
             () async {
@@ -170,7 +171,7 @@ class _RegisterPageState extends State<RegisterPage> {
       );*/
         } catch (e) {
           String errorMessage = 'Impossible de se connecter. Vérifiez que votre adresse e-mail et votre mot de passe sont corrects.';
-          print(e);
+          print('erreor lors google $e');
           if (e.toString().contains('email')) {
             errorMessage = 'Le champ e-mail est requis.';
           } else if (e.toString().contains('password')) {

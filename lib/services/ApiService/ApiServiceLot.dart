@@ -14,67 +14,29 @@ class LotService {
 
   Future<List<Lot>> fetchLots() async {
     String idPharma = await PharmacieStorage.getPharma();
-    print(idPharma);
+    print("Pharmacie ID: $idPharma");
+
     try {
       final response = await http.get(Uri.parse("$baseUrl/$idPharma"));
 
       if (response.statusCode == 200) {
         print('Réponse API brute: ${response.body}');
+        final decodedData = jsonDecode(response.body);
 
-        // Décoder le JSON
-        final dynamic decodedData = jsonDecode(response.body);
-
-        List<Lot> lots = [];
-
-        // Vérifier le type de réponse
         if (decodedData is List) {
-          // Si c'est une liste
-          for (var item in decodedData) {
-            if (item is Map<String, dynamic>) {
-              try {
-                lots.add(Lot.fromJson(item));
-              } catch (e) {
-                print('Erreur parsing item: $e');
-                print('Item problématique: $item');
-              }
-            }
-          }
-        } else if (decodedData is Map<String, dynamic>) {
-          // Si c'est un objet avec une clé contenant la liste
-          // Essayez de trouver la clé qui contient les lots
-          final possibleKeys = ['data', 'lots', 'results', 'items'];
-          for (var key in possibleKeys) {
-            if (decodedData.containsKey(key) && decodedData[key] is List) {
-              for (var item in decodedData[key]) {
-                if (item is Map<String, dynamic>) {
-                  try {
-                    lots.add(Lot.fromJson(item));
-                  } catch (e) {
-                    print('Erreur parsing item: $e');
-                  }
-                }
-              }
-              break;
-            }
-          }
+          // On parse chaque lot
+          final lots = decodedData.map((e) => Lot.fromJson(e)).toList();
 
-          // Si aucune clé standard n'est trouvée, essayez de parser tout l'objet
-          if (lots.isEmpty) {
-            try {
-              lots.add(Lot.fromJson(decodedData));
-            } catch (e) {
-              print('Erreur parsing object complet: $e');
-            }
-          }
+          print("Nombre de lots récupérés: ${lots.length}");
+          print("Détails des lots: $lots");
+
+          // Sauvegarde locale
+          await saveLots(lots,idPharma);
+
+          return lots;
+        } else {
+          throw Exception("Format de réponse inattendu: ${decodedData.runtimeType}");
         }
-
-        print("Nombre de lots récupérés: ${lots.length}");
-        print("Détails des lots: $lots");
-
-        // Sauvegarde locale
-        await saveLots(lots);
-
-        return lots;
       } else {
         print('Erreur HTTP: ${response.statusCode}');
         print('Body erreur: ${response.body}');
@@ -82,21 +44,24 @@ class LotService {
       }
     } catch (e) {
       print('Erreur fetchLots: $e');
-      // En cas d'erreur, retourner les données locales
-      return await getLocalLots();
+
+      // Fallback → récupérer les données locales
+      final localLots = await getLocalLots(idPharma);
+      return localLots.isNotEmpty ? localLots : <Lot>[]; // garanti jamais null
     }
   }
+
   /// Sauvegarde locale avec SharedPreferences
-  Future<void> saveLots(List<Lot> lots) async {
+  Future<void> saveLots(List<Lot> lots,String idPharma) async {
     final prefs = await SharedPreferences.getInstance();
     String lotsJson = jsonEncode(lots.map((e) => e.toJson()).toList());
-    await prefs.setString("lots", lotsJson);
+    await prefs.setString("lots_$idPharma", lotsJson);
   }
 
   /// Chargement local
-  Future<List<Lot>> getLocalLots() async {
+  Future<List<Lot>> getLocalLots(String idPharma) async {
     final prefs = await SharedPreferences.getInstance();
-    String? lotsJson = prefs.getString("lots");
+    String? lotsJson = prefs.getString("lots_$idPharma");
 
     if (lotsJson != null) {
       List<dynamic> body = jsonDecode(lotsJson);

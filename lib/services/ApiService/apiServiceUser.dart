@@ -65,7 +65,7 @@ class ApiService {
         'role': role
       },
     );
-    print(response);
+    print(response.body);
 
     if (response.statusCode == 200 || response.statusCode == 201) {
       final data = jsonDecode(response.body);
@@ -257,13 +257,14 @@ class ApiService {
       headers: {'Content-Type': 'application/json'},
       body: jsonEncode({'id_token': idToken}),
     );
-
+    print('api service aouth');
+    print(response.body);
     if (response.statusCode == 200) {
       final data = jsonDecode(response.body);
-      print(data);
+        print(data);
       return {
         'user': User.fromJson(data['user']),
-        //'roleInfo': RoleInfo.fromJson(data['roleInfo']),
+        'roleInfo': RoleInfo.fromJson(data['role']),
         'token': data['token'],
       };
     } else {

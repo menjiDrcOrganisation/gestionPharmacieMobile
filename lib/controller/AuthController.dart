@@ -86,14 +86,15 @@ class AuthController {
   Future<User> googleSignIn(String? idToken) async {
     try {
 
+
       final result = await _apiService.googleAuth(idToken: idToken);
       final token = result['token'];
       final user = result['user'] as User;
-    //  final roleInfo = result['roleInfo'] as RoleInfo;
+     final roleInfo = result['roleInfo'] as RoleInfo;
 
       await _localStorage.saveToken(token);
       await _localStorage.saveUser(user);
-     // await _localStorage.saveRoleInfo(roleInfo);
+     await _localStorage.saveRoleInfo(roleInfo);
       return user;
 
     } catch (e) {
