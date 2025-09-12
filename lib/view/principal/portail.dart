@@ -120,56 +120,6 @@ class _PortailState extends State<Portail> {
               ),
             ),
             SizedBox(height: 10),
-            Row(
-              children: [
-                SizedBox(
-                  width: 200, // largeur du widget glissable
-                  child: Dismissible(
-                    key: Key("unique"),
-                    direction: DismissDirection.horizontal, // glisser de droite à gauche
-                    background:
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.end,
-                          children: [
-                            Container(
-                              color: Coloraction,
-                              alignment: Alignment.centerRight,
-                              padding: EdgeInsets.symmetric(horizontal: 20),
-                              child: Icon(Icons.delete, color: Colors.white),
-                            ),
-                            Container(
-                              color: Coloraction,
-                              alignment: Alignment.centerRight,
-                              padding: EdgeInsets.symmetric(horizontal: 20),
-                              child: Icon(Icons.update, color: Colors.white),
-                            )
-
-                          ],
-                        )
-
-                  ,
-                    onDismissed: (direction) {
-                      if (direction == DismissDirection.startToEnd) {
-
-                        // glissé vers la droite (côté gauche)
-                        print("Action gauche déclenchée !");
-                      } else if (direction == DismissDirection.endToStart) {
-                        // glissé vers la gauche (côté droit)
-
-                        print("Action droite déclenchée !");
-                      }
-                      // Ici tu peux faire ce que tu veux
-                    },
-                    child: Container(
-                      height: 60,
-                      color: Colors.green,
-                      alignment: Alignment.center,
-                      child: Text("Glisserd moi"),
-                    ),
-                  ),
-                ),
-              ],
-            ),
 
             // Liste des pharmacies
             Expanded(

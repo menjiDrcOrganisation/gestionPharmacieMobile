@@ -33,15 +33,25 @@ class LookPharma {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
-                      this.title,
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        color: Colors.green[800],
-                        fontSize: 16,
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [Text(
+                        this.title,
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          color: Colors.green[800],
+                          fontSize: 16,
+                        ),
+                        overflow: TextOverflow.ellipsis,
                       ),
-                      overflow: TextOverflow.ellipsis,
-                    ),
+                      Text("Setting",
+                        style: TextStyle(
+                          color: Colors.red
+                        ),
+
+                      )],
+                    )
+                    ,
                     const SizedBox(height: 4),
                     Text(
                       subtitle,
@@ -51,9 +61,13 @@ class LookPharma {
                     const SizedBox(height: 4),
                     Row(
                       children: [
-                        const Icon(Icons.inventory_2, size: 16),
+                        const Icon(Icons.library_add_check_outlined, size: 16),
                         const SizedBox(width: 4),
-                        const Text('120 produits'),
+                        Text("Actif",
+                          style: TextStyle(
+                              color: Colors.green
+                          ),
+                        ),
                         const SizedBox(width: 12),
                         const Icon(Icons.notifications, size: 16),
                         const SizedBox(width: 4),
