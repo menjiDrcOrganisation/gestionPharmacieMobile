@@ -80,23 +80,8 @@ class _SettingState extends State<Setting> {
   }
 
   void deletePharmacie() async {
-    bool confirmed = await showDialog(
-      context: context,
-      builder: (_) => AlertDialog(
-        title: const Text("Confirmation"),
-        content: const Text("Voulez-vous supprimer cette pharmacie ?"),
-        actions: [
-          TextButton(onPressed: () => Navigator.pop(context, false), child: const Text("Annuler")),
-          ElevatedButton(onPressed: () => Navigator.pop(context, true), child: const Text("Confirmer")),
-        ],
-      ),
-    ) ?? false;
 
-    if (!confirmed) return;
-
-    setState(() => isLoading = true);
     bool result = await ControllerPharmacie.delete(widget.pharmacie.id);
-    setState(() => isLoading = false);
 
     if (result) {
       Fluttertoast.showToast(

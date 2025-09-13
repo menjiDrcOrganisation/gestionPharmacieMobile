@@ -1,6 +1,6 @@
 
 
 class Utilise {
-  static  String  baseUrl = "http://127.0.0.1:8001/api/";
+  static  String  baseUrl = "https://gestionpharmacie.menjidrc.com/api/";
 }
 

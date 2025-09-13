@@ -49,12 +49,7 @@ class LookPharma {
                         onTap: (){
                           viewSetting!();
                         },
-                        child: Text("Setting",
-                          style: TextStyle(
-                              color: Colors.red
-                          ),
-
-                        ),
+                        child: Icon(Icons.info,size: 35,),
                       )
                       ],
                     )
