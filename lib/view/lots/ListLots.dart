@@ -90,7 +90,11 @@ class _DashboardPageState extends State<DashboardPage> {
     Map<String, List<Lot>> grouped = {};
 
     for (var lot in allLots) {
+
       String medicamentName = lot.medicament.nom;
+      print('');
+      print(lot.medicament.nom);
+
       if (!grouped.containsKey(medicamentName)) {
         grouped[medicamentName] = [];
       }
@@ -351,6 +355,7 @@ class _DashboardPageState extends State<DashboardPage> {
 
                                 return InkWell(
                                   onTap: () {
+
                                     _showMedicamentDetails(context, medicamentName, medicamentLots);
                                   },
                                   child: Container(
