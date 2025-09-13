@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:gestion_pharmacie_mobile/view/auth/ProfilPage.dart';
+import 'package:gestion_pharmacie_mobile/view/principal/portail.dart';
 import 'package:intl/intl.dart'; // pour formater la date
 import 'package:gestion_pharmacie_mobile/services/ApiService/venteService.dart';
 import '../../ModelTampo/Vente.dart';
 import '../../component/AppBar.dart';
+import '../../component/AppBarTest.dart';
 import '../../component/BottomApp.dart';
 import '../../component/Option.dart';
 import '../../component/dashboard/Block.dart';
@@ -79,7 +81,7 @@ class _ViewDashState extends State<ViewDash> {
     final screenHeight = MediaQuery.of(context).size.height;
 
     return Scaffold(
-      appBar: Appbar(Title: "Dashboard").lancer(context),
+      appBar: AppbarTest(title: "DashBoard",pageDeRemplacement: Portail()).lancer(context),
       body: SingleChildScrollView(
         padding: EdgeInsets.symmetric(horizontal: screenWidth * 0.03, vertical: screenHeight * 0.02),
         child: Column(

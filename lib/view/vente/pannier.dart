@@ -4,6 +4,7 @@ import 'package:gestion_pharmacie_mobile/view/vente/vendre.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../component/AppBar.dart';
+import '../../component/AppBarTest.dart';
 import '../../component/BottomApp.dart';
 import '../../component/Button.dart';
 import '../../component/Colors.dart';
@@ -89,7 +90,7 @@ class _PannierState extends State<Pannier> {
     final double screenHeight = MediaQuery.of(context).size.height;
 
     return Scaffold(
-      appBar: Appbar(Title: "Espace Panier",pageDeRemplacement:Vendre()).lancer(context),
+      appBar: AppbarTest(title: "Espace vente",pageDeRemplacement: Vendre()).lancer(context),
       body: StructurePage(
         contentBack: Row(
           mainAxisAlignment: MainAxisAlignment.spaceAround,

@@ -4,11 +4,13 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:gestion_pharmacie_mobile/view/vente/pannier.dart';
 import '../../ModelTampo/Lot.dart';
 import '../../component/AppBar.dart';
+import '../../component/AppBarTest.dart';
 import '../../component/Colors.dart';
 import '../../component/Combobox.dart';
 import '../../component/vente/BottomAppVente.dart';
 import '../../component/vente/Prix.dart';
 import '../../services/ApiService/ApiServiceLotTampo.dart';
+import '../dashboard/viewDash.dart';
 import '../layouts/StructurePage.dart';
 
 class Vendre extends StatefulWidget {
@@ -112,7 +114,7 @@ class _VendreState extends State<Vendre> {
     }
 
     return Scaffold(
-      appBar: Appbar(Title: "Espace vente").lancer(context),
+      appBar: AppbarTest(title: "Espace vente",pageDeRemplacement: ViewDash()).lancer(context),
       body: StructurePage(
         screenHeight: screenHeight,
         screenWidth: screenWidth,
@@ -213,7 +215,7 @@ class _VendreState extends State<Vendre> {
             context,
             MaterialPageRoute(builder: (context) => Pannier()),
           );
-          if (result == true) getQuantite();
+
         },
       ).lancer(),
     );

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../ModelTampo/Pharmacie.dart';
 import '../../component/AppBar.dart';
+import '../../component/AppBarTest.dart';
 import '../../component/Combobox.dart';
 import '../../component/Confirmation.dart';
 import '../../controller/PharmacieController.dart';
@@ -42,7 +43,7 @@ class _CreationComptePageState extends State<CreationComptePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: Appbar(Title: "Opharma").lancer(context),
+      appBar: AppbarTest(title: "Creation Pharmacie",pageDeRemplacement: Portail()).lancer(context),
       backgroundColor: Colors.white,
       body: SafeArea(
         child: Stack(

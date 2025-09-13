@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import '../../ModelTampo/Pharmacie.dart';
 import '../../component/AppBar.dart';
+import '../../component/AppBarTest.dart';
 import '../../component/Colors.dart';
 import '../../controller/PharmacieController.dart';
 import '../../utils/navigation.dart';
@@ -146,7 +147,7 @@ class _SettingState extends State<Setting> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: Appbar(Title: "Détails Pharmacie").lancer(context),
+      appBar: AppbarTest(title: "Detail Pharmacie",pageDeRemplacement: Portail()).lancer(context),
       backgroundColor: Colors.grey.shade100,
       body: SafeArea(
         child: SingleChildScrollView(

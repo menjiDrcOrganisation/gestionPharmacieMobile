@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../ModelTampo/Pharmacie.dart';
 import '../../component/AppBar.dart';
+import '../../component/AppBarTest.dart';
 import '../../component/BottomApp.dart';
 import '../../component/LookPharma.dart';
 import '../../component/Option.dart';
@@ -38,7 +39,7 @@ class _PortailState extends State<Portail> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: Appbar(Title: "Portail").lancer(context),
+      appBar: AppbarTest(title: "Portail").lancer(context),
       body: Padding(
         padding: EdgeInsets.symmetric(horizontal: 10, vertical: 10),
         child: Column(
