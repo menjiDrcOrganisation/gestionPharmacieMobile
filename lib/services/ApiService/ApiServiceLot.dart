@@ -84,7 +84,7 @@ class LotService {
       },
       body: jsonEncode(Lot_register.toJson()),
     );
-    print(response);
+
     if (response.statusCode == 201) {
       print('bien');
       print('benikasu');

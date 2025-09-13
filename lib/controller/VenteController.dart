@@ -9,17 +9,14 @@ class VenteController {
 
 
   static index () async{
-    print("ddddd");
+
     List<Lot> lots= await LotService().fetchLots();
-    print(lots[0].toJson());
+
 
   }
 
   static getVente () async{
-    print("ddddd");
     List<Lot> lots= await LotService().fetchLots();
-    print(lots[0].toJson());
-
   }
 
   static create (List<Map<String, dynamic>> ligneVente) async{

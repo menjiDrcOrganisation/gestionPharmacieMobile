@@ -105,7 +105,7 @@ class _ViewDashState extends State<ViewDash> {
                     src: 'assets/Icone/shopping-cart-add 5.png',
                     intitule: "Vente",
                     action: () {
-                      print(LotStorage.getLots());
+
                       Navigator.push(
                         context,
                         MaterialPageRoute(builder: (context) => Vendre()),

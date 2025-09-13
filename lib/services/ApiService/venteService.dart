@@ -39,7 +39,7 @@ class VenteService {
     print("eeeeehh");
 
     try {
-      print(baseUrl);
+
 
       final response = await http.post(
         Uri.parse("${baseUrl}pharmacie/$idPharma/vente"),
@@ -47,7 +47,6 @@ class VenteService {
         body: jsonEncode(vente),
       );
 
-      print("Status code: ${response.statusCode}");
 
       if (response.statusCode == 200 || response.statusCode == 201) {
         // Succès
