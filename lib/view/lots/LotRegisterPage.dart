@@ -39,7 +39,6 @@ class AddProduitPage extends StatefulWidget {
 }
 
 class _AddProduitPageState extends State<AddProduitPage> {
-
   String? selectedForme;
   String? selectedDosage;
   String? selectedMedicament;
@@ -49,9 +48,10 @@ class _AddProduitPageState extends State<AddProduitPage> {
   bool isSubmitting = false;
 
   final TextEditingController nomProduitController = TextEditingController();
-  final TextEditingController prixUnitaireController = TextEditingController(text: "1500");
-  final TextEditingController prixAchatController = TextEditingController(text: "1500");
+  final TextEditingController prixUnitaireController = TextEditingController(text: "0");
+  final TextEditingController prixAchatController = TextEditingController(text: "0");
   final TextEditingController searchController = TextEditingController();
+  final TextEditingController quantityController = TextEditingController(text: "0");
 
   final MedicamentController _medicamentController = MedicamentController();
   final FormeDoseController controller = FormeDoseController();
@@ -70,12 +70,14 @@ class _AddProduitPageState extends State<AddProduitPage> {
     // Écouter les changements de prix d'achat pour calculer automatiquement le prix unitaire
     prixAchatController.addListener(_calculatePrixUnitaire);
     searchController.addListener(_filterMedicaments);
+    quantityController.addListener(_updateQuantityFromField);
   }
 
   @override
   void dispose() {
     prixAchatController.removeListener(_calculatePrixUnitaire);
     searchController.removeListener(_filterMedicaments);
+    quantityController.removeListener(_updateQuantityFromField);
     super.dispose();
   }
 
@@ -90,6 +92,26 @@ class _AddProduitPageState extends State<AddProduitPage> {
         // Ignorer les erreurs de parsing
       }
     }
+  }
+
+  void _updateQuantityFromField() {
+    if (quantityController.text.isNotEmpty) {
+      try {
+        final newQuantity = double.tryParse(quantityController.text) ?? 0;
+        if (newQuantity >= 0 && newQuantity <= 1000) {
+          setState(() => quantity = newQuantity);
+        }
+      } catch (e) {
+        // Ignorer les erreurs de parsing
+      }
+    }
+  }
+
+  void _updateQuantityFromSlider(double value) {
+    setState(() {
+      quantity = value;
+      quantityController.text = value.round().toString();
+    });
   }
 
   void _filterMedicaments() {
@@ -192,9 +214,10 @@ class _AddProduitPageState extends State<AddProduitPage> {
     setState(() {
       selectedMedicament = medicaments?.isNotEmpty == true ? medicaments!.first.id.toString() : null;
       quantity = 0;
+      quantityController.text = "0";
       expirationDate = null;
-      prixAchatController.text = "1500";
-      prixUnitaireController.text = "1800"; // 1500 * 1.2
+      prixAchatController.text = "0";
+      prixUnitaireController.text = "0"; // 1500 * 1.2
       searchController.clear();
     });
   }
@@ -369,16 +392,14 @@ class _AddProduitPageState extends State<AddProduitPage> {
                               divisions: 100,
                               label: quantity.round().toString(),
                               activeColor: Colors.green,
-                              onChanged: (val) {
-                                setState(() => quantity = val);
-                              },
+                              onChanged: _updateQuantityFromSlider,
                             ),
                           ),
                           const SizedBox(width: 16),
                           Container(
                             width: 80,
                             child: TextField(
-                              controller: TextEditingController(text: quantity.round().toString()),
+                              controller: quantityController,
                               keyboardType: TextInputType.number,
                               textAlign: TextAlign.center,
                               decoration: InputDecoration(
@@ -413,7 +434,7 @@ class _AddProduitPageState extends State<AddProduitPage> {
                   TextField(
                     controller: prixAchatController,
                     keyboardType: TextInputType.number,
-                    decoration: _inputDecoration("Prix d'achat (FCFA)").copyWith(
+                    decoration: _inputDecoration("Prix d'achat (FC)").copyWith(
                       suffixIcon: const Icon(Icons.money, color: Colors.green),
                     ),
                   ),
@@ -424,7 +445,7 @@ class _AddProduitPageState extends State<AddProduitPage> {
                   TextField(
                     controller: prixUnitaireController,
                     readOnly: true,
-                    decoration: _inputDecoration("Prix unitaire (FCFA)").copyWith(
+                    decoration: _inputDecoration("Prix unitaire (FC)").copyWith(
                       suffixIcon: const Icon(Icons.calculate, color: Colors.green),
                     ),
                   ),

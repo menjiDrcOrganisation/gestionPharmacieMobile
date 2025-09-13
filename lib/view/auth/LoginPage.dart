@@ -13,6 +13,7 @@ import '../../controller/AuthController.dart';
 import '../../utils/navigation.dart';
 import '../dashboard/viewDash.dart';
 import '../principal/portail.dart';
+import 'MotDePasseOublie.dart';
 import 'RegisterPage.dart';
 
 
@@ -284,21 +285,20 @@ class _LoginPageState extends State<LoginPage> {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     SizedBox(height: 10),
-                 TextButton(
+                    TextButton(
                       onPressed: () => Navigator.push(
                         context,
-                       MaterialPageRoute(
-                            builder: (context) => RegisterPage()),
+                        MaterialPageRoute(builder: (context) => const MotDePasseOublie()),
                       ),
                       child: RichText(
-                        text: TextSpan(
+                        text: const TextSpan(
                           children: [
                             TextSpan(
-                              text: 'Mots de passe ',
+                              text: 'Mot de passe ',
                               style: TextStyle(color: Colors.grey),
                             ),
                             TextSpan(
-                              text: ' oublié',
+                              text: 'oublié ?',
                               style: TextStyle(color: MyColors.primary),
                             ),
                           ],

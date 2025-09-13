@@ -120,7 +120,7 @@ class _PortailState extends State<Portail> {
               ),
             ),
             SizedBox(height: 10),
-            Row(
+           /* Row(
               children: [
                 SizedBox(
                   width: 200, // largeur du widget glissable
@@ -169,7 +169,7 @@ class _PortailState extends State<Portail> {
                   ),
                 ),
               ],
-            ),
+            ),*/
 
             // Liste des pharmacies
             Expanded(

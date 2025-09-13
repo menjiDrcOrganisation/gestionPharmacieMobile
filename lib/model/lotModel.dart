@@ -87,10 +87,21 @@ class Medicament {
     required this.updatedAt,
   });
 
-  factory Medicament.fromJson(Map<String, dynamic> json) {
+  /*factory Medicament.fromJson(Map<String, dynamic> json) {
     return Medicament(
       idMedicament: json['id_medicament'] ?? 0,
       nom: json['nom'] ?? 'Inconnu',
+      description: json['description'] ?? '',
+      idForme: json['id_forme'] ?? 0,
+      idDose: json['id_dose'] ?? 0,
+      createdAt: json['created_at'] ?? '',
+      updatedAt: json['updated_at'] ?? '',
+    );
+  }*/
+  factory Medicament.fromJson(Map<String, dynamic> json) {
+    return Medicament(
+      idMedicament: json["id_medicament"],
+      nom: json["nom"]+"_"+json["forme"]["nom"]+"_"+json["dose"]["quantite"]+"_"+json["dose"]["unite"],
       description: json['description'] ?? '',
       idForme: json['id_forme'] ?? 0,
       idDose: json['id_dose'] ?? 0,
