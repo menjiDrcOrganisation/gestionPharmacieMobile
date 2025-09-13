@@ -36,20 +36,34 @@ class VenteService {
   /// Ajouter une nouvelle vente
   Future<void> createVente(Map<String, dynamic> vente) async {
     String idPharma = await PharmacieStorage.getPharma();
-    print(jsonEncode(vente));
-    final response = await http.post(
-      Uri.parse("${baseUrl}pharmacie/${idPharma}/vente"),
-      headers: {"Content-Type": "application/json"},
-      body: jsonEncode(vente),
-    );
+    print("eeeeehh");
 
-    if (response.statusCode == 201) {
-      final Map<String, dynamic> data = jsonDecode(response.body);
-      print(data);
-    } else {
-      throw Exception("Erreur lors de la création de la vente : ${response.statusCode}");
+    try {
+      print(baseUrl);
+
+      final response = await http.post(
+        Uri.parse("${baseUrl}pharmacie/$idPharma/vente"),
+        headers: {"Content-Type": "application/json"},
+        body: jsonEncode(vente),
+      );
+
+      print("Status code: ${response.statusCode}");
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        // Succès
+        print("Vente créée avec succès : ${response.body}");
+      } else {
+        // Erreur côté serveur
+        print("Erreur serveur : ${response.body}");
+        throw Exception("Échec de la création de la vente (${response.statusCode})");
+      }
+    } catch (e) {
+      // Erreur réseau ou JSON
+      print("Erreur lors de la création de la vente : $e");
+      rethrow; // pour remonter l'erreur si tu veux la gérer dans l'UI
     }
   }
+
 
   /// Mettre à jour une vente
   Future<Vente> updateVente(int id, Vente vente) async {

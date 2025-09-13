@@ -2,9 +2,10 @@ import 'package:flutter/material.dart';
 
 class LookPharma {
   Function action;
+  Function ?viewSetting;
   String title;
   String subtitle;
-  LookPharma({required this.action, required this.title, required this.subtitle});
+  LookPharma({required this.action, required this.title, required this.subtitle,this.viewSetting});
   Widget lancer() {
     String abreviation = title.length >= 2
         ? title.substring(0, 2).toUpperCase()
@@ -44,12 +45,18 @@ class LookPharma {
                         ),
                         overflow: TextOverflow.ellipsis,
                       ),
-                      Text("Setting",
-                        style: TextStyle(
-                          color: Colors.red
-                        ),
+                      InkWell(
+                        onTap: (){
+                          viewSetting!();
+                        },
+                        child: Text("Setting",
+                          style: TextStyle(
+                              color: Colors.red
+                          ),
 
-                      )],
+                        ),
+                      )
+                      ],
                     )
                     ,
                     const SizedBox(height: 4),

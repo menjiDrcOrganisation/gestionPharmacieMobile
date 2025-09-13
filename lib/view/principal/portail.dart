@@ -7,6 +7,7 @@ import '../../component/LookPharma.dart';
 import '../../component/Option.dart';
 import '../../component/SeashBar.dart';
 import '../../controller/LotController.dart';
+import '../../controller/PharmacieController.dart';
 import '../../controller/VenteController.dart';
 import '../../model/userModel.dart';
 import '../../services/ApiService/ApiPharmacie.dart';
@@ -14,6 +15,7 @@ import '../../services/GetStorage/Pharmacie.dart';
 import '../../utils/navigation.dart';
 import '../auth/ProfilPage.dart';
 import '../dashboard/viewDash.dart';
+import '../pharmacie/Setting.dart';
 import '../pharmacie/pharmacoePage.dart';
 
 class Portail extends StatefulWidget {
@@ -156,6 +158,16 @@ class _PortailState extends State<Portail> {
                     itemBuilder: (context, index) {
                       Pharmacie pharma = pharmacies[index];
                       return LookPharma(
+                        viewSetting: ()async{
+                          Pharmacie p= await ControllerPharmacie.showPhramacie(pharma.id);
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => Setting(pharmacie: p,),
+                            ),
+                          );
+
+                        },
                         action: () async {
                           await PharmacieStorage.savePharmacie(pharma.id.toString());
                           Navigator.push(

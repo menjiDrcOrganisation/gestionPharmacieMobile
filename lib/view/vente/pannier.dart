@@ -94,6 +94,7 @@ class _PannierState extends State<Pannier> {
         contentBack: Row(
           mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: [
+            coutPannier==0?Center():
             Button(
               intitule: "Valider",
               colorText: Colors.white,
@@ -113,7 +114,7 @@ class _PannierState extends State<Pannier> {
 
               },
             ).lancer(),
-
+            coutPannier==0?Center():
             Button(
               intitule: "Annuler",
               colorText: Colors.white,
@@ -179,9 +180,9 @@ class _PannierState extends State<Pannier> {
                 padding: const EdgeInsets.symmetric(vertical: 20),
                 child: Center(
                   child: Container(
-                    padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 20), // espace à l'intérieur
+                    padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 5), // espace à l'intérieur
                     decoration: BoxDecoration(
-                      color: Colors.green.shade100, // couleur de fond
+                       // couleur de fond
                       borderRadius: BorderRadius.circular(12), // bordure arrondie
                       border: Border.all(color: Colors.green, width: 2), // bordure verte
                     ),

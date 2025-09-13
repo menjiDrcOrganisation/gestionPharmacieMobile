@@ -44,9 +44,7 @@ class ApiService {
       _token = data['token'];
       return {
         'user': User.fromJson(data['user']),
-
         'role': RoleInfo.fromJson(data['role']),
-
         'token': data['token'],
       };
     } else {
@@ -56,7 +54,7 @@ class ApiService {
   }
 
   Future<Map<String, dynamic>> register(String name, String email, String password, String? role) async {
-
+print(baseUrl);
     final response = await http.post(
       Uri.parse('${baseUrl}register'),
       body: {

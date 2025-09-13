@@ -80,33 +80,42 @@ print("pharmacies ${response.body}");
   }
 
   // Mettre à jour une pharmacie
-  Future<Pharmacie> updatePharmacie(int id, Pharmacie pharmacie) async {
+  Future<Pharmacie> updatePharmacie(Pharmacie pharmacie) async {
     final response = await http.put(
-      Uri.parse("$baseUrl/$id"),
+      Uri.parse("$baseUrl/${pharmacie.id}"),
       headers: {
         "Content-Type": "application/json",
         "Accept": "application/json"
       },
       body: jsonEncode(pharmacie.toJson()),
     );
-
     if (response.statusCode == 200) {
       final data = jsonDecode(response.body);
       return Pharmacie.fromJson(data);
     } else {
-      throw Exception("Erreur lors de la mise à jour de la pharmacie $id : ${response.statusCode}");
+      throw Exception("Erreur lors de la mise à jour de la pharmacie ${pharmacie.id} : ${response.statusCode}");
     }
   }
 
   // Supprimer une pharmacie
-  Future<void> deletePharmacie(int id) async {
+  Future<bool> deletePharmacie(int id) async {
     final response = await http.delete(
       Uri.parse("$baseUrl/$id"),
       headers: {"Accept": "application/json"},
     );
 
-    if (response.statusCode != 204) {
-      throw Exception("Erreur lors de la suppression de la pharmacie $id : ${response.statusCode}");
+    if (response.statusCode == 200 || response.statusCode == 204) {
+      // Suppression réussie
+      return true;
+    } else if (response.statusCode == 404) {
+
+      return false;
+    } else {
+      // Autres erreurs
+      throw Exception("Erreur lors de la suppression de la pharmacie $id : ${response.body}");
     }
+
+
+
   }
 }

@@ -4,13 +4,11 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:gestion_pharmacie_mobile/view/vente/pannier.dart';
 import '../../ModelTampo/Lot.dart';
 import '../../component/AppBar.dart';
-import '../../component/BottomApp.dart';
 import '../../component/Colors.dart';
 import '../../component/Combobox.dart';
 import '../../component/vente/BottomAppVente.dart';
 import '../../component/vente/Prix.dart';
 import '../../services/ApiService/ApiServiceLotTampo.dart';
-import '../../services/GetStorage/LotStorage.dart';
 import '../layouts/StructurePage.dart';
 
 class Vendre extends StatefulWidget {
@@ -21,35 +19,58 @@ class Vendre extends StatefulWidget {
 class _VendreState extends State<Vendre> {
   Lot? selectedLot;
   double quantiteChoisie = 0;
-  late Future<List<Lot> >lots;
+  List<Lot> lots = [];
   int coutPannier = 0;
   TextEditingController rechercheController = TextEditingController();
+  bool isLoading = true;
 
-  /// Future pour récupérer les lots
-  Future<void> getLots() async {
-    lots=  LotService().fetchLots();
+  @override
+  void initState() {
+    super.initState();
+    getQuantite();
+    getLots();
   }
-  getQuantite() async{
 
+  /// Récupérer les lots uniques par combinaison nom+forme+dose
+  Future<void> getLots() async {
+    setState(() => isLoading = true);
+    try {
+      final allLots = await LotService().fetchLots();
+
+      // Map pour garder le premier lot pour chaque combinaison
+      final Map<String, Lot> lotsParCle = {};
+      for (var lot in allLots) {
+        final key = "${lot.medicament.nom}-${lot.medicament.forme.nom}-${lot.medicament.dose.quantite}";
+        if (lot.quantite <= 0) continue;
+        if (!lotsParCle.containsKey(key)) {
+          lotsParCle[key] = lot;
+        }
+      }
+
+      setState(() {
+        lots = lotsParCle.values.toList();
+        selectedLot = lots.isNotEmpty ? lots.first : null;
+        isLoading = false;
+      });
+    } catch (e) {
+      setState(() => isLoading = false);
+      print("Erreur lors de la récupération des lots : $e");
+    }
+  }
+
+  /// Récupérer le nombre d’éléments dans le panier
+  Future<void> getQuantite() async {
     final prefs = await SharedPreferences.getInstance();
     final String? panierString = prefs.getString('panier');
     if (panierString != null) {
       List<Map<String, dynamic>> panier = List<Map<String, dynamic>>.from(jsonDecode(panierString));
-
       setState(() {
-        coutPannier=panier.length;
+        coutPannier = panier.length;
       });
-    }else{
     }
   }
 
-  @override
-  void initState() {
-    getQuantite();
-    getLots();
-    super.initState();
-  }
-
+  /// Ajouter un lot au panier
   Future<void> ajouterAuPanier(Lot lot, int quantite) async {
     if (quantite <= 0) return;
     final prefs = await SharedPreferences.getInstance();
@@ -73,7 +94,7 @@ class _VendreState extends State<Vendre> {
     }
 
     await prefs.setString('panier', jsonEncode(panier));
-    setState(() {});
+    setState(() => getQuantite());
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(content: Text("${lot.medicament.nom} ajouté au panier !")),
     );
@@ -84,165 +105,115 @@ class _VendreState extends State<Vendre> {
     final double screenWidth = MediaQuery.of(context).size.width;
     final double screenHeight = MediaQuery.of(context).size.height;
 
+    if (isLoading) {
+      return const Scaffold(
+        body: Center(child: CircularProgressIndicator()),
+      );
+    }
+
     return Scaffold(
       appBar: Appbar(Title: "Espace vente").lancer(context),
-      body: FutureBuilder<List<Lot>>(
-        future: lots,
-        builder: (context, snapshot) {
-
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(
-              child: CircularProgressIndicator(), // loader
-            );
-          }
-
-          if (snapshot.hasError) {
-            return Center(child: Text("Erreur de chargement des médicaments"));
-          }
-
-          if (!snapshot.hasData || snapshot.data!.isEmpty) {
-            return const Center(
-              child: Text(
-                "cette pharmacie n'a pas des médicaments pour l'instant",
-                textAlign: TextAlign.center,
-                style: TextStyle(fontSize: 16),
+      body: StructurePage(
+        screenHeight: screenHeight,
+        screenWidth: screenWidth,
+        contentBack: InkWell(
+          onTap: () {
+            if (selectedLot != null && quantiteChoisie > 0) {
+              ajouterAuPanier(selectedLot!, quantiteChoisie.toInt());
+              setState(() => quantiteChoisie = 0);
+            }
+          },
+          child: Container(
+            height: screenWidth * 0.13,
+            width: screenWidth * 0.13,
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(500),
+              color: MyColors.primaryColor,
+            ),
+            child: Icon(Icons.add, color: Colors.white, size: screenWidth * 0.1),
+          ),
+        ),
+        content: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            TextField(
+              controller: rechercheController,
+              decoration: InputDecoration(
+                labelText: "Rechercher un produit",
+                prefixIcon: const Icon(Icons.search),
+                border: OutlineInputBorder(borderRadius: BorderRadius.circular(20)),
               ),
-            );
-          }
-
-          List<Lot> lots = snapshot.data!;
-          selectedLot ??= lots.first;
-
-          return StructurePage(
-            contentBack: InkWell(
-              onTap: () {
-                if (selectedLot != null && quantiteChoisie > 0) {
-                  ajouterAuPanier(selectedLot!, quantiteChoisie.toInt());
-                  setState(() {
-                    getQuantite();
-                  });
-
-                }
+              onChanged: (query) {
+                final filteredLots = lots.where((lot) =>
+                    lot.medicament.nom.toLowerCase().contains(query.toLowerCase())
+                ).toList();
+                setState(() {
+                  selectedLot = filteredLots.isNotEmpty ? filteredLots.first : null;
+                });
               },
-              child: Container(
-                height: screenWidth * 0.13,
-                width: screenWidth * 0.13,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(500),
-                  color: MyColors.primaryColor,
-                ),
-                child: Icon(Icons.add,
-                    color: Colors.white, size: screenWidth * 0.1),
-              ),
             ),
-            screenHeight: screenHeight,
-            screenWidth: screenWidth,
-            content: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                TextField(
-                  controller: rechercheController,
-                  decoration: InputDecoration(
-                    labelText: "Rechercher un produit",
-                    prefixIcon: Icon(Icons.search),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(20),
-                    ),
+            SizedBox(height: screenHeight * 0.01),
+            buildComboBox<int>(
+              title: "Nom du produit",
+              items: lots.map((lot) {
+                return DropdownMenuItem<int>(
+                  value: lot.idLot,
+                  child: Text(
+                    "${lot.medicament.nom} ${lot.medicament.forme.nom} ${lot.medicament.dose.quantite} ${lot.medicament.dose.unite}",
                   ),
-                  onChanged: (query) {
-                    setState(() {
-                      lots = snapshot.data!
-                          .where((lot) => lot.medicament.nom
-                          .toLowerCase()
-                          .contains(query.toLowerCase()))
-                          .toList();
-                      selectedLot =
-                      lots.isNotEmpty ? lots.first : null;
-                      quantiteChoisie = 0;
-                    });
-                  },
-                ),
-                SizedBox(height: screenHeight * 0.01),
-                buildComboBox<int>(
-                  title: "Nom du produit",
-                  items: lots.map((lot) {
-                    return DropdownMenuItem<int>(
-                      value: lot.idLot, // identifiant unique
-                      child: Text(
-                        "${lot.medicament.nom} "
-                            "${lot.medicament.forme.nom} "
-                            "${lot.medicament.dose.quantite} "
-                            "${lot.medicament.dose.unite}",
-                      ),
-                    );
-                  }).toList(),
-                  selectedItem: selectedLot?.idLot, // garder uniquement l'id comme valeur
-                  placeholder: "Choisissez un produit",
-                  onChanged: (int? id) {
-                    setState(() {
-                      // retrouver le lot complet via son id
-                      selectedLot = lots.firstWhere((lot) => lot.idLot == id);
-                      quantiteChoisie = 0;
-                    });
-                  },
-                ),
-                SizedBox(height: screenHeight * 0.02),
-                if (selectedLot != null) ...[
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      const Text("Quantité"),
-                      Text("0 - ${selectedLot!.quantite}"),
-                    ],
-                  ),
-                  Slider(
-                    value: quantiteChoisie,
-                    onChanged: (double value) {
-                      setState(() {
-                        quantiteChoisie = value;
-                      });
-                    },
-                    max: selectedLot!.quantite.toDouble(),
-                    divisions: selectedLot!.quantite,
-                    label: quantiteChoisie.toInt().toString(),
-                    activeColor: MyColors.primaryColor,
-                  ),
-                  Text("Quantité choisie : ${quantiteChoisie.toInt()}"),
-                  SizedBox(height: screenHeight * 0.02),
-                  Prix(
-                    intitule: "Prix unitaire",
-                    montant: "${selectedLot!.prixUnitaire} FC",
-                  ).lancer(),
-                  SizedBox(height: screenHeight * 0.02),
-                  Prix(
-                    intitule: "Prix total",
-                    montant:
-                    "${selectedLot!.prixUnitaire * quantiteChoisie.toInt()} FC",
-                  ).lancer(),
+                );
+              }).toList(),
+              selectedItem: selectedLot?.idLot,
+              placeholder: "Choisissez un produit",
+              onChanged: (int? id) {
+                setState(() {
+                  selectedLot = lots.firstWhere((lot) => lot.idLot == id);
+                  quantiteChoisie = 0;
+                });
+              },
+            ),
+            SizedBox(height: screenHeight * 0.02),
+            if (selectedLot != null) ...[
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  const Text("Quantité"),
+                  Text("0 - ${selectedLot!.quantite}"),
                 ],
-              ],
-            ),
-          ).lancer();
-        },
-      ),
+              ),
+              Slider(
+                value: quantiteChoisie.clamp(0, selectedLot!.quantite.toDouble()),
+                onChanged: (double value) {
+                  setState(() {
+                    quantiteChoisie = value;
+                  });
+                },
+                max: selectedLot!.quantite.toDouble(),
+                divisions: selectedLot!.quantite,
+                label: quantiteChoisie.toInt().toString(),
+                activeColor: MyColors.primaryColor,
+              )
+              ,
+              Text("Quantité choisie : ${quantiteChoisie.toInt()}"),
+              SizedBox(height: screenHeight * 0.02),
+              Prix(intitule: "Prix unitaire", montant: "${selectedLot!.prixUnitaire} FC").lancer(),
+              SizedBox(height: screenHeight * 0.02),
+              Prix(
+                intitule: "Prix total",
+                montant: "${selectedLot!.prixUnitaire * quantiteChoisie.toInt()} FC",
+              ).lancer(),
+            ],
+          ],
+        ),
+      ).lancer(),
       bottomNavigationBar: BottomappVente(
-
-        onAccueil: () {
-          setState(() {
-          });
-        },
         notifCount: coutPannier,
-        onNotif: ()async {
+        onNotif: () async {
           final result = await Navigator.push(
             context,
             MaterialPageRoute(builder: (context) => Pannier()),
           );
-
-          if (result == true) {
-            setState(() {
-              getQuantite(); // met à jour coutPannier
-            });
-          }
+          if (result == true) getQuantite();
         },
       ).lancer(),
     );

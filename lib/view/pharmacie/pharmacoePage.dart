@@ -196,6 +196,7 @@ class _CreationComptePageState extends State<CreationComptePage> {
                                 "Vous confirmez l'ajout de cette pharmacie?",
                                 onOui: () async {
                                   setState(() => isLoading = true);
+
                                   try {
                                     Pharmacie p = await ControllerPharmacie
                                         .createPhramacie(
