@@ -1,7 +1,4 @@
 
-
-import 'dart:js_interop';
-
 import '../ModelTampo/Pharmacie.dart';
 import '../model/userModel.dart';
 import '../services/ApiService/ApiPharmacie.dart';
@@ -10,7 +7,6 @@ import '../services/GetStorage/local_storage_service.dart';
 class ControllerPharmacie{
 
   static Future<Pharmacie> createPhramacie(nom,ville,quartier,rue,tel,indice) async{
-    print("fffff");
     RoleInfo? user = await LocalStorageService().getRoleInfo();
     print(user!.id);
     int? idUser=user!.id;
