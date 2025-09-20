@@ -78,6 +78,7 @@ class _PannierState extends State<Pannier> {
   Future<void> clearPanier() async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.remove('panier');
+    await prefs.setString('panier', jsonEncode([]));
     setState(() {
       panier = [];
       getQuantite();

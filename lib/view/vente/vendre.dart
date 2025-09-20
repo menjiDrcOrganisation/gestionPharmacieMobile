@@ -21,6 +21,7 @@ class Vendre extends StatefulWidget {
 class _VendreState extends State<Vendre> {
   Lot? selectedLot;
   double quantiteChoisie = 0;
+  TextEditingController quantiteS=TextEditingController();
   List<Lot> lots = [];
   int coutPannier = 0;
   TextEditingController rechercheController = TextEditingController();
@@ -113,6 +114,7 @@ class _VendreState extends State<Vendre> {
       );
     }
 
+
     return Scaffold(
       appBar: AppbarTest(title: "Espace vente",pageDeRemplacement: ViewDash()).lancer(context),
       body: StructurePage(
@@ -183,17 +185,44 @@ class _VendreState extends State<Vendre> {
                   Text("0 - ${selectedLot!.quantite}"),
                 ],
               ),
-              Slider(
-                value: quantiteChoisie.clamp(0, selectedLot!.quantite.toDouble()),
-                onChanged: (double value) {
-                  setState(() {
-                    quantiteChoisie = value;
-                  });
-                },
-                max: selectedLot!.quantite.toDouble(),
-                divisions: selectedLot!.quantite,
-                label: quantiteChoisie.toInt().toString(),
-                activeColor: MyColors.primaryColor,
+              Column(
+                children: [
+                  Slider(
+                    value: quantiteChoisie.clamp(0, selectedLot!.quantite.toDouble()),
+                    onChanged: (double value) {
+                      setState(() {
+                        quantiteChoisie = value;
+                        quantiteS.text = quantiteChoisie.toString();
+
+                      });
+                    },
+                    max: selectedLot!.quantite.toDouble(),
+                    divisions: selectedLot!.quantite,
+                    label: quantiteChoisie.toInt().toString(),
+                    activeColor: MyColors.primaryColor,
+                  ),
+                  TextFormField(
+                    onChanged:(value){
+                      selectedLot!.quantite.toDouble()>=double.parse(value)?
+                      setState(() {
+                        quantiteChoisie = double.parse(value);
+                      }):null;
+                    },
+                      controller: quantiteS,
+                      keyboardType: TextInputType.number,
+                      decoration: InputDecoration(
+                      labelText: "",
+                      contentPadding: const EdgeInsets.symmetric(vertical: 20, horizontal: 12),
+                      filled: true,
+                      fillColor:  Colors.white ,
+                      border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                      borderSide: const BorderSide(color: Colors.blue),
+                      ),
+                      ),
+                      validator: (value) => value!.isEmpty ? "Champ obligatoire" : null,
+                  )
+                ],
               )
               ,
               Text("Quantité choisie : ${quantiteChoisie.toInt()}"),

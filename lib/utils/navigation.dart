@@ -12,8 +12,9 @@ void goToPage(BuildContext context, Widget page) {
 
 
 void goToPagePlacement(BuildContext context, Widget page) {
+
   Navigator.pushReplacement(
     context,
-    MaterialPageRoute(builder: (context) => page),
+    MaterialPageRoute(builder: (_) => page!),
   );
 }
