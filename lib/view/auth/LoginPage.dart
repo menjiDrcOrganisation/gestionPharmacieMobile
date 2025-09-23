@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:gestion_pharmacie_mobile/utils/Utilis.dart';
 import 'package:http/http.dart' as http;
 
 import 'package:flutter/material.dart';
@@ -146,8 +147,8 @@ class _LoginPageState extends State<LoginPage> {
     try {
       // Initialise GoogleSignIn avec les clientId (Android et Web)
       await GoogleSignIn.instance.initialize(
-        clientId: "1084287883351-m7vtn5gae1ngqicv8r47qgketl2cneho.apps.googleusercontent.com",
-        serverClientId: "1084287883351-5eu60ndaq3c6d2e999d5a04trcf9fecd.apps.googleusercontent.com",
+        clientId: Utilise.clientId,
+        serverClientId: Utilise.serverClientId,
       );
 
       // Vérifie si authenticate() est supporté

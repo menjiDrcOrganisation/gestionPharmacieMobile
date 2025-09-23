@@ -162,8 +162,9 @@ class _MedicamentLotsPageState extends State<MedicamentLotsPage> {
                 subtitle: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text("Quantité: ${lot.quantite}"),
-                    Text("Prix unitaire: ${lot.prixUnitaire} FCFA"),
+                    Text("Quantité achater : ${lot.quantite_reel} "),
+                    Text(' Quantité restant: ${lot.quantite} '),
+                    Text("Prix unitaire: ${lot.prixUnitaire} FC"),
                     Text("Expiration: ${_formatDate(lot.dateExpiration)}"),
                     Text(
                       "Statut: ${getExpirationInfo(lot.dateExpiration)}",
@@ -409,7 +410,7 @@ class _MedicamentLotsPageState extends State<MedicamentLotsPage> {
                       decoration: const InputDecoration(
                         labelText: 'Prix d\'achat',
                         border: OutlineInputBorder(),
-                        prefixIcon: Icon(Icons.attach_money),
+                        prefixIcon: Icon(Icons.money),
                       ),
                       keyboardType: TextInputType.number,
                     ),
@@ -566,8 +567,8 @@ class _MedicamentLotsPageState extends State<MedicamentLotsPage> {
                 const SizedBox(height: 10),
                 Text("Numéro de lot: ${lot.numeroLot}"),
                 Text("Quantité: ${lot.quantite}"),
-                Text("Prix d'achat: ${lot.prixAchat} FCFA"),
-                Text("Prix unitaire: ${lot.prixUnitaire} FCFA"),
+                Text("Prix d'achat: ${lot.prixAchat} FC"),
+                Text("Prix unitaire: ${lot.prixUnitaire} FC"),
                 Text("Date d'expiration: ${_formatDate(lot.dateExpiration)}"),
                 Text(
                   "Statut: ${getExpirationInfo(lot.dateExpiration)}",

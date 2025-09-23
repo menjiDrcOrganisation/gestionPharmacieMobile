@@ -38,9 +38,11 @@ class _DashboardPageState extends State<DashboardPage> {
       final List<Lot> fetchedLots = await _lotController.getLots();
       print('view ${fetchedLots}');
       print(fetchedLots);
+      // Filtrer les lots dont la quantité est > 0
+      final List<Lot> filteredLots = fetchedLots.where((lot) => lot.quantite > 0).toList();
 
       setState(() {
-        allLots = fetchedLots;
+        allLots = filteredLots;
         isLoading = false;
       });
     } catch (e) {
@@ -136,10 +138,13 @@ class _DashboardPageState extends State<DashboardPage> {
             onPressed: () {
               Navigator.push(
                 context,
-                MaterialPageRoute(
-                  builder: (context) => AddProduitPage(),
-                ),
-              );
+                MaterialPageRoute(builder: (_) => AddProduitPage()),
+              ).then((_) {
+                // recharge les lots après être revenu
+                _loadLots();
+              });
+
+
             },
           ),
         ],
@@ -397,7 +402,10 @@ class _DashboardPageState extends State<DashboardPage> {
             MaterialPageRoute(
               builder: (context) => AddProduitPage(),
             ),
-          );
+          ).then((_) {
+            // recharge les lots après être revenu
+            _loadLots();
+          });
         },
         child: const Icon(Icons.add, size: 28),
         elevation: 4,
@@ -501,7 +509,10 @@ class _DashboardPageState extends State<DashboardPage> {
             medicamentId: lots.first.idMedicament,
           ),
         ),
-      );
+      ).then((_) {
+        // recharge les lots après être revenu
+        _loadLots();
+      });
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Aucun lot disponible pour $medicamentName')),
