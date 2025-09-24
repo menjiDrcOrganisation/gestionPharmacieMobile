@@ -114,7 +114,6 @@ class _VendreState extends State<Vendre> {
       );
     }
 
-
     return Scaffold(
       appBar: AppbarTest(title: "Espace vente",pageDeRemplacement: ViewDash()).lancer(context),
       body: StructurePage(

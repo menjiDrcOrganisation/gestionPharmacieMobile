@@ -7,7 +7,7 @@ import '../GetStorage/LotStorage.dart';
 import '../GetStorage/Pharmacie.dart';
 
 class LotService {
-   static  String baseUrl = "${Utilise.baseUrl}pharmacies/1/medicaments";
+
 
   // Récupérer tous les lots
    Future<List<Lot>> fetchLots() async {

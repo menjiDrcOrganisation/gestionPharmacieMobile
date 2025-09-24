@@ -37,7 +37,6 @@ class VenteController {
     // Formater en "yyyy-MM-dd"
     String formattedDate = DateFormat('yyyy-MM-dd').format(now);
 
-    print(formattedDate);
     Map<String, dynamic> vente={
       "date_vente" : formattedDate,
       "montant_total" :montant_total.toString(),

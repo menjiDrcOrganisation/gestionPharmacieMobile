@@ -3,6 +3,7 @@ class Lot {
   final String numeroLot;
   final int prixAchat;
   final int quantite;
+  final int quantite_reel;
   final int prixUnitaire;
   final String dateExpiration;
   final int idMedicament;
@@ -16,6 +17,7 @@ class Lot {
     required this.numeroLot,
     required this.prixAchat,
     required this.quantite,
+    required this.quantite_reel,
     required this.prixUnitaire,
     required this.dateExpiration,
     required this.idMedicament,
@@ -31,6 +33,7 @@ class Lot {
       numeroLot: json['numero_lot'] ?? '',
       prixAchat: json['prix_achat'] ?? 0,
       quantite: json['quantite'] ?? 0,
+      quantite_reel: json['quantite_reel']?? 0,
       prixUnitaire: json['prix_unitaire'] ?? 0,
       dateExpiration: json['date_expiration'] ?? '',
       idMedicament: json['id_medicament'] ?? 0,

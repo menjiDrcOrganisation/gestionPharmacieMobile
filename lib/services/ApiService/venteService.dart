@@ -36,10 +36,8 @@ class VenteService {
   /// Ajouter une nouvelle vente
   Future<void> createVente(Map<String, dynamic> vente) async {
     String idPharma = await PharmacieStorage.getPharma();
-    print("eeeeehh");
 
     try {
-
 
       final response = await http.post(
         Uri.parse("${baseUrl}pharmacie/$idPharma/vente"),
