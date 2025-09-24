@@ -14,6 +14,7 @@ import '../../services/GetStorage/local_storage_service.dart';
 import '../../utils/navigation.dart';
 import '../lots/ListLots.dart';
 import '../pharmacie/pharmacoePage.dart';
+import '../rapport/viewRapport.dart';
 import '../vente/vendre.dart';
 import '../lots/LotRegisterPage.dart';
 import '../../services/GetStorage/LotStorage.dart';
@@ -127,19 +128,14 @@ class _ViewDashState extends State<ViewDash> {
                   ).lancer(),
                 ),
                 SizedBox(width: 8),
-                Expanded(
-                  child: Option(
-                    src: 'assets/Icone/inventaire-alternatif 1.png',
-                    intitule: "Invent",
-                    action: () {},
-                  ).lancer(),
-                ),
-                SizedBox(width: 8),
+
                 Expanded(
                   child: Option(
                     src: 'assets/Icone/traitement 1.png',
                     intitule: "Rapport",
-                    action: () {},
+                    action: () {
+                      goToPagePlacement(context,ViewRapport());
+                    },
                   ).lancer(),
                 ),
               ],
