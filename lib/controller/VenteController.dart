@@ -44,7 +44,7 @@ class VenteController {
       "lots_ids":id_lots,
       "quantite_medicament_lot":quantites
     };
-    print(vente);
+
     VenteService().createVente(vente);
 
 

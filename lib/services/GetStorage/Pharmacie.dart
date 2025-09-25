@@ -8,7 +8,6 @@ class PharmacieStorage {
   /// Sauvegarder la liste de lots
   static Future<void> savePharmacie(id) async {
     final prefs = await SharedPreferences.getInstance();
-
     await prefs.setString(PHAR_KEY, id);
   }
 
@@ -17,9 +16,6 @@ class PharmacieStorage {
 
     final prefs = await SharedPreferences.getInstance();
     String? id= prefs.getString(PHAR_KEY);
-
-
-    print(id);
 
     if (id != null) {
       return id;

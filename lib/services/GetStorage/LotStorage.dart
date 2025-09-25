@@ -18,9 +18,13 @@ class LotStorage {
     final prefs = await SharedPreferences.getInstance();
     final List<String>? lotStrings = prefs.getStringList(LOT_KEY);
 
+
     if (lotStrings != null) {
-      return lotStrings.map((str) => Lot.fromJson(jsonDecode(str))).toList();
-    } else {
+      return lotStrings.map((str) {
+       return  Lot.fromJson(jsonDecode(str));
+      }).toList();
+    }
+    else {
       return [];
     }
   }

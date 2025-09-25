@@ -18,7 +18,6 @@ class LotService {
 
     try {
       final response = await http.get(Uri.parse("$baseUrl/$idPharma"));
-
       if (response.statusCode == 200) {
         print('Réponse API brute: ${response.body}');
         final decodedData = jsonDecode(response.body);
@@ -60,6 +59,7 @@ class LotService {
 
   /// Chargement local
   Future<List<Lot>> getLocalLots(String idPharma) async {
+
     final prefs = await SharedPreferences.getInstance();
     String? lotsJson = prefs.getString("lots_$idPharma");
 

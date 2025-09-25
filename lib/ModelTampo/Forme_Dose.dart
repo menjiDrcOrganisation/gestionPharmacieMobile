@@ -22,6 +22,16 @@ class Forme {
       updatedAt: json['updated_at'],
     );
   }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'id_forme': idForme,
+      'nom': nom,
+      'description': description,
+      'created_at': createdAt,
+      'updated_at': updatedAt,
+    };
+  }
 }
 
 class Dose {
@@ -48,23 +58,15 @@ class Dose {
       updatedAt: json['updated_at'],
     );
   }
-}
 
-class FormeAndDoseResponse {
-  final List<Forme> formes;
-  final List<Dose> doses;
-
-  FormeAndDoseResponse({required this.formes, required this.doses});
-
-  factory FormeAndDoseResponse.fromJson(Map<String, dynamic> json) {
-    var formeList = (json['forme'] as List)
-        .map((item) => Forme.fromJson(item))
-        .toList();
-
-    var doseList = (json['dose'] as List)
-        .map((item) => Dose.fromJson(item))
-        .toList();
-
-    return FormeAndDoseResponse(formes: formeList, doses: doseList);
+  Map<String, dynamic> toJson() {
+    return {
+      'id_dose': idDose,
+      'quantite': quantite,
+      'unite': unite,
+      'created_at': createdAt,
+      'updated_at': updatedAt,
+    };
   }
 }
+

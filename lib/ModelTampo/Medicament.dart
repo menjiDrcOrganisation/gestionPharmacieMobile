@@ -30,5 +30,8 @@ class Medicament {
     "id_medicament": id,
     "nom": nom,
     "description": description,
+    "forme":forme.toJson(),
+    "dose":dose.toJson(),
+
   };
 }

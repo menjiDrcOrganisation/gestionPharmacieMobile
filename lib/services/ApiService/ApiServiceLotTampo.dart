@@ -10,23 +10,35 @@ class LotService {
 
 
   // Récupérer tous les lots
-   Future<List<Lot>> fetchLots() async {
-     String idPharma = await PharmacieStorage.getPharma();
-     String base= "${Utilise.baseUrl}pharmacies/${idPharma}/medicaments";
-     final response = await http.get(Uri.parse(base));
-     print(response.statusCode);
-     if (response.statusCode == 200) {
-       // On décode directement en liste
-       final Map<String, dynamic> data = jsonDecode(response.body);
-       final List<dynamic> lotsJson = data["data"];
+  Future<List<Lot>> fetchLots() async {
+    try {
+      String idPharma = await PharmacieStorage.getPharma();
+      String base = "${Utilise.baseUrl}pharmacies/${idPharma}/medicaments";
 
-       List<Lot> lots = lotsJson.map((item) => Lot.fromJson(item)).toList();
-       LotStorage.saveLots(lots);
-       return lots;
-     } else {
-       throw Exception("Erreur lors du chargement des lots : ${response.statusCode}");
-     }
-   }
+      final response = await http.get(Uri.parse(base));
+
+
+      if (response.statusCode == 200) {
+        // On décode directement en liste
+        final Map<String, dynamic> data = jsonDecode(response.body);
+        final List<dynamic> lotsJson = data["data"];
+
+        List<Lot> lots = lotsJson.map((item) => Lot.fromJson(item)).toList();
+        await LotStorage.saveLots(lots);
+
+        return lots;
+      } else {
+        // Erreur serveur → on lit depuis le cache
+        print("⚠️ Erreur API ${response
+            .statusCode}, récupération du cache local");
+        return await LotStorage.getLots();
+      }
+    } catch (e) {
+      // Erreur réseau (connexion perdue, timeout, etc.)
+
+      return await LotStorage.getLots();
+    }
+  }
 
 
   // Récupérer un lot par son ID
@@ -37,7 +49,8 @@ class LotService {
       final Map<String, dynamic> data = jsonDecode(response.body);
       return Lot.fromJson(data);
     } else {
-      throw Exception("Erreur lors du chargement du lot $id : ${response.statusCode}");
+      throw Exception(
+          "Erreur lors du chargement du lot $id : ${response.statusCode}");
     }
   }
 
@@ -53,7 +66,8 @@ class LotService {
       final Map<String, dynamic> data = jsonDecode(response.body);
       return Lot.fromJson(data);
     } else {
-      throw Exception("Erreur lors de la création du lot : ${response.statusCode}");
+      throw Exception(
+          "Erreur lors de la création du lot : ${response.statusCode}");
     }
   }
 
@@ -70,7 +84,8 @@ class LotService {
       final Map<String, dynamic> data = jsonDecode(response.body);
       return Lot.fromJson(data);
     } else {
-      throw Exception("Erreur lors de la mise à jour du lot $id : ${response.statusCode}");
+      throw Exception(
+          "Erreur lors de la mise à jour du lot $id : ${response.statusCode}");
     }
   }
 
@@ -79,7 +94,7 @@ class LotService {
     final response = await http.delete(Uri.parse(""));
 
     if (response.statusCode != 204) {
-      throw Exception("Erreur lors de la suppression du lot $id : ${response.statusCode}");
+      throw Exception(
+          "Erreur lors de la suppression du lot $id : ${response.statusCode}");
     }
-  }
-   }
+  }}
