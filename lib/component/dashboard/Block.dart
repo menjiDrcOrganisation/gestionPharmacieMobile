@@ -59,7 +59,7 @@ class Block {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
-                    montant,
+                    _formatMontant(montant),
                     style: TextStyle(
                       fontSize: blockWidth * 0.1, // taille texte adaptative
                       fontWeight: FontWeight.w600,
@@ -82,5 +82,16 @@ class Block {
         ),
       ),
     );
+  }
+
+  // Fonction pour convertir le montant en K si >= 1000
+  String _formatMontant(String montant) {
+    int? value = int.tryParse(montant.replaceAll(RegExp(r'[^0-9]'), ''));
+    if (value == null) return montant; // si non numérique
+    if (value >= 1000) {
+      double valK = value / 1000;
+      return valK.toStringAsFixed(1) + 'K';
+    }
+    return value.toString();
   }
 }

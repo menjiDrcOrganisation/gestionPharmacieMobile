@@ -12,6 +12,7 @@ import '../../component/dashboard/Block.dart';
 import '../../model/userModel.dart';
 import '../../services/GetStorage/local_storage_service.dart';
 import '../../utils/navigation.dart';
+import '../Notification/AllNotification.dart';
 import '../lots/ListLots.dart';
 import '../pharmacie/pharmacoePage.dart';
 import '../rapport/viewRapport.dart';
@@ -206,6 +207,10 @@ class _ViewDashState extends State<ViewDash> {
       bottomNavigationBar: Bottomapp(
         onAccueil: (){
           goToPagePlacement(context,ViewDash());
+        },
+        onNotif: (){
+          goToPagePlacement(context,AllNotification());
+          print('hello');
         },
         onUser:(){
           goToPage(context,ProfilePage());

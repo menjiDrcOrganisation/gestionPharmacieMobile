@@ -12,6 +12,7 @@ class AppbarTest {
 
   AppBar lancer(BuildContext context) {
     return AppBar(
+
       title: Text(title),
       backgroundColor: MyColors.primaryColor, // remplace avec MyColors.primaryColor
       automaticallyImplyLeading: false,

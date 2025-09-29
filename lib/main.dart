@@ -14,7 +14,7 @@ Future<void> main() async {
   await notificationPush.init();
 
   // Vérification périodique tous les 5s
-  Timer.periodic(const Duration(seconds: 5), (timer) async {
+  Timer.periodic(const Duration(seconds: 10), (timer) async {
     List<Lot> lots = await LotStorage.getLots();
     for (var medoc in lots) {
       if (isNearExpiration(DateTime.parse(medoc.dateExpiration))) {
@@ -37,8 +37,9 @@ int joursRestants(DateTime dateExpiration) {
 
 bool isNearExpiration(DateTime dateExpiration, {int daysBefore = 7}) {
   final diff = joursRestants(dateExpiration);
-  return diff <= daysBefore;
+  return diff <= daysBefore && diff>=0;
 }
+
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
