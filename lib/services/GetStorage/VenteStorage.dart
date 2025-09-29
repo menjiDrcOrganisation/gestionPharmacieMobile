@@ -15,10 +15,12 @@ class VenteStorage {
   }
 
   /// ajouter une vente AddVente
-  static Future<void> AddVente(Vente vente) async {
+  static Future<void> AddVente(Map<String, dynamic> vente) async {
+
+    //effectuer une vente en local en utilisant meme les lots en local
     final prefs = await SharedPreferences.getInstance();
     final List<String>? ventes = prefs.getStringList(VENTE_KEY);
-    final venteEncodeString=jsonEncode(vente.toJson());
+    final venteEncodeString=jsonEncode(vente);
     ventes!.add(venteEncodeString);
 
     //List<Vente> lotStrings = ventes!.map((vente) => Vente.fromJson(jsonDecode(vente))).toList();

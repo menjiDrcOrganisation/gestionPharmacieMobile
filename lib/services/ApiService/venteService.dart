@@ -4,6 +4,7 @@ import 'package:gestion_pharmacie_mobile/ModelTampo/Vente.dart';
 
 import '../../utils/Utilis.dart';
 import '../GetStorage/Pharmacie.dart';
+import '../GetStorage/VenteStorage.dart';
 
 class VenteService {
   final String baseUrl = "${Utilise.baseUrl}";
@@ -45,19 +46,21 @@ class VenteService {
         body: jsonEncode(vente),
       );
 
-
       if (response.statusCode == 200 || response.statusCode == 201) {
+        //VenteStorage.AddVente(vente);
         // Succès
         print("Vente créée avec succès : ${response.body}");
       } else {
-        // Erreur côté serveur
-        print("Erreur serveur : ${response.body}");
+        await VenteStorage.AddVente(vente);
+        print("Erreur Vente ajouter en local");
+
         throw Exception("Échec de la création de la vente (${response.statusCode})");
       }
     } catch (e) {
+      await VenteStorage.AddVente(vente);
       // Erreur réseau ou JSON
-      print("Erreur lors de la création de la vente : $e");
-      rethrow; // pour remonter l'erreur si tu veux la gérer dans l'UI
+      print("Erreur Vente ajouter en local");
+     rethrow; // pour remonter l'erreur si tu veux la gérer dans l'UI
     }
   }
 
