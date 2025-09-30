@@ -29,7 +29,7 @@ class Bottomapp {
               },
             ),
             InkWell(
-              onTap:onNotif ,
+              onTap:onNotif,
               child:
               Stack(
                 children: [

@@ -13,7 +13,7 @@ class AppbarTest {
   AppBar lancer(BuildContext context) {
     return AppBar(
 
-      title: Text(title),
+      title: Text(title,style: TextStyle(color: Colors.white),),
       backgroundColor: MyColors.primaryColor, // remplace avec MyColors.primaryColor
       automaticallyImplyLeading: false,
       leading:pageDeRemplacement != null? IconButton(
