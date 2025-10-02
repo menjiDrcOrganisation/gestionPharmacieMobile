@@ -54,7 +54,7 @@ class LookPharma {
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           Text(
-                          this.title,
+                          capitalize(this.title),
                           style: TextStyle(
                             fontWeight: FontWeight.bold,
                             fontFamily: 'Schyler',
@@ -78,7 +78,10 @@ class LookPharma {
                   ),
                 ),
 
-                Icon(Icons.arrow_forward_ios, size: 16),
+                Padding(
+                  padding: const EdgeInsets.all(15.0),
+                  child: Icon(Icons.arrow_forward_ios, size: 16),
+                ),
               ],
             ),
           ),
@@ -86,4 +89,8 @@ class LookPharma {
       ),
     );
   }
+}
+String capitalize(String s) {
+  if (s.isEmpty) return s;
+  return s[0].toUpperCase() + s.substring(1);
 }

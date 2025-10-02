@@ -42,7 +42,7 @@ class PharmacieService {
   }
 
   // Récupérer les pharmacies d’un gérant
-  Future<List<Pharmacie>> fetchPharmaciesDuGerant(int idGerant) async {
+  Future<List<Pharmacie>> fetchPharmaciesDuGerant() async {
     RoleInfo? user = await LocalStorageService().getRoleInfo();
 
     int? idUser=user?.id;
@@ -56,7 +56,7 @@ class PharmacieService {
       final data = jsonDecode(response.body) as List;
       return data.map((json) => Pharmacie.fromJson(json)).toList();
     } else {
-      throw Exception("Erreur lors de la récupération des pharmacies du gérant $idGerant : ${response.statusCode}");
+      throw Exception("Erreur lors de la récupération des pharmacies du gérant : ${response.statusCode}");
     }
   }
 

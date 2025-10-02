@@ -48,6 +48,10 @@ class _ViewDashState extends State<ViewDash> {
     try {
       final ventesData = await VenteService().fetchVentes();
 
+      // Trier les ventes par date décroissante (les plus récentes en premier)
+      ventesData.sort((a, b) => DateTime.parse(b.dateVente)
+          .compareTo(DateTime.parse(a.dateVente)));
+
       double totalJour = 0.0;
       double totalMois = 0.0;
       DateTime today = DateTime.now();
@@ -56,11 +60,8 @@ class _ViewDashState extends State<ViewDash> {
         DateTime dateVente = DateTime.parse(vente.dateVente);
         double montant = double.tryParse(vente.montant_total) ?? 0.0;
 
-        // Vérifie la vente du mois
         if (dateVente.year == today.year && dateVente.month == today.month) {
           totalMois += montant;
-
-          // Vérifie la vente du jour
           if (dateVente.day == today.day) {
             totalJour += montant;
           }
@@ -76,6 +77,7 @@ class _ViewDashState extends State<ViewDash> {
       print("Erreur lors de la récupération des ventes : $e");
     }
   }
+
 
   @override
   Widget build(BuildContext context) {
@@ -190,16 +192,44 @@ class _ViewDashState extends State<ViewDash> {
               ),
               child: Ventes.isEmpty
                   ? Text("Aucune activité récente")
-                  : ListView.builder(
-                shrinkWrap: true,
-                physics: NeverScrollableScrollPhysics(),
-                itemCount: Ventes.length > 5 ? 5 : Ventes.length,
-                itemBuilder: (context, index) {
-                  final v = Ventes[index];
-                  final date = DateFormat('dd/MM – HH:mm').format(DateTime.parse(v.dateVente));
-                  return Text("$date · Vente · ${v.nom_client ?? 'Client'} · ${v.montant_total} FC");
-                },
-              ),
+                  : Column(
+                    children: [
+                      ListView.builder(
+                                      shrinkWrap: true,
+                                      physics: NeverScrollableScrollPhysics(),
+                                      itemCount: Ventes.length > 5 ? 5 : Ventes.length,
+                                      itemBuilder: (context, index) {
+                      final v = Ventes[index];
+                      final date = DateFormat('dd/MM ').format(DateTime.parse(v.dateVente));
+                      return Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 4.0),
+                        child:  Column(
+                          children: [
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Text(date, style: TextStyle(fontWeight: FontWeight.w500)),
+                                Text(v.nom_client ?? 'Client'),
+                                Text("${v.montant_total} FC",
+                                    style: TextStyle(fontWeight: FontWeight.bold)),
+                                Divider()
+                              ],
+                            ),
+
+
+                          ],
+                        ),
+                      );
+                                      },
+                                    ),
+                      InkWell(
+                        onTap: (){
+                          goToPagePlacement(context, ViewRapport());
+                        },
+                        child: Text("Voir plus",style: TextStyle(color: Colors.blue,decoration: TextDecoration.underline),) ,
+                      )
+                    ],
+                  ),
             ),
           ],
         ),
@@ -210,7 +240,6 @@ class _ViewDashState extends State<ViewDash> {
         },
         onNotif: (){
           goToPagePlacement(context,AllNotification());
-          print('hello');
         },
         onUser:(){
           goToPage(context,ProfilePage());
