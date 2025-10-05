@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../component/AppBarTest.dart';
+import '../../component/rapport/cardBlock.dart';
 import '../../controller/Rapport_vente_controller.dart';
 import '../../model/RapportVente.dart';
 import '../dashboard/viewDash.dart';
@@ -59,13 +60,14 @@ class _ViewRapportState extends State<ViewRapport> {
 
             return SafeArea(
               child: Column(
+
                 children: [
                   AppbarTest(
                     title: "Rapport",
                     pageDeRemplacement: ViewDash(),
                   ).lancer(context),
 
-                  // Titre + filtre date
+                // Titre + filtre date
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                     child: Row(
@@ -85,6 +87,8 @@ class _ViewRapportState extends State<ViewRapport> {
                   ),
 
                   Container(
+                    width: double.infinity,
+                    margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                     padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                     decoration: BoxDecoration(
                       color: Colors.white,
@@ -119,17 +123,19 @@ class _ViewRapportState extends State<ViewRapport> {
                     ),
                   ),
 
+
                   // Statistiques (montant + quantité)
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                   child: Row(
                     children: [
+
                       _buildStatCard(
                         "Montant vendu",
-                        "${montantTotal} ",
+                        "${montantTotal.toInt()} ",
                         Colors.indigo,
 
-                        Text("FC",style: TextStyle(fontSize:16,color: Colors.white,fontWeight: FontWeight.bold),),
+                        Text("FC",style: TextStyle(fontSize:16,color: Colors.black,fontWeight: FontWeight.bold),),
                         context, //
                       ),
                       const SizedBox(width: 16),
@@ -137,7 +143,7 @@ class _ViewRapportState extends State<ViewRapport> {
                         "Quantité vendue",
                         "$quantiteTotale",
                         Colors.teal,
-                        Icon(Icons.inventory_2_outlined,color: Colors.white, )
+                        Icon(Icons.inventory_2_outlined,color: Colors.black, )
                         ,
                         context, //
                       ),
@@ -149,7 +155,7 @@ class _ViewRapportState extends State<ViewRapport> {
                   // Liste des ventes
                   Expanded(
                     child: ListView.builder(
-                      padding: const EdgeInsets.all(16),
+                      padding: const EdgeInsets.all(13),
                       itemCount: ventesDuJour.length,
                       itemBuilder: (context, index) {
                         final vente = ventesDuJour[index];
@@ -157,38 +163,11 @@ class _ViewRapportState extends State<ViewRapport> {
                         vente.lots.fold(0, (sum, lot) => sum + lot.quantite);
                         final montantVente = double.tryParse(vente.montantTotal) ?? 0;
 
-                        return Card(
-                          margin: const EdgeInsets.symmetric(vertical: 8),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(18),
-                          ),
-                          elevation: 4,
-                          child: ListTile(
-                            contentPadding: const EdgeInsets.all(16),
-                            leading: CircleAvatar(
-                              backgroundColor: Colors.blueAccent.withOpacity(0.2),
-                              child: const Icon(Icons.person, color: Colors.blueAccent),
-                            ),
-                            title: Text(
-                              "Client: ${vente.nomClient}",
-                              style: const TextStyle(
-                                  fontWeight: FontWeight.bold, color: Colors.black87),
-                            ),
-                            subtitle: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                const SizedBox(height: 4),
-                                Text("Vente N° ${vente.idVente} | Lots: $quantiteVente"),
-                                Text("Total: ${montantVente.toStringAsFixed(2)} FC",
-                                    style: const TextStyle(fontWeight: FontWeight.w600)),
-                              ],
-                            ),
-                            trailing: IconButton(
-                              icon: const Icon(Icons.info_outline, color: Colors.blueAccent),
-                              onPressed: () => _showDetails(context, vente, quantiteVente, montantVente),
-                            ),
-                          ),
-                        );
+                        return  createPaiementMarchandCard(
+                          titre: "Vente N° ${vente.idVente}",
+                            montant: montantVente.toStringAsFixed(2),
+                            heure: '08:32',
+                            onVoirDetailsTap: () => _showDetailsBottom(context, vente, quantiteVente, montantVente));
                       },
                     ),
                   ),
@@ -202,61 +181,89 @@ class _ViewRapportState extends State<ViewRapport> {
   }
 
   //  Popup détails améliorée
-  void _showDetails(BuildContext context, vente, int quantiteVente, double montantVente) {
-    showDialog(
+  void _showDetailsBottom(BuildContext context, vente, int quantiteVente, double montantVente) {
+    showModalBottomSheet(
+      transitionAnimationController: AnimationController(
+        vsync: Navigator.of(context),
+        duration: const Duration(milliseconds: 600), // vitesse de l’animation
+      ),
+
       context: context,
-      builder: (context) => AlertDialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-        title: const Text("Détails de la vente",
-            style: TextStyle(fontWeight: FontWeight.bold)),
-        content: SizedBox(
-          width: double.maxFinite,
+      isScrollControlled: true, // pour permettre d'avoir plus d'espace
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (context) => DraggableScrollableSheet(
+
+        expand: false,
+        initialChildSize: 0.6,
+        minChildSize: 0.4,
+        maxChildSize: 0.9,
+        builder: (_, controller) => Padding(
+          padding: const EdgeInsets.all(16),
           child: Column(
-            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Row(
+              Center(
+                child: Container(
+                  width: 40,
+                  height: 5,
+                  margin: const EdgeInsets.only(bottom: 12),
+                  decoration: BoxDecoration(
+                    color: Colors.grey[400],
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                ),
+              ),
+              Text("Détails ",
+                  style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
+              const SizedBox(height: 16),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch, // pour que les containers prennent toute la largeur
                 children: [
-                  Expanded(
-                    child: Container(
-                      padding: const EdgeInsets.all(12),
-                      decoration: BoxDecoration(
-                        color: Colors.blue[50],
-                        borderRadius: BorderRadius.circular(12),
-                        border: Border.all(color: Colors.blueAccent),
+                  Container(
+                    padding: const EdgeInsets.all(12),
+                    margin: const EdgeInsets.only(bottom: 8), // espace entre les deux
+                    decoration: BoxDecoration(
+                      color: Colors.blue[50],
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(color: Colors.blueAccent),
+                    ),
+                    child: Text(
+                      "Quantité: $quantiteVente",
+                      textAlign: TextAlign.center,
+                      style: const TextStyle(
+                        fontWeight: FontWeight.w500,
+                        color: Colors.blueAccent,
                       ),
-                      child: Text("Quantité: $quantiteVente",
-                          textAlign: TextAlign.center,
-                          style: const TextStyle(
-                              fontWeight: FontWeight.w500, color: Colors.blueAccent)),
                     ),
                   ),
-                  const SizedBox(width: 8),
-                  Expanded(
-                    child: Container(
-                      padding: const EdgeInsets.all(12),
-                      decoration: BoxDecoration(
-                        color: Colors.green[50],
-                        borderRadius: BorderRadius.circular(12),
-                        border: Border.all(color: Colors.green),
+                  Container(
+                    padding: const EdgeInsets.all(12),
+                    decoration: BoxDecoration(
+                      color: Colors.green[50],
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(color: Colors.green),
+                    ),
+                    child: Text(
+                      "Montant: ${montantVente.toStringAsFixed(2)} FC",
+                      textAlign: TextAlign.center,
+                      style: const TextStyle(
+                        fontWeight: FontWeight.w500,
+                        color: Colors.green,
                       ),
-                      child: Text("Montant: ${montantVente.toStringAsFixed(2)} FC",
-                          textAlign: TextAlign.center,
-                          style: const TextStyle(
-                              fontWeight: FontWeight.w500, color: Colors.green)),
                     ),
                   ),
                 ],
               ),
+
               const SizedBox(height: 16),
-              const Align(
-                alignment: Alignment.centerLeft,
-                child: Text("Lots de médicaments :",
-                    style: TextStyle(fontWeight: FontWeight.bold)),
-              ),
+              const Text("médicaments",
+                  style: TextStyle(fontWeight: FontWeight.bold)),
               const SizedBox(height: 8),
-              SizedBox(
-                height: 160,
+              Expanded(
                 child: ListView.builder(
+                  controller: controller,
                   itemCount: vente.lots.length,
                   itemBuilder: (context, i) {
                     final lot = vente.lots[i];
@@ -274,23 +281,28 @@ class _ViewRapportState extends State<ViewRapport> {
                   },
                 ),
               ),
+              const SizedBox(height: 12),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  TextButton.icon(
+                    onPressed: () {},
+                    icon: const Icon(Icons.print, size: 18),
+                    label: const Text("Imprimer"),
+                  ),
+                  TextButton(
+                    onPressed: () => Navigator.pop(context),
+                    child: const Text("Fermer"),
+                  ),
+                ],
+              )
             ],
           ),
         ),
-        actions: [
-          TextButton.icon(
-            onPressed: () {},
-            icon: const Icon(Icons.print, size: 18),
-            label: const Text("Imprimer"),
-          ),
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text("Fermer"),
-          ),
-        ],
       ),
     );
   }
+
 
 }
 Widget _buildStatCard(String title, String value, Color color, Widget? leading,  BuildContext context) {
@@ -315,24 +327,32 @@ Widget _buildStatCard(String title, String value, Color color, Widget? leading, 
       height: cardHeight,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(16),
-        gradient: LinearGradient(
-          colors: [color.withOpacity(0.7), color],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
+        border: Border.all(
+          color: Colors.black26, // couleur de la bordure
+          width: 1,           // épaisseur de la bordure
         ),
         boxShadow: [
           BoxShadow(
-            color: color.withOpacity(0.3),
-            blurRadius: 6,
-            offset: const Offset(0, 3),
+            color: Colors.white,
+            spreadRadius: 1,
+            blurRadius: 2,
+            offset: Offset(0, 0), // décalage ombre
           ),
         ],
       ),
       child: Padding(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.symmetric(vertical: 1,horizontal:10),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
+          mainAxisSize: MainAxisSize.max,
           children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: [
+                Icon(Icons.access_time_sharp,color: Colors.black,)
+              ],
+            ),
             Row(
               children: [
                 leading ?? const SizedBox(), // si non défini, rien
@@ -341,7 +361,7 @@ Widget _buildStatCard(String title, String value, Color color, Widget? leading, 
                   child: Text(
                     displayValue,
                     style: TextStyle(
-                      color: Colors.white,
+                      color: Colors.orange,
                       fontWeight: FontWeight.bold,
                       fontSize: valueFontSize,
                     ),
@@ -350,11 +370,10 @@ Widget _buildStatCard(String title, String value, Color color, Widget? leading, 
                 ),
               ],
             ),
-            const Spacer(),
             Text(
               title,
               style: TextStyle(
-                color: Colors.white70,
+                color: Colors.black,
                 fontSize: titleFontSize,
               ),
             ),

@@ -76,7 +76,6 @@ class LocalStorageService {
 
     if (jsonStr != null) {
       final Map<String, dynamic> jsonMap = jsonDecode(jsonStr);
-      print(jsonMap);
       print(RoleInfo.fromJson(jsonMap));
       return RoleInfo.fromJson(jsonMap);
     }

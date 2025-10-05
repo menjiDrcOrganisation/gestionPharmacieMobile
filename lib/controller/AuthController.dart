@@ -24,10 +24,11 @@ class AuthController {
 
    final roleInfo = result['role'] ;
 
-
     await _localStorage.saveToken(token);
     await _localStorage.saveUser(user);
     await _localStorage.saveRoleInfo(roleInfo);
+
+    print('nini');
     return user;
   }
 
@@ -59,15 +60,13 @@ class AuthController {
     final result =
     await _apiService.register(name, email, password, role);
 
-
-
     final token = result['token'];
     final user = result['user'] as User;
-   // final roleInfo = result['roleInfo'] as RoleInfo;
+    final roleInfo = result['roleInfo'] as RoleInfo;
 
     await _localStorage.saveToken(token);
     await _localStorage.saveUser(user);
-  //  await _localStorage.saveRoleInfo(roleInfo);
+    await _localStorage.saveRoleInfo(roleInfo);
 
     return user;
   }

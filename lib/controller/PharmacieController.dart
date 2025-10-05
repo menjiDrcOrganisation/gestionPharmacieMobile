@@ -7,10 +7,9 @@ import '../services/GetStorage/local_storage_service.dart';
 class ControllerPharmacie{
 
   static Future<Pharmacie> createPhramacie(nom,ville,quartier,rue,tel,indice) async{
+
     RoleInfo? user = await LocalStorageService().getRoleInfo();
-    print(user!.id);
     int? idUser=user!.id;
-    print("id genrant $idUser");
     Pharmacie pharmacie = Pharmacie(
       id: 0,
       nom: nom,
@@ -29,8 +28,6 @@ class ControllerPharmacie{
   static Future<Pharmacie> showPhramacie(id_pharmacie) async{
 
     Future<Pharmacie> pharma=PharmacieService().fetchPharmacieById(id_pharmacie);
-    print(pharma);
-
     return pharma;
 
   }

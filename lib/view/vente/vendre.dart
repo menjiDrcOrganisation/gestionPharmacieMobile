@@ -40,9 +40,12 @@ class _VendreState extends State<Vendre> {
     try {
       final allLots = await LotService().fetchLots();
 
+
+
       // Map pour garder le premier lot pour chaque combinaison
       final Map<String, Lot> lotsParCle = {};
       for (var lot in allLots) {
+        print(lot.quantite);
         final key = "${lot.medicament.nom}-${lot.medicament.forme.nom}-${lot.medicament.dose.quantite}";
         if (lot.quantite <= 0) continue;
         if (!lotsParCle.containsKey(key)) {

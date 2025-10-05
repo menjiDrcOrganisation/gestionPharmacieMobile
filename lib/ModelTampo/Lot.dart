@@ -27,7 +27,7 @@ class Lot {
 
     return Lot(
       idLot: json['id_lot'] as int,
-      quantite: 23,
+      quantite:json['quantite'] ,
       prixAchat: json['prix_achat'] as int,
       prixUnitaire: json['prix_unitaire'] as int,
       numeroLot: json['numero_lot'] as String,

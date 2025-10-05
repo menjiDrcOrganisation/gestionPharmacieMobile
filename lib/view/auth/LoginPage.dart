@@ -111,7 +111,7 @@ class _LoginPageState extends State<LoginPage> {
         _emailController.text,
         _passwordController.text,
       )
-          .timeout(const Duration(seconds: 10));
+          .timeout(const Duration(seconds: 30));
 
       _showToast('Bienvenue, ${user.name}', isError: false);
       goToPagePlacement(context,Portail());

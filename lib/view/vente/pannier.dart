@@ -65,7 +65,6 @@ class _PannierState extends State<Pannier> {
       });
     }
   }
-
   /// Supprimer un article
   Future<void> removeItem(int index) async {
     panier.removeAt(index);
@@ -122,7 +121,15 @@ class _PannierState extends State<Pannier> {
               colorText: Colors.white,
               colorButton: Colors.red,
               onPressed: (){
-                clearPanier();
+                confirmation(context,"Vous confirmez l'annulation du panier ?",
+                    onOui: () async{
+                      clearPanier();
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(content: Text("la panier vidé")),
+                      );
+                    }
+                );
+
               },
             ).lancer()
           ],
@@ -153,10 +160,15 @@ class _PannierState extends State<Pannier> {
                         padding: const EdgeInsets.symmetric(horizontal: 20),
                         child: const Icon(Icons.delete, color: Colors.white),
                       ),
-                      onDismissed: (direction) {
-                        removeItem(index);
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(content: Text("${item['medicament']} supprimé")),
+                      confirmDismiss: (direction) async {
+                        confirmation(context,"Vous confirmez la suppression?",
+                            onOui: () async{
+                              await VenteController.create(panier);
+                              removeItem(index);
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(content: Text("${item['medicament']} supprimé")),
+                              );
+                            }
                         );
                       },
                       child:  ListTile(

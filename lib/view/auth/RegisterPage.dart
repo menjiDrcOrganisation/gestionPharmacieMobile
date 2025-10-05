@@ -71,12 +71,9 @@ class _RegisterPageState extends State<RegisterPage> {
   final _nameController = TextEditingController();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
-  final _confirmPasswordController = TextEditingController();
   final _authController = AuthController();
 
-
   bool _obscurePassword = true;
-  bool _obscureConfirmPassword = true;
   bool _isLoading = false;
   int _passwordStrength = 0;
   String _passwordFeedback = '';
@@ -278,7 +275,6 @@ class _RegisterPageState extends State<RegisterPage> {
               children: [
                 const SizedBox(height: 50),
                 // Animated header
-
 
                 const SizedBox(height: 10),
                 const Text(
