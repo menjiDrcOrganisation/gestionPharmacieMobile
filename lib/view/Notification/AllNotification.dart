@@ -37,7 +37,6 @@ class _AllNotificationState extends State<AllNotification> {
         });
       }
     }
-
     setState(() {
       notifications = notifList;
     });
@@ -71,9 +70,16 @@ class _AllNotificationState extends State<AllNotification> {
                 : Icons.access_time;
 
             return Card(
-              color: cardColor,
+              color: Colors.white,
+              elevation: 0,
               shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(20)),
+                  borderRadius: BorderRadius.circular(10),
+                side: BorderSide(
+                  color: Colors.black12,
+                  width: 1,
+                ),
+              ),
+
               margin: const EdgeInsets.symmetric(vertical: 6),
               child: ListTile(
                 leading: CircleAvatar(
@@ -86,7 +92,7 @@ class _AllNotificationState extends State<AllNotification> {
                 title: Text(
                   notif["medicament"]!,
                   style: const TextStyle(
-                      fontWeight: FontWeight.bold, fontSize: 14,color: Colors.white),
+                      fontWeight: FontWeight.bold, fontSize: 14,color: Colors.black),
                 ),
                 subtitle: Text(
                   "⏳ Expire dans $joursRestants jours",
@@ -106,3 +112,72 @@ class _AllNotificationState extends State<AllNotification> {
     );
   }
 }
+
+Widget buildStatCardAsCard({
+  required String title,
+  required String value,
+  required Color color,
+  Widget? leading,
+  BuildContext? context,
+  double? height,
+}) {
+  final screenWidth = context != null ? MediaQuery.of(context).size.width : 300.0;
+  final screenHeight = context != null ? MediaQuery.of(context).size.height : 150.0;
+
+  final cardHeight = height ?? screenHeight * 0.15;
+  final valueFontSize = screenWidth * 0.05;
+  final titleFontSize = screenWidth * 0.035;
+
+  // Convertir en K si > 999
+  String displayValue = value;
+  double? numericValue = double.tryParse(value.replaceAll(RegExp(r'[^0-9.]'), ''));
+  if (numericValue != null && numericValue >= 1000) {
+    displayValue = (numericValue / 1000).toStringAsFixed(1) + 'K';
+  }
+
+  return Card(
+    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+    elevation: 3,
+    margin: const EdgeInsets.symmetric(vertical: 6, horizontal: 8),
+    child: Container(
+      height: cardHeight,
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(16),
+        color: Colors.white,
+        border: Border.all(color: Colors.black12),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.spaceAround,
+        children: [
+          Row(
+            children: [
+              leading ?? const Icon(Icons.access_time_sharp, color: Colors.black),
+              if (leading != null) const SizedBox(width: 8),
+              Flexible(
+                child: Text(
+                  displayValue,
+                  style: TextStyle(
+                    color: Colors.orange,
+                    fontWeight: FontWeight.bold,
+                    fontSize: valueFontSize,
+                  ),
+                ),
+              ),
+            ],
+          ),
+          Text(
+            title,
+            style: TextStyle(
+              fontSize: titleFontSize,
+              color: Colors.black87,
+            ),
+          ),
+        ],
+      ),
+    ),
+  );
+}
+
+
