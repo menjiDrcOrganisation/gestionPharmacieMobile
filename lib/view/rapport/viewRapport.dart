@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../component/AppBarTest.dart';
+import '../../component/Colors.dart';
 import '../../component/rapport/cardBlock.dart';
 import '../../controller/Rapport_vente_controller.dart';
 import '../../model/RapportVente.dart';
@@ -23,9 +24,9 @@ class _ViewRapportState extends State<ViewRapport> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // Dégradé léger en fond
       body: Container(
         decoration: const BoxDecoration(
+            color: Colors.white38,
           gradient: LinearGradient(
             colors: [Color(0xFFE3F2FD), Color(0xFFFFFFFF)],
             begin: Alignment.topCenter,
@@ -60,32 +61,14 @@ class _ViewRapportState extends State<ViewRapport> {
 
             return SafeArea(
               child: Column(
-
                 children: [
                   AppbarTest(
                     title: "Rapport",
                     pageDeRemplacement: ViewDash(),
                   ).lancer(context),
 
-                // Titre + filtre date
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        const Text(
-                          "Rapport de vente",
-                          style: TextStyle(
-                            fontSize: 22,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.blueGrey,
-                          ),
-                        ),
 
-                      ],
-                    ),
-                  ),
-
+                  SizedBox(height: 10,),
                   Container(
                     width: double.infinity,
                     margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
@@ -93,13 +76,11 @@ class _ViewRapportState extends State<ViewRapport> {
                     decoration: BoxDecoration(
                       color: Colors.white,
                       borderRadius: BorderRadius.circular(14),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.grey.withOpacity(0.2),
-                          blurRadius: 5,
-                          offset: const Offset(0, 3),
-                        ),
-                      ],
+                        border: Border.all(
+                          color: Colors.black26, // couleur de la bordure
+                          width: 0.3,           // épaisseur de la bordure
+                        )
+
                     ),
                     child: DropdownButton<String>(
                       value: selectedDate,
@@ -122,7 +103,6 @@ class _ViewRapportState extends State<ViewRapport> {
                       },
                     ),
                   ),
-
 
                   // Statistiques (montant + quantité)
                 Padding(
@@ -164,7 +144,7 @@ class _ViewRapportState extends State<ViewRapport> {
                         final montantVente = double.tryParse(vente.montantTotal) ?? 0;
 
                         return  createPaiementMarchandCard(
-                          titre: "Vente N° ${vente.idVente}",
+                          titre: "Vente N°${vente.idVente}",
                             montant: montantVente.toStringAsFixed(2),
                             heure: '08:32',
                             onVoirDetailsTap: () => _showDetailsBottom(context, vente, quantiteVente, montantVente));
@@ -218,47 +198,8 @@ class _ViewRapportState extends State<ViewRapport> {
               Text("Détails ",
                   style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
               const SizedBox(height: 16),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch, // pour que les containers prennent toute la largeur
-                children: [
-                  Container(
-                    padding: const EdgeInsets.all(12),
-                    margin: const EdgeInsets.only(bottom: 8), // espace entre les deux
-                    decoration: BoxDecoration(
-                      color: Colors.blue[50],
-                      borderRadius: BorderRadius.circular(12),
-                      border: Border.all(color: Colors.blueAccent),
-                    ),
-                    child: Text(
-                      "Quantité: $quantiteVente",
-                      textAlign: TextAlign.center,
-                      style: const TextStyle(
-                        fontWeight: FontWeight.w500,
-                        color: Colors.blueAccent,
-                      ),
-                    ),
-                  ),
-                  Container(
-                    padding: const EdgeInsets.all(12),
-                    decoration: BoxDecoration(
-                      color: Colors.green[50],
-                      borderRadius: BorderRadius.circular(12),
-                      border: Border.all(color: Colors.green),
-                    ),
-                    child: Text(
-                      "Montant: ${montantVente.toStringAsFixed(2)} FC",
-                      textAlign: TextAlign.center,
-                      style: const TextStyle(
-                        fontWeight: FontWeight.w500,
-                        color: Colors.green,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
 
-              const SizedBox(height: 16),
-              const Text("médicaments",
+              const Text("Médicaments",
                   style: TextStyle(fontWeight: FontWeight.bold)),
               const SizedBox(height: 8),
               Expanded(
@@ -279,6 +220,21 @@ class _ViewRapportState extends State<ViewRapport> {
                           "Quantité: ${lot.quantite} | Prix: ${lot.prixUnitaire} FC"),
                     );
                   },
+                ),
+              ),
+              const SizedBox(height: 12),
+              Container(
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+
+                ),
+                child: Text(
+                  "Prix Total: ${montantVente.toStringAsFixed(2)} FC",
+                  textAlign: TextAlign.center,
+                  style: const TextStyle(
+                    fontWeight: FontWeight.w500,
+                    color: Colors.black,
+                  ),
                 ),
               ),
               const SizedBox(height: 12),
@@ -324,12 +280,13 @@ Widget _buildStatCard(String title, String value, Color color, Widget? leading, 
 
   return Expanded(
     child: Container(
+      padding: EdgeInsets.symmetric(vertical: 10),
       height: cardHeight,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(16),
         border: Border.all(
           color: Colors.black26, // couleur de la bordure
-          width: 1,           // épaisseur de la bordure
+          width: 0.3,           // épaisseur de la bordure
         ),
         boxShadow: [
           BoxShadow(
@@ -361,7 +318,7 @@ Widget _buildStatCard(String title, String value, Color color, Widget? leading, 
                   child: Text(
                     displayValue,
                     style: TextStyle(
-                      color: Colors.orange,
+                      color: MyColors.primaryColor,
                       fontWeight: FontWeight.bold,
                       fontSize: valueFontSize,
                     ),
@@ -374,7 +331,9 @@ Widget _buildStatCard(String title, String value, Color color, Widget? leading, 
               title,
               style: TextStyle(
                 color: Colors.black,
-                fontSize: titleFontSize,
+                fontSize: 15,
+                fontWeight: FontWeight.w400
+
               ),
             ),
           ],

@@ -10,7 +10,6 @@ class LotController {
 
   Future<List<Lot>> getLots() async {
     try {
-
       // Appel API
       return await _lotService.fetchLots();
     } catch (e) {
@@ -37,7 +36,7 @@ class LotController {
 
     try {
       String idPharma = await PharmacieStorage.getPharma();
-      print(idPharma);
+
       Lot_register lot = Lot_register(
         idMedicament: idMedicament,
         quantite: quantite,

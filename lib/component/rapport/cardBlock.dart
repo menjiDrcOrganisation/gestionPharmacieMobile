@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../Colors.dart';
+
 Widget createPaiementMarchandCard({
   required String montant,
   required String heure,
@@ -15,10 +17,9 @@ Widget createPaiementMarchandCard({
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(14),
-
           border: Border.all(
             color: Colors.black26, // couleur de la bordure
-            width: 1,           // épaisseur de la bordure
+            width: 0.3,           // épaisseur de la bordure
           )
       ),
       child: Row(
@@ -36,20 +37,22 @@ Widget createPaiementMarchandCard({
                   titre,
                   style: TextStyle(
                     color: Colors.black,
-                    fontWeight: FontWeight.bold,
+                    fontWeight: FontWeight.w400,
                     fontSize: 16,
                   ),
                 ),
                 SizedBox(height: 10,),
-
                 RichText(
                   text: TextSpan(
                     style: TextStyle(color: Colors.black, fontSize: 16),
                     children: [
-                      TextSpan(text: "Montant - "),
+                      TextSpan(text: "Montant - ",style: TextStyle(
+                        fontWeight: FontWeight.w100,
+                          fontSize: 17
+                      )),
                       TextSpan(
-                        text: "580 Fc",
-                        style: TextStyle(fontWeight: FontWeight.bold, color: Colors.orange),
+                        text: "${montant} Fc",
+                        style: TextStyle(fontWeight: FontWeight.bold,fontSize: 17, color: MyColors.primaryColor),
                       ),
                     ],
                   ),
@@ -61,7 +64,7 @@ Widget createPaiementMarchandCard({
                   children: [
                     Text(
                       heure,
-                      style: TextStyle(color: Colors.blue),
+                      style: TextStyle(color: Colors.black),
                     ),
                     Spacer(), // pousse "voir plus" à droite
                     GestureDetector(
@@ -69,8 +72,8 @@ Widget createPaiementMarchandCard({
                       child: Text(
                         "Voir plus",
                         style: TextStyle(
-                          color: Colors.blue,
-                          decoration: TextDecoration.underline,
+                          color: Colors.grey[600],
+
                         ),
                       ),
                     ),

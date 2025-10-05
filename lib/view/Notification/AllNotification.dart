@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../../ModelTampo/Lot.dart';
 import '../../component/AppBarTest.dart';
 import '../../services/GetStorage/LotStorage.dart';
+import '../../services/GetStorage/expiration_medicament.dart';
 import '../principal/portail.dart';
 
 class AllNotification extends StatefulWidget {
@@ -21,9 +22,9 @@ class _AllNotificationState extends State<AllNotification> {
   }
 
   Future<void> loadNotifications() async {
-    List<Lot> lots = await LotStorage.getLots();
-    List<Map<String, String>> notifList = [];
+    List<Lot> lots = await ExpirationMedicamentStorage.getExpiringLots();
 
+    List<Map<String, String>> notifList = [];
     for (var medoc in lots) {
       int remainingDays = DateTime.parse(medoc.dateExpiration)
           .difference(DateTime.now())

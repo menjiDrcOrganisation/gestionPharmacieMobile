@@ -62,7 +62,6 @@ class LotService {
 
     final prefs = await SharedPreferences.getInstance();
     String? lotsJson = prefs.getString("lots_$idPharma");
-
     if (lotsJson != null) {
       List<dynamic> body = jsonDecode(lotsJson);
       return body.map((e) => Lot.fromJson(e)).toList();
@@ -100,7 +99,6 @@ class LotService {
 
   Future<Map<String, dynamic>> updatelot(
       int idlot,
-
       int quantite,
       String dateExpiration,
       int prixAchat,

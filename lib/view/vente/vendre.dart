@@ -40,8 +40,6 @@ class _VendreState extends State<Vendre> {
     try {
       final allLots = await LotService().fetchLots();
 
-
-
       // Map pour garder le premier lot pour chaque combinaison
       final Map<String, Lot> lotsParCle = {};
       for (var lot in allLots) {
