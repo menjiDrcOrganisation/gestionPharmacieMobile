@@ -24,6 +24,11 @@ class _ViewRapportState extends State<ViewRapport> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppbarTest(
+        title: "Rapport",
+        pageDeRemplacement: ViewDash(),
+      ).lancer(context),
+
       body: Container(
         decoration: const BoxDecoration(
             color: Colors.white38,
@@ -63,12 +68,6 @@ class _ViewRapportState extends State<ViewRapport> {
             return SafeArea(
               child: Column(
                 children: [
-                  AppbarTest(
-                    title: "Rapport",
-                    pageDeRemplacement: ViewDash(),
-                  ).lancer(context),
-
-
                   SizedBox(height: 10,),
                   Container(
                     width: double.infinity,
