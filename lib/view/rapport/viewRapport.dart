@@ -39,6 +39,7 @@ class _ViewRapportState extends State<ViewRapport> {
             if (snapshot.connectionState == ConnectionState.waiting) {
               return const Center(child: CircularProgressIndicator());
             } else if (snapshot.hasError) {
+              print(snapshot.hasError);
               return Center(child: Text('Erreur: ${snapshot.error}'));
             } else if (!snapshot.hasData || snapshot.data!.ventesParDate.isEmpty) {
               return const Center(child: Text('Aucune vente trouvée.'));

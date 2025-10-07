@@ -23,12 +23,9 @@ class Apirapportvente {
     );
 
     if (response.statusCode == 200) {
-
-      final jsonData = json.decode(response.body) as Map<String, dynamic>;
-
+      final jsonData = json.decode(response.body) ;
       final rapport = RapportVente.fromJson(jsonData);
-
-      return rapport; // ici c'est un objet RapportVente, pas une List
+      return rapport;
     } else {
       throw Exception("Erreur lors du chargement des ventes : ${response.statusCode}");
     }

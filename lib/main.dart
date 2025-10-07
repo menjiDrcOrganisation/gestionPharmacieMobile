@@ -1,8 +1,6 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:gestion_pharmacie_mobile/services/ApiService/ApiServiceLotTampo.dart';
-
-
 import 'package:gestion_pharmacie_mobile/services/GetStorage/expiration_medicament.dart';
 import 'package:gestion_pharmacie_mobile/utils/NotificationPush.dart';
 import 'package:gestion_pharmacie_mobile/view/auth/LoginPage.dart';
@@ -26,10 +24,8 @@ Future<void> main() async {
     for (var lot in lots) {
       final dateExp = DateTime.parse(lot.dateExpiration);
 
-      print(lot.dateExpiration);
-
       // Vérifier si proche de l'expiration
-      if (ExpirationMedicamentStorage.isNearExpiration(dateExp, daysBefore: 15)) {
+      if (ExpirationMedicamentStorage.isNearExpiration(dateExp)) {
 
         // Récupérer les lots déjà notifiés
         List<Lot> notifiedLots = await ExpirationMedicamentStorage.getExpiringLots();

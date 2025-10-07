@@ -107,7 +107,7 @@ class _ViewDashState extends State<ViewDash> {
                 Expanded(
                   child: Option(
                     src: 'assets/Icone/shopping-cart-add 5.png',
-                    intitule: "Vente",
+                    intitule: "Vendre",
                     action: () {
 
                       Navigator.push(

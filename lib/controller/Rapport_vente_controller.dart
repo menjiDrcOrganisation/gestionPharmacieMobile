@@ -11,7 +11,7 @@ class RapportVenteController{
 
 
   static Future<RapportVente> getRapportVente() async{
-    print(await Apirapportvente().fetchRapport());
+
     return await Apirapportvente().fetchRapport();
 
   }

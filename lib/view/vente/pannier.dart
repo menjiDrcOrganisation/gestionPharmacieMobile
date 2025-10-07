@@ -163,7 +163,6 @@ class _PannierState extends State<Pannier> {
                       confirmDismiss: (direction) async {
                         confirmation(context,"Vous confirmez la suppression?",
                             onOui: () async{
-                              await VenteController.create(panier);
                               removeItem(index);
                               ScaffoldMessenger.of(context).showSnackBar(
                                 SnackBar(content: Text("${item['medicament']} supprimé")),
