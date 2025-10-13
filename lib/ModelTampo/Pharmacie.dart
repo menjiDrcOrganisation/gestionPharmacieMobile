@@ -3,7 +3,7 @@ class Pharmacie {
   final String nom;
   final String adresse;
   final String telephone;
-  final int indice;
+  final  indice;
   final int idGerant;
   final String statut;
   final String? createdAt;

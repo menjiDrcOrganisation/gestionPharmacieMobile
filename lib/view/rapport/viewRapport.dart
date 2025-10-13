@@ -49,7 +49,6 @@ class _ViewRapportState extends State<ViewRapport> {
             } else if (!snapshot.hasData || snapshot.data!.ventesParDate.isEmpty) {
               return const Center(child: Text('Aucune vente trouvée.'));
             }
-
             final rapport = snapshot.data!;
             final dates = rapport.ventesParDate.keys.toList();
             dates.sort((a, b) => b.compareTo(a));
@@ -65,8 +64,7 @@ class _ViewRapportState extends State<ViewRapport> {
               quantiteTotale += vente.lots.fold(0, (sum, lot) => sum + lot.quantite);
             }
 
-            return SafeArea(
-              child: Column(
+            return Column(
                 children: [
                   SizedBox(height: 10,),
                   Container(
@@ -131,18 +129,17 @@ class _ViewRapportState extends State<ViewRapport> {
                   ),
                 ),
 
-
                   // Liste des ventes
                   Expanded(
                     child: ListView.builder(
                       padding: const EdgeInsets.all(13),
                       itemCount: ventesDuJour.length,
                       itemBuilder: (context, index) {
+                        print(index);
                         final vente = ventesDuJour[index];
                         final quantiteVente =
                         vente.lots.fold(0, (sum, lot) => sum + lot.quantite);
                         final montantVente = double.tryParse(vente.montantTotal) ?? 0;
-
                         return  createPaiementMarchandCard(
                           titre: "Vente N°${vente.idVente}",
                             montant: montantVente.toStringAsFixed(2),
@@ -152,8 +149,7 @@ class _ViewRapportState extends State<ViewRapport> {
                     ),
                   ),
                 ],
-              ),
-            );
+              );
           },
         ),
       ),

@@ -10,9 +10,7 @@ import '../principal/portail.dart';
 
 class Setting extends StatefulWidget {
   final Pharmacie pharmacie;
-
   const Setting({super.key, required this.pharmacie});
-
   @override
   State<Setting> createState() => _SettingState();
 }
@@ -21,7 +19,6 @@ class _SettingState extends State<Setting> {
   final _formKey = GlobalKey<FormState>();
   bool isLoading = false;
   bool isEditing = false;
-
   late TextEditingController nomController;
   late TextEditingController adresseController;
   late TextEditingController telephoneController;
@@ -56,7 +53,7 @@ class _SettingState extends State<Setting> {
         nom: nomController.text,
         adresse: adresseController.text,
         telephone: telephoneController.text,
-        indice: int.parse(indiceController.text),
+        indice:  double.parse(indiceController.text),
         idGerant: widget.pharmacie.idGerant,
         statut: widget.pharmacie.statut,
       );
@@ -80,9 +77,7 @@ class _SettingState extends State<Setting> {
   }
 
   void deletePharmacie() async {
-
     bool result = await ControllerPharmacie.delete(widget.pharmacie.id);
-
     if (result) {
       Fluttertoast.showToast(
         msg: "Pharmacie supprimée avec succès",
@@ -110,12 +105,14 @@ class _SettingState extends State<Setting> {
     required String label,
     required IconData icon,
     TextInputType type = TextInputType.text,
+    String? Function(String?)? validator,
   }) {
     return TextFormField(
       controller: controller,
       keyboardType: type,
       readOnly: !isEditing,
       decoration: InputDecoration(
+        errorStyle: const TextStyle(color: Colors.red, fontSize: 12),
         labelText: label,
        contentPadding: const EdgeInsets.symmetric(vertical: 20, horizontal: 12),
         filled: true,
@@ -123,9 +120,18 @@ class _SettingState extends State<Setting> {
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
           borderSide: const BorderSide(color: Colors.blue),
+
         ),
       ),
-      validator: (value) => value!.isEmpty ? "Champ obligatoire" : null,
+        validator: (value) {
+          if (validator != null) {
+            return validator(value);
+          }
+          if (value == null || value.isEmpty) {
+            return "Champ obligatoire";
+          }
+          return null;
+        }
     );
   }
 
@@ -149,22 +155,47 @@ class _SettingState extends State<Setting> {
                 const SizedBox(height: 6),
                 Divider(),
                 const SizedBox(height: 6),
-
-
-                buildTextField(controller: nomController, label: "Nom de la pharmacie", icon: Icons.local_pharmacy),
+                buildTextField(controller: nomController, label: "Nom de la pharmacie", icon: Icons.local_pharmacy,
+                ),
                 const SizedBox(height: 12),
                 buildTextField(controller: adresseController, label: "Adresse complète(Rue,Quartier,Ville)", icon: Icons.location_on),
                 const SizedBox(height: 12),
-                buildTextField(controller: telephoneController, label: "Téléphone", icon: Icons.phone, type: TextInputType.phone),
-                const SizedBox(height: 12),
-                buildTextField(controller: indiceController, label: "Indice", icon: Icons.format_list_numbered, type: TextInputType.number),
-                const SizedBox(height: 12),
+                buildTextField(controller: telephoneController, label: "Téléphone", icon: Icons.phone, type: TextInputType.phone,
 
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return "Téléphone obligatoire";
+                      }
+                      // 9 chiffres RDC commençant par 8 ou 9
+                      if (!RegExp(r'^[89][0-9]{8}$').hasMatch(value)) {
+                        return "Numéro invalide (format 82xxxxxxx ou 91xxxxxxx)";
+                      }
+                      return null;
+                    }
 
+                ),
+                const SizedBox(height: 12),
+                buildTextField(controller: indiceController, label: "Indice", icon: Icons.format_list_numbered, type: TextInputType.number,
+
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return "Indice obligatoire";
+                    }
+                    final number = double.tryParse(value);
+                    if (number == null) {
+                      return "Indice doit être un nombre (entier ou décimal)";
+                    }
+                    if (number <= 0) {
+                      return "Indice doit être supérieur à 0";
+                    }
+                    return null;
+                  },
+                )
+                ,
+                const SizedBox(height: 12),
                 Column(
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
                   children: [
-
                     SizedBox(
                       width: double.infinity,
                       child: ElevatedButton.icon(

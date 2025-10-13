@@ -21,7 +21,7 @@ class Vendre extends StatefulWidget {
 class _VendreState extends State<Vendre> {
   Lot? selectedLot;
   double quantiteChoisie = 0;
-  TextEditingController quantiteS=TextEditingController();
+  TextEditingController quantiteS = TextEditingController();
   List<Lot> lots = [];
   int coutPannier = 0;
   TextEditingController rechercheController = TextEditingController();
@@ -34,16 +34,13 @@ class _VendreState extends State<Vendre> {
     getLots();
   }
 
-  /// Récupérer les lots uniques par combinaison nom+forme+dose
   Future<void> getLots() async {
     setState(() => isLoading = true);
     try {
       final allLots = await LotService().fetchLots();
 
-      // Map pour garder le premier lot pour chaque combinaison
       final Map<String, Lot> lotsParCle = {};
       for (var lot in allLots) {
-        print(lot.quantite);
         final key = "${lot.medicament.nom}-${lot.medicament.forme.nom}-${lot.medicament.dose.quantite}";
         if (lot.quantite <= 0) continue;
         if (!lotsParCle.containsKey(key)) {
@@ -62,7 +59,6 @@ class _VendreState extends State<Vendre> {
     }
   }
 
-  /// Récupérer le nombre d’éléments dans le panier
   Future<void> getQuantite() async {
     final prefs = await SharedPreferences.getInstance();
     final String? panierString = prefs.getString('panier');
@@ -74,9 +70,21 @@ class _VendreState extends State<Vendre> {
     }
   }
 
-  /// Ajouter un lot au panier
   Future<void> ajouterAuPanier(Lot lot, int quantite) async {
-    if (quantite <= 0) return;
+    if (quantite <= 0) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Veuillez choisir une quantité valide.")),
+      );
+      return;
+    }
+
+    if (quantite > lot.quantite) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Quantité choisie (${quantite}) dépasse le stock disponible (${lot.quantite}).")),
+      );
+      return;
+    }
+
     final prefs = await SharedPreferences.getInstance();
     final String? panierString = prefs.getString('panier');
     List<Map<String, dynamic>> panier = panierString != null
@@ -84,8 +92,16 @@ class _VendreState extends State<Vendre> {
         : [];
 
     int index = panier.indexWhere((item) => item['idLot'] == lot.idLot);
+
     if (index >= 0) {
-      panier[index]['quantite'] += quantite;
+      int nouvelleQuantite = panier[index]['quantite'] + quantite;
+      if (nouvelleQuantite > lot.quantite) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text("Stock insuffisant pour augmenter la quantité.")),
+        );
+        return;
+      }
+      panier[index]['quantite'] = nouvelleQuantite;
     } else {
       panier.add({
         'idLot': lot.idLot,
@@ -99,6 +115,7 @@ class _VendreState extends State<Vendre> {
 
     await prefs.setString('panier', jsonEncode(panier));
     setState(() => getQuantite());
+
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(content: Text("${lot.medicament.nom} ajouté au panier !")),
     );
@@ -116,16 +133,32 @@ class _VendreState extends State<Vendre> {
     }
 
     return Scaffold(
-      appBar: AppbarTest(title: "Espace vente",pageDeRemplacement: ViewDash()).lancer(context),
+      appBar: AppbarTest(title: "Espace vente", pageDeRemplacement: ViewDash()).lancer(context),
       body: StructurePage(
         screenHeight: screenHeight,
         screenWidth: screenWidth,
         contentBack: InkWell(
           onTap: () {
-            if (selectedLot != null && quantiteChoisie > 0) {
-              ajouterAuPanier(selectedLot!, quantiteChoisie.toInt());
-              setState(() => quantiteChoisie = 0);
+            if (selectedLot == null) return;
+
+            if (quantiteChoisie <= 0) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(content: Text("Veuillez choisir une quantité.")),
+              );
+              return;
             }
+
+            if (quantiteChoisie > selectedLot!.quantite) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text("Stock insuffisant (max: ${selectedLot!.quantite})."),
+                ),
+              );
+              return;
+            }
+
+            ajouterAuPanier(selectedLot!, quantiteChoisie.toInt());
+            setState(() => quantiteChoisie = 0);
           },
           child: Container(
             height: screenWidth * 0.13,
@@ -193,7 +226,6 @@ class _VendreState extends State<Vendre> {
                       setState(() {
                         quantiteChoisie = value;
                         quantiteS.text = quantiteChoisie.toString();
-
                       });
                     },
                     max: selectedLot!.quantite.toDouble(),
@@ -202,29 +234,38 @@ class _VendreState extends State<Vendre> {
                     activeColor: MyColors.primaryColor,
                   ),
                   TextFormField(
-                    onChanged:(value){
-                      selectedLot!.quantite.toDouble()>=double.parse(value)?
-                      setState(() {
-                        quantiteChoisie = double.parse(value);
-                      }):null;
-                    },
-                      controller: quantiteS,
-                      keyboardType: TextInputType.number,
-                      decoration: InputDecoration(
+                    controller: quantiteS,
+                    keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                    decoration: InputDecoration(
                       labelText: "",
                       contentPadding: const EdgeInsets.symmetric(vertical: 20, horizontal: 12),
                       filled: true,
-                      fillColor:  Colors.white ,
+                      fillColor: Colors.white,
                       border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                      borderSide: const BorderSide(color: Colors.blue),
+                        borderRadius: BorderRadius.circular(12),
+                        borderSide: const BorderSide(color: Colors.blue),
                       ),
-                      ),
-                      validator: (value) => value!.isEmpty ? "Champ obligatoire" : null,
-                  )
+                    ),
+                    onChanged: (value) {
+                      final input = double.tryParse(value) ?? 0;
+
+                      if (input > selectedLot!.quantite) {
+                        quantiteS.text = selectedLot!.quantite.toString();
+                        quantiteChoisie = selectedLot!.quantite.toDouble();
+
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text("Quantité maximale autorisée : ${selectedLot!.quantite}"),
+                          ),
+                        );
+                      } else {
+                        setState(() => quantiteChoisie = input);
+                      }
+                    },
+                    validator: (value) => value!.isEmpty ? "Champ obligatoire" : null,
+                  ),
                 ],
-              )
-              ,
+              ),
               Text("Quantité choisie : ${quantiteChoisie.toInt()}"),
               SizedBox(height: screenHeight * 0.02),
               Prix(intitule: "Prix unitaire", montant: "${selectedLot!.prixUnitaire} FC").lancer(),
@@ -244,7 +285,6 @@ class _VendreState extends State<Vendre> {
             context,
             MaterialPageRoute(builder: (context) => Pannier()),
           );
-
         },
       ).lancer(),
     );

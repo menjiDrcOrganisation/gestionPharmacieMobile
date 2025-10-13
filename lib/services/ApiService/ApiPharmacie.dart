@@ -81,6 +81,11 @@ print("pharmacies ${response.body}");
 
   // Mettre à jour une pharmacie
   Future<Pharmacie> updatePharmacie(Pharmacie pharmacie) async {
+
+
+
+    print(pharmacie.toJson());
+
     final response = await http.put(
       Uri.parse("$baseUrl/${pharmacie.id}"),
       headers: {
