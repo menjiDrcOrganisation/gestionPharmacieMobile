@@ -141,7 +141,7 @@ class _PortailState extends State<Portail> {
                             );
                           },
                           action: () async {
-                            await PharmacieStorage.savePharmacie(pharma.id.toString());
+                            await PharmacieStorage.savePharmacie(pharma.id.toString(),pharma.indice.toString());
                             Navigator.push(
                               context,
                               MaterialPageRoute(

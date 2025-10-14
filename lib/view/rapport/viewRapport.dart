@@ -5,7 +5,6 @@ import '../../component/rapport/cardBlock.dart';
 import '../../controller/Rapport_vente_controller.dart';
 import '../../model/RapportVente.dart';
 import '../dashboard/viewDash.dart';
-
 class ViewRapport extends StatefulWidget {
   @override
   State<ViewRapport> createState() => _ViewRapportState();
@@ -50,12 +49,26 @@ class _ViewRapportState extends State<ViewRapport> {
               return const Center(child: Text('Aucune vente trouvée.'));
             }
             final rapport = snapshot.data!;
-            final dates = rapport.ventesParDate.keys.toList();
-            dates.sort((a, b) => b.compareTo(a));
-            selectedDate ??= dates.first;
 
+            // Regrouper par jour (JJ/MM/YYYY)
+            final Map<String, String> datesParJour = {}; // key = "dd/MM/yyyy", value = date complète
+            for (var dateStr in rapport.ventesParDate.keys) {
+              final dt = DateTime.parse(dateStr);
+              final key = "${dt.day.toString().padLeft(2, '0')}/${dt.month.toString().padLeft(2,'0')}/${dt.year}";
+              if (!datesParJour.containsKey(key)) {
+                datesParJour[key] = dateStr; // garde une seule occurrence par jour
+              }
+            }
+
+            final dates = datesParJour.entries.toList()
+              ..sort((a, b) {
+                final dtA = DateTime.parse(a.value);
+                final dtB = DateTime.parse(b.value);
+                return dtB.compareTo(dtA); // tri décroissant
+              });
+
+            selectedDate ??= dates.first.value;
             final ventesDuJour = rapport.ventesParDate[selectedDate!]!;
-
             // Calcul du montant total et quantité totale
             double montantTotal = 0;
             int quantiteTotale = 0;
@@ -84,13 +97,16 @@ class _ViewRapportState extends State<ViewRapport> {
                       value: selectedDate,
                       underline: const SizedBox(),
                       icon: const Icon(Icons.arrow_drop_down, color: Colors.blueGrey),
-                      items: dates.map((date) {
+                      items: dates.map((entry) {
+                        final displayText = entry.key; // "JJ/MM/YYYY"
                         return DropdownMenuItem(
-                          value: date,
+                          value: entry.value, // date complète
                           child: Text(
-                            date,
+                            displayText,
                             style: const TextStyle(
-                                fontWeight: FontWeight.w500, color: Colors.blueGrey),
+                              fontWeight: FontWeight.w500,
+                              color: Colors.blueGrey,
+                            ),
                           ),
                         );
                       }).toList(),
@@ -99,7 +115,9 @@ class _ViewRapportState extends State<ViewRapport> {
                           selectedDate = value;
                         });
                       },
-                    ),
+                    )
+                    ,
+
                   ),
 
                   // Statistiques (montant + quantité)
@@ -143,7 +161,7 @@ class _ViewRapportState extends State<ViewRapport> {
                         return  createPaiementMarchandCard(
                           titre: "Vente N°${vente.idVente}",
                             montant: montantVente.toStringAsFixed(2),
-                            heure: '08:32',
+                            heure: vente.dateVente,
                             onVoirDetailsTap: () => _showDetailsBottom(context, vente, quantiteVente, montantVente));
                       },
                     ),

@@ -46,7 +46,7 @@ Widget createPaiementMarchandCard({
                   text: TextSpan(
                     style: TextStyle(color: Colors.black, fontSize: 16),
                     children: [
-                      TextSpan(text: "Montant - ",style: TextStyle(
+                      TextSpan(text: "Montant  ",style: TextStyle(
                         fontWeight: FontWeight.w100,
                           fontSize: 17
                       )),

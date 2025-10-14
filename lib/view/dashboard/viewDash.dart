@@ -200,7 +200,7 @@ class _ViewDashState extends State<ViewDash> {
                                       itemCount: Ventes.length > 5 ? 5 : Ventes.length,
                                       itemBuilder: (context, index) {
                       final v = Ventes[index];
-                      final date = DateFormat('dd/MM ').format(DateTime.parse(v.dateVente));
+                      final date = v.dateVente;
                       return Padding(
                         padding: const EdgeInsets.symmetric(vertical: 4.0),
                         child:  Column(

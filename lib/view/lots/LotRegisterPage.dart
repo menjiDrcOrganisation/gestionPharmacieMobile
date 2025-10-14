@@ -3,6 +3,7 @@ import '../../controller/FormeDoseController.dart';
 import '../../controller/LotController.dart';
 import '../../controller/MedocController.dart';
 import '../../model/Medicament.dart';
+import '../../services/GetStorage/Pharmacie.dart';
 import '../layouts/AppBarCustomer.dart';
 
 void main() {
@@ -81,12 +82,17 @@ class _AddProduitPageState extends State<AddProduitPage> {
     super.dispose();
   }
 
-  void _calculatePrixUnitaire() {
+  void _calculatePrixUnitaire()async {
     if (prixAchatController.text.isNotEmpty) {
       try {
         final prixAchat = double.parse(prixAchatController.text);
+        String indiceStr = await PharmacieStorage.getindice();
+        double indice = double.parse(indiceStr);
+        print("indice");
+        print(indice);// convertir en nombre
+        int prixFinal = (prixAchat * indice).round();
         // Calculer le prix unitaire avec une marge de 20%
-        final prixUnitaire = (prixAchat * 1.2).round();
+        final prixUnitaire =prixFinal;
         prixUnitaireController.text = prixUnitaire.toString();
       } catch (e) {
         // Ignorer les erreurs de parsing

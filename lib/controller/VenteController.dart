@@ -33,12 +33,12 @@ class VenteController {
     });
     // Récupérer la date actuelle
     DateTime now = DateTime.now();
-
-    // Formater en "yyyy-MM-dd"
-    String formattedDate = DateFormat('yyyy-MM-dd').format(now);
+    String formattedDateTime = DateFormat('yyyy-MM-dd HH:mm:ss').format(now);
+    print("erreur date");
+    print(formattedDateTime);
 
     Map<String, dynamic> vente={
-      "date_vente" : formattedDate,
+      "date_vente" : formattedDateTime,
       "montant_total" :montant_total.toString(),
       "nom_client" : "client",
       "lots_ids":id_lots,
