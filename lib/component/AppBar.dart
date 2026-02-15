@@ -1,8 +1,3 @@
-
-import 'package:flutter/material.dart';
-
-import 'Colors.dart';
-
 import 'package:flutter/material.dart';
 
 class Appbar {

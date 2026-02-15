@@ -186,17 +186,19 @@ class _AddProduitPageState extends State<AddProduitPage> {
             (m) => m.id.toString() == selectedMedicament,
       );
 
+      String id_pharmacie= await PharmacieStorage.getPharma();
+
       final lot = await lotController.enregistrerLot(
         idMedicament: medicament.id,
         quantite: quantity.round(),
         dateExpiration: expirationDate!.toIso8601String().split("T")[0],
         prixAchat: int.parse(prixAchatController.text),
-        idPharmacie: 1,
+        idPharmacie: int.parse(id_pharmacie),
       );
 
       if (lot != null) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text("Lot ajouté avec succès ✅")),
+          const SnackBar(content: Text("Lot ajouté avec succès")),
         );
         // Réinitialiser le formulaire après succès
         _resetForm();

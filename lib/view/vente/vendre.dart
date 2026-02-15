@@ -37,7 +37,7 @@ class _VendreState extends State<Vendre> {
   Future<void> getLots() async {
     setState(() => isLoading = true);
     try {
-      final allLots = await LotService().fetchLots();
+      final List<Lot> allLots= await LotService().fetchLots();
 
       final Map<String, Lot> lotsParCle = {};
       for (var lot in allLots) {

@@ -1,7 +1,5 @@
-
 import 'package:intl/intl.dart';
 import '../ModelTampo/Lot.dart';
-import '../ModelTampo/Vente.dart';
 import '../services/ApiService/ApiServiceLotTampo.dart' show LotService;
 import '../services/ApiService/venteService.dart';
 

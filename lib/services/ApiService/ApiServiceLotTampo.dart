@@ -2,27 +2,36 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:gestion_pharmacie_mobile/ModelTampo/Lot.dart';
 
+import '../../model/userModel.dart';
 import '../../utils/Utilis.dart';
 import '../GetStorage/LotStorage.dart';
 import '../GetStorage/Pharmacie.dart';
+import '../GetStorage/StorageMethode.dart';
+import '../GetStorage/local_storage_service.dart';
 
 class LotService {
 
   // Récupérer tous les lots
   Future<List<Lot>> fetchLots() async {
     try {
+      User? user = await LocalStorageService().getUser();
+      if(user==null) {
+        throw Exception("Impossible de récupérer les lots");
+      }
       String idPharma = await PharmacieStorage.getPharma();
       String base = "${Utilise.baseUrl}pharmacies/${idPharma}/medicaments";
       final response = await http.get(Uri.parse(base));
 
       if (response.statusCode == 200) {
-        // On décode directement en liste
         final Map<String, dynamic> data = jsonDecode(response.body);
         final List<dynamic> lotsJson = data["data"];
 
         List<Lot> lots = lotsJson.map((item) => Lot.fromJson(item)).toList();
-        await LotStorage.saveLots(lots);
-
+        await LocalStorageMethode.save<Lot>(
+          user.id.toString(),
+          lots,
+              (n) => n.toJson(),
+        );
         return lots;
       } else {
         // Erreur serveur → on lit depuis le cache
@@ -32,8 +41,7 @@ class LotService {
       }
     } catch (e) {
       // Erreur réseau (connexion perdue, timeout, etc.)
-
-      return await LotStorage.getLots();
+      throw Exception("Impossible erreur de reccuperation de lot");
     }
   }
 

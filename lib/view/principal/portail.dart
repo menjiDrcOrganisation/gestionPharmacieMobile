@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import '../../ModelTampo/Pharmacie.dart';
 import '../../component/AppBarTest.dart';
 import '../../component/Colors.dart';
@@ -18,8 +19,8 @@ class Portail extends StatefulWidget {
 }
 class _PortailState extends State<Portail> {
   late Future<List<Pharmacie>> pharmaciesFuture;
-  List<Pharmacie> allPharmacies = [];       // toutes les pharmacies récupérées
-  List<Pharmacie> filteredPharmacies = [];  // liste filtrée selon la recherche
+  List<Pharmacie> allPharmacies = [];
+  List<Pharmacie> filteredPharmacies = [];
 
   TextEditingController recherche = TextEditingController();
 
@@ -194,7 +195,7 @@ class _PortailState extends State<Portail> {
               IconButton(
                 icon: Image.asset("assets/Icone/user.png"),
                 onPressed: () {
-                  goToPagePlacement(context, ProfilePage());
+                  context.push('/profil');
                 },
               ),
             ],

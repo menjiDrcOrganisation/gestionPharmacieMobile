@@ -3,6 +3,7 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:gestion_pharmacie_mobile/model/userModel.dart';
 import 'package:gestion_pharmacie_mobile/utils/navigation.dart';
 import 'package:gestion_pharmacie_mobile/view/auth/LoginPage.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../controller/AuthController.dart';
 import '../../services/ApiService/apiServiceUser.dart';
@@ -253,8 +254,9 @@ class _ProfilePageState extends State<ProfilePage> with SingleTickerProviderStat
         elevation: 0,
         leading: IconButton(
           icon: Icon(Icons.arrow_back_ios_new, color: Colors.grey[800]),
-          onPressed: () => Navigator.of(context).pop(),
+          onPressed: () => context.go("/home"), // bouton désactivé
         ),
+
         title: Text('Mon Profil',
             style: TextStyle(
                 color: Colors.grey[800],
@@ -480,7 +482,7 @@ class _ProfilePageState extends State<ProfilePage> with SingleTickerProviderStat
                             icon: Icons.logout,
                             color: Colors.red,
                             onPressed: () => _authController.logout().then((_) {
-                              goToPagePlacement(context, LoginPage());
+                              context.go("/logout");
                             }),
                           ),
                         ],

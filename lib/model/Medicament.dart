@@ -1,3 +1,4 @@
+import '../ModelTampo/Forme_Dose.dart';
 
 class Medicament {
   final int id;
@@ -5,6 +6,8 @@ class Medicament {
   final String description;
   final int idForme;
   final int idDose;
+  final Forme forme;
+  final Dose dose;
 
   Medicament({
     required this.id,
@@ -12,16 +15,22 @@ class Medicament {
     required this.description,
     required this.idForme,
     required this.idDose,
+    required this.forme,
+    required this.dose
   });
 
   factory Medicament.fromJson(Map<String, dynamic> json) {
-    return Medicament(
-      id: json["id_medicament"],
-      nom: json["nom"]+"_"+json["forme"]["nom"]+"_"+json["dose"]["quantite"]+"_"+json["dose"]["unite"],
-      description: json["description"],
-      idForme: json["id_forme"],
-      idDose: json["id_dose"],
+
+    Medicament medoc = Medicament(
+      id: int.parse(json["id_medicament"].toString()),
+      nom: "${json["nom"]}_${json["forme"]["nom"]}_${json["dose"]["quantite"]}_${json["dose"]["unite"]}",
+      description: json["description"]??"",
+      forme: Forme.fromJson(json["forme"]),
+      dose: Dose.fromJson(json["dose"]),
+      idForme: int.parse(json["id_forme"].toString()),
+      idDose: int.parse(json["id_dose"].toString()),
     );
+    return medoc;
   }
 
   Map<String, dynamic> toJson() => {

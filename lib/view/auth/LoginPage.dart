@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:gestion_pharmacie_mobile/utils/Utilis.dart';
+import 'package:go_router/go_router.dart';
 import 'package:http/http.dart' as http;
 
 import 'package:flutter/material.dart';
@@ -105,7 +106,6 @@ class _LoginPageState extends State<LoginPage> {
     setState(() => _isLoading = true);
 
     try {
-      print({"loginnnnnnnnnnnnnnnnn::page"});
       final user = await _authController
           .login(
         _emailController.text,
@@ -114,7 +114,7 @@ class _LoginPageState extends State<LoginPage> {
           .timeout(const Duration(seconds: 30));
 
       _showToast('Bienvenue, ${user.name}', isError: false);
-      goToPagePlacement(context,Portail());
+      context.go("/home");
 
 
     /*  Future.delayed(
@@ -165,10 +165,7 @@ class _LoginPageState extends State<LoginPage> {
         // Récupère les tokens d'authentification
         final GoogleSignInAuthentication googleAuth =
         await googleUser.authentication;
-
-        print("✅ ID Token : ${googleAuth.idToken}");
         try {
-          print({"loginnnnnnnnnnnnnnnnn::page"});
           final user = await _authController
               .googleSignIn(
               googleAuth.idToken
@@ -176,19 +173,7 @@ class _LoginPageState extends State<LoginPage> {
               .timeout(const Duration(seconds: 10));
 
           _showToast('Bienvenue, ${user.name}', isError: false);
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => Portail(),
-            ),
-          );
-
-          /*  Future.delayed(
-        const Duration(milliseconds: 1500),
-            () async {
-          context.go('/login');
-        },
-      );*/
+          context.go("/home");
         } catch (e) {
           String errorMessage = 'Impossible de se connecter. Vérifiez que votre adresse e-mail et votre mot de passe sont corrects.';
           print(e);
@@ -386,11 +371,7 @@ class _LoginPageState extends State<LoginPage> {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           TextButton(
-            onPressed: () => Navigator.push(
-              context,
-              MaterialPageRoute(
-                  builder: (context) => RegisterPage()),
-            ),
+            onPressed: () => context.go("/register"),
             child: const Text(
               "Vous n’avez pas de compre ? Cliquez ici ",
               style: TextStyle(

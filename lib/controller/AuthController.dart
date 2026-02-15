@@ -1,11 +1,4 @@
-
-
-import 'package:flutter/cupertino.dart';
-import 'package:google_sign_in/google_sign_in.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-
-
-
 import '../model/userModel.dart';
 import '../services/ApiService/apiServiceUser.dart';
 import '../services/GetStorage/local_storage_service.dart';
@@ -16,8 +9,7 @@ class AuthController {
 
   Future<User> login(String email, String password) async {
     final result = await _apiService.login(email, password);
-    print({"loginnnnnnnnnnnnnnnnn::controller"});
-    print('connexion ${result['role']}');
+
 
     final token = result['token'];
     final user = result['user'] as User;
@@ -27,8 +19,6 @@ class AuthController {
     await _localStorage.saveToken(token);
     await _localStorage.saveUser(user);
     await _localStorage.saveRoleInfo(roleInfo);
-
-    print('nini');
     return user;
   }
 

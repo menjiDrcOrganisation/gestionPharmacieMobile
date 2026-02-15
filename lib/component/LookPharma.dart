@@ -1,8 +1,5 @@
 import 'package:flutter/material.dart';
 
-import '../utils/navigation.dart';
-import '../view/pharmacie/Setting.dart';
-import '../view/pharmacie/pharmacoePage.dart';
 
 class LookPharma {
   Function action;

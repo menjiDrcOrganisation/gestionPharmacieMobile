@@ -1,4 +1,3 @@
-import 'Lot.dart';
 import 'Pharmacie.dart';
 import 'VenteLot.dart';
 

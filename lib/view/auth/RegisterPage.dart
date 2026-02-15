@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:gestion_pharmacie_mobile/utils/Utilis.dart';
 import 'package:gestion_pharmacie_mobile/view/principal/portail.dart';
+import 'package:go_router/go_router.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -127,6 +128,7 @@ class _RegisterPageState extends State<RegisterPage> {
       fontSize: 16.0,
     );
   }
+
   Future<void> _handleGoogleSignIn() async {
     try {
       // Initialise GoogleSignIn avec les clientId (Android et Web)
@@ -218,24 +220,18 @@ class _RegisterPageState extends State<RegisterPage> {
 
       );
         final success = user == null ? false : true;
-
-        print(user);
         setState(() => _isLoading = false);
 
       if (success) {
         Fluttertoast.showToast(
-          msg: "Compte créé avec succès 🎉",
+          msg: "Compte créé avec succès",
           toastLength: Toast.LENGTH_SHORT,
           gravity: ToastGravity.BOTTOM,
           backgroundColor: AppColors.success,
           textColor: Colors.white,
         );
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => Portail(),
-          ),
-        );
+        context.go("/home");
+
       } else {
         Fluttertoast.showToast(
           msg: "Erreur lors de la création du compte",
