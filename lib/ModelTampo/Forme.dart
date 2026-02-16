@@ -17,7 +17,7 @@ class Forme {
     return Forme(
       idForme: json['id_forme'],
       nom: json['nom'],
-      description: json["description"] ?? "",
+      description: json['description'],
       createdAt: json['created_at'],
       updatedAt: json['updated_at'],
     );

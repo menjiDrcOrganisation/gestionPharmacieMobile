@@ -1,6 +1,8 @@
 
 import 'package:gestion_pharmacie_mobile/ModelTampo/Forme_Dose.dart';
 
+import '../model/Forme.dart';
+
 class Medicament {
   final int id;
   final String nom;
@@ -17,11 +19,12 @@ class Medicament {
   });
 
   factory Medicament.fromJson(Map<String, dynamic> json) {
+
     return Medicament(
       id: json["id_medicament"],
       nom: json["nom"],
-      forme:Forme(idForme: 1, nom: json["forme"]["nom"], description:"douleur", createdAt: "", updatedAt: ""),
-      dose: Dose(idDose: 1, quantite: json["dose"]["quantite"], unite: json["dose"]["unite"], createdAt: "", updatedAt: ""),
+      forme:Forme.fromJson(json["forme"]),
+      dose: Dose.fromJson(json["dose"]),
       description: json["description"],
     );
   }

@@ -1,4 +1,6 @@
-import '../ModelTampo/Forme_Dose.dart';
+
+import 'Dose.dart';
+import 'Forme.dart';
 
 class Medicament {
   final int id;
@@ -20,16 +22,38 @@ class Medicament {
   });
 
   factory Medicament.fromJson(Map<String, dynamic> json) {
+    print(json);
 
-    Medicament medoc = Medicament(
-      id: int.parse(json["id_medicament"].toString()),
-      nom: "${json["nom"]}_${json["forme"]["nom"]}_${json["dose"]["quantite"]}_${json["dose"]["unite"]}",
-      description: json["description"]??"",
-      forme: Forme.fromJson(json["forme"]),
-      dose: Dose.fromJson(json["dose"]),
-      idForme: int.parse(json["id_forme"].toString()),
-      idDose: int.parse(json["id_dose"].toString()),
-    );
+
+
+    Medicament medoc;
+
+    try {
+      medoc = Medicament(
+        id: int.parse(json["id_medicament"].toString()),
+        nom: "${json["nom"]}_${json["forme"]["nom"]}_${json["dose"]["quantite"]}_${json["dose"]["unite"]}",
+        description: json["description"] ?? "",
+        forme: Forme.fromJson(json["forme"]),
+        dose: Dose.fromJson(json["dose"]),
+        idForme: int.parse(json["id_forme"].toString()),
+        idDose: int.parse(json["id_dose"].toString()),
+      );
+    } catch (e) {
+      print("Erreur lors du parsing Medicament: $e");
+
+      // Optionnel : créer un objet par défaut pour éviter crash
+      medoc = Medicament(
+        id: 0,
+        nom: "",
+        description: "",
+        forme: Forme.fromJson({}),
+        dose: Dose.fromJson({}),
+        idForme: 0,
+        idDose: 0,
+      );
+    }
+
+
     return medoc;
   }
 
